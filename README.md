@@ -22,7 +22,7 @@ The following examples are from a (freshly installed) Arch Linux.
 
 ### Binaries
 
-Binaries only need to be downloaded, extracted and moved into a suitable `$LOCATION`.
+Binaries only need to be downloaded, extracted and moved to a suitable `$LOCATION`.
 
 	[user@arch ~]$ wget https://github.com/Tuplanolla/indefinix/blob/master/indefinix.tar.gz
 	[user@arch ~]$ tar -xf indefinix.tar.gz
@@ -62,7 +62,7 @@ and Indefinix can be built.
 	[user@arch indefinix]$ make
 
 The binaries go in the `bin` directory and temporary objects in the `obj` directory.
-After moving the binaries into a suitable `$LOCATION`
+After moving the binaries to a suitable `$LOCATION`
 
 	[user@arch ~]$ mv indefinix/bin/* $LOCATION
 
@@ -111,15 +111,19 @@ The key `status`, abbreviated as `s`, contains the status indicator characters a
 The default value is `+-! ?`.
 Any string in the form `(added)(removed)(updated)(found)(error)` is a valid status indicator string.
 
+That's too complicated.
+
 The statuses are explained in the next section.
 
 ### Usage
 
+A brief usage reference can be printed by calling Indefinix without any arguments.
+
+	[user@arch /tmp]$ indefinix
+
 Indefinix can be used with the commands `indefinix (flags) (command) (argument) (...)`, where the `(flags)` are optional and the `(command)` can be partial if it's unambiguous.
 
 The flags are explained in the previous section and the commands in the following subsections.
-
-Commands that fail change the state of the entry to `(error)`.
 
 #### Configuration
 
@@ -153,64 +157,82 @@ The command `destroy` deletes the index file.
 
 #### Example
 
-A brief usage reference can be printed by calling Indefinix without any arguments.
+Let's first configure Indefinix.
 
-	[user@arch /tmp]$ indefinix
+	[user@arch /tmp]$ indefinix configure prefix "<- % "
+	Set the persistent prefix.
+	[user@arch /tmp]$ indefinix configure suffix " ->"
+	Set the persistent suffix.
+	[user@arch /tmp]$ indefinix configure infix " -|- "
+	Set the persistent infix.
+	[user@arch /tmp]$ indefinix configure affix "  |- "
+	Set the persistent affix.
 
-*In the wrong tense:*
-Edit the configuration,
+Let's make some dummy files and directories.
 
-	[user@arch /tmp]$ indefinix modify
+	[user@arch /tmp]$ touch README LICENSE
+	[user@arch /tmp]$ mkdir documents music pictures
 
-delete it,
+Let's create an index file and add some entries to it.
+
+	[user@arch /tmp]$ indefinix build
+	Created a new index.
+	[user@arch /tmp]$ indefinix build
+	An index already exists.
+	[user@arch /tmp]$ indefinix add music sequential notes
+	Added a new entry.
+	[user@arch /tmp]$ indefinix add documents "books, papers and other text documents"
+	Added a new entry.
+	[user@arch /tmp]$ indefinix add LICENSE legal nonsense
+	Added a new entry.
+
+Let's take a look at the new index.
+
+	[user@arch /tmp]$ indefinix lookup
+	<-   music/     -|- sequential notes     ->
+	<-   documents/ -|- books, papers and    ->
+	<-               |- other text documents ->
+	<-   LICENSE    -|- legal nonsense       ->
+
+Let's delete the configuration since it looks stupid.
 
 	[user@arch /tmp]$ indefinix obliterate
 	Do you really want to delete the configuration file "/home/user/.indefinix"? (y / N)
+	y
+	Destroyed the configuration.
 
-and build a new index by hand,
+Let's look up something in the index.
 
-	[user@arch /tmp]$ indefinix build
-	[user@arch /tmp]$ indefinix edit
+	[user@arch /tmp]$ indefinix lookup pictures music nothing
+	? pictures - not indexed
+	  music    - sequential notes
+	? nothing  - not present
 
-list the index,
+Let's change the music description to something more descriptive.
 
-	[user@arch /tmp]$ indefinix lookup
-	  music          - sequential notes
-	  documents      - books, papers and other text documents
-	  configurations - reusable system and software
-	                   configurations
+	[user@arch /tmp]$ indefinix update music representations of pressure waves
+	Updated an entry.
 
-look up the index,
+Let's find it.
 
-	[user@arch /tmp]$ indefinix lookup pictures/ ./documents nothing\
-	? pictures       - not indexed
-	  configurations - reusable system and software
-	                   configurations
-	? nothing        - not present
+	[user@arch /tmp]$ indefinix find wave
+	  music - representations of pressure waves
 
-remove stuff,
+Let's remove some unnecessary things.
 
-	[user@arch /tmp]$ indefinix remove ./nothing/ music
-	? nothing - not indexed
-	- music   - sequential notes
+	[user@arch /tmp]$ indefinix remove documents
+	Removed an entry.
 
-add stuff,
-
-	[user@arch /tmp]$ indefinix add .\projects\ "all kinds" of "waste"
-	+ projects - all kinds of waste
-
-update stuff
-
-	[user@arch /tmp]$ indefinix update ./music\ "representations of pressure waves"
-	! music - representations of pressure waves
-
-and delete it.
+Let's destroy the index.
 
 	[user@arch /tmp]$ indefinix destroy
 	Do you really want to delete the index file "/tmp/INDEX"? (y / N)
+	y
+	Destroyed the index.
 
 It's a good idea to add Indefinix to the lookup `$PATH` and give it a shorter alias
 
+	[user@arch /tmp]$ echo $PATH
 	[user@arch /tmp]$ which indefinix
 	[user@arch /tmp]$ alias ind=indefinix
 
