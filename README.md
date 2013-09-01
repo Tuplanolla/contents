@@ -76,9 +76,8 @@ All the names are subject to change.
 
 ### Configuration
 
-Indefinix can be configured persistently with the command `indefinix configure (key) (value), (...)` or temporarily with optional flags in the short form `-(k) (value), (...)` or the long form `--(key) (value), (...)`.
-Using the comma is optional in the command form, but mandatory in the flag forms.
-However separating the arguments with a space is optional in all forms.
+Indefinix can be configured persistently with the command `indefinix configure (key) (value),(...)` or temporarily with optional flags in the short form `-(k) (value),(...)` or the long form `--(key) (value),(...)`.
+Using the comma is optional in the command form, but mandatory in the flag forms while using spaces around the comma is optional in all forms.
 Persistent configurations are saved to `~/.indefinix` if needed while temporary configurations are lost when the program exits.
 
 The key `name`, abbreviated as `n`, contains the expected name of the index files.
@@ -86,34 +85,38 @@ The default value is `INDEX`.
 Any file name is a valid `name`.
 
 The key `editor`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
-The default value is `nano`, but only if it's present.
+The default value is empty unless a text editor is detected automatically.
 Any path to an executable is a valid `editor`.
 
 The key `order`, abbreviated as `o`, contains the order used in the index file.
-The default value is `normal,directories,hide`.
-Any string in the form `(sorting),(grouping),(hiding)` is a valid order string.
+The default value is `normal,directories,hidden`.
+Any string in the form `(sorting),(grouping),(hiding)` is a valid order string, where `(sorting)` is either `normal`, `reverse` or `none`, `(grouping)` is either `directories`, `files` or `none` and `(hiding)` is either `hidden` or `none`.
 
 The key `alignment`, abbreviated as `a`, contains the text alignment to use in the columns of the index files.
 The default value is `left,left`.
 Any single `(position)` or `(position),(position)` pair is valid `alignment`, where `(position)` is either `left`, `right` or `center`.
 When given a single `(position)`, both of the columns are aligned together, and when given a `(position),(position)` pair, both of the columns are aligned independently.
 
-The key `prefix`, abbreviated as `pf`, contains the text that comes before the first column.
-The default value is `"% "`.
+The key `filling`, abbreviated as `f`, contains the text padding to use in the columns of the index files.
+The default value is `fill,fill`.
+Any `(padding),(padding)` pair is valid `filling`, where `(padding)` is either `fill` or `none`.
 
-Similarly the keys `infix`, abbreviated as `if`; `suffix`, abbreviated as `sf`, and `affix`, abbreviated as `af`, contain the text that comes between the columns, after the last column and between wrapped columns respectively.
-The default values are `" - "`, `""` and `"   "` (three spaces).
+The key `infix`, abbreviated as `i`, contains the text that comes between the columns.
+The default value is `"   "` (three spaces).
 
-The character `%` is replaced by a status indicator in all of the strings unless it's followed by another `%`.
-The string `%%` is reserved for a literal percent sign.
+Similarly the keys `prefix`, abbreviated as `p`, and `suffix`, abbreviated as `s`, contain the texts that come before the first column and after the last column respectively.
+The default values are both `""`.
 
-The key `status`, abbreviated as `s`, contains the status indicator characters as a string.
-The default value is `+-! ?`.
-Any string in the form `(added)(removed)(updated)(found)(error)` is a valid status indicator string.
+Furthermore the keys `headinfix`, abbreviated as `hi`, `headprefix`, abbreviated as `hp`, and `headsuffix`, abbreviated as `hs`, contain the corresponding texts on the first line only.
+The default values are empty except for `" - "` for `headinfix`.
 
-That's too complicated.
+Finally the keys `tailinfix`, abbreviated as `ti`, `tailprefix`, abbreviated as `tp`, and `tailsuffix`, abbreviated as `ts`, contain the corresponding texts on the last line only.
+The default values are empty.
 
-The statuses are explained in the next section.
+The key `what`, abbreviated as `w`, contains the texts that are displayed in exceptional situations.
+The default value is `"not indexed","not present"`.
+
+Any strings are valid texts.
 
 ### Usage
 
@@ -131,6 +134,8 @@ The command `modify` opens the persistent configuration in the default text edit
 
 The command `configure (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
 
+The command `toss (key)` changes the persistent configuration by removing the given `(key)`.
+
 The command `query (key)` looks up the given key in the persistent configuration.
 
 The command `obliterate` deletes the persistent configuration.
@@ -143,30 +148,28 @@ The command `build` creates a new index file.
 
 The command `grope` repairs the index file if it's mangled.
 
-The command `add (entry) (description) (...)` adds the given `(entry)` to the index file with the given descriptions and changes the state of the entry to `(added)`.
+The command `add (entry) (description) (...)` adds the given `(entry)` to the index file with the given descriptions.
 
-The command `remove (entry) (...)` removes the given entries from the index file and changes the state of the entry to `(removed)`.
+The command `remove (entry) (...)` removes the given entries from the index file.
 
-The command `update (entry) (description) (...)` changes the given `(entry)` in the index file to have the given descriptions and changes the state of the entry to `(updated)`.
+The command `update (entry) (description) (...)` changes the given `(entry)` in the index file to have the given descriptions.
 
-The command `find (string) (...)` searches the index file for the given strings and changes the state of the entry to `(found)`.
+The command `find (string) (...)` searches the index file for the given strings.
 
-The command `lookup (entry) (...)` looks up the given entries in the index file and changes the state of the entry to `(found)`.
+The command `lookup (entry) (...)` looks up the given entries in the index file.
 
 The command `destroy` deletes the index file.
 
 #### Example
 
-Let's first configure Indefinix.
+Let's first configure Indefinix into a Lisp fanatic style.
 
-	[user@arch /tmp]$ indefinix configure prefix "<- % "
-	Set the persistent prefix.
-	[user@arch /tmp]$ indefinix configure suffix " ->"
-	Set the persistent suffix.
-	[user@arch /tmp]$ indefinix configure infix " -|- "
-	Set the persistent infix.
-	[user@arch /tmp]$ indefinix configure affix "  |- "
-	Set the persistent affix.
+	[user@arch /tmp]$ indefinix configure alignment left
+	[user@arch /tmp]$ indefinix configure filling none
+	[user@arch /tmp]$ indefinix configure infix " ("
+	[user@arch /tmp]$ indefinix configure prefix " "
+	[user@arch /tmp]$ indefinix configure headprefix "("
+	[user@arch /tmp]$ indefinix configure tailsuffix "))"
 
 Let's make some dummy files and directories.
 
@@ -189,10 +192,10 @@ Let's create an index file and add some entries to it.
 Let's take a look at the new index.
 
 	[user@arch /tmp]$ indefinix lookup
-	<-   music/     -|- sequential notes     ->
-	<-   documents/ -|- books, papers and    ->
-	<-               |- other text documents ->
-	<-   LICENSE    -|- legal nonsense       ->
+	(music/ (sequential notes))
+	(documents/ (books, papers and
+	 other text documents))
+	(LICENSE (legal nonsense))
 
 Let's delete the configuration since it looks stupid.
 
@@ -204,9 +207,9 @@ Let's delete the configuration since it looks stupid.
 Let's look up something in the index.
 
 	[user@arch /tmp]$ indefinix lookup pictures music nothing
-	? pictures - not indexed
-	  music    - sequential notes
-	? nothing  - not present
+	pictures - not indexed
+	music    - sequential notes
+	nothing  - not present
 
 Let's change the music description to something more descriptive.
 
@@ -216,7 +219,7 @@ Let's change the music description to something more descriptive.
 Let's find it.
 
 	[user@arch /tmp]$ indefinix find wave
-	  music - representations of pressure waves
+	music - representations of pressure waves
 
 Let's remove some unnecessary things.
 
