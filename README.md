@@ -131,7 +131,7 @@ A brief usage reference can be printed by calling Indefinix without any argument
 	[user@arch /tmp]$ indefinix
 
 Indefinix can be used with the commands `indefinix (flags) (command) (argument) (...) (flags)`, where the `(flags)` are optional and the `(command)` can be partial if it's unambiguous.
-The position of the flags matters as it determines when they're applied.
+The order of commands and flags matters as it determines their order of application.
 
 The flags are explained in the previous section and the commands in the following subsections.
 
@@ -139,17 +139,17 @@ The flags are explained in the previous section and the commands in the followin
 
 The command `configure` opens the persistent configuration in the default text editor.
 
-The command `give (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
+The command `set (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
 
-The command `take (key) (...)` changes the persistent configuration by removing the given keys.
+The command `pop (key) (...)` changes the persistent configuration by removing the given keys.
 
-The command `see (key) (...)` looks up the given keys in the persistent configuration.
+The command `get (key) (...)` looks up the given keys in the persistent configuration.
 
 The command `obliterate` deletes the persistent configuration.
 
 #### Indexing
 
-The command `create` creates a new index file.
+The command `make` creates a new index file.
 
 The command `edit` opens the index file in the default text editor.
 
@@ -190,7 +190,7 @@ and create some dummy files and directories.
 
 We can now create an index file and add some entries to it.
 
-	[user@arch /tmp]$ indefinix create
+	[user@arch /tmp]$ indefinix make
 	Created a new index "INDEX".
 	[user@arch /tmp]$ indefinix add music performed scores
 	Added a new entry "music".
@@ -249,7 +249,7 @@ and destroy the index.
 Now the index can't be used anymore.
 
 	[user@arch /tmp]$ indefinix find meaning
-	Failed to find an index.
+	Failed to find the index "INDEX".
 	[user@arch /tmp]$ echo $?
 	1
 

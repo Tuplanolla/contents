@@ -14,8 +14,8 @@ CC = /usr/bin/gcc $(FLAGS)
 SRC = src
 OBJ = obj
 BIN = bin
-SOURCES = $(SRC)/main.c# $(SRC)/asm.c
-OBJECTS = $(OBJ)/main.o
+SOURCES = $(SRC)/main.c $(SRC)/parser.c
+OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/indefinix
 
 all: build

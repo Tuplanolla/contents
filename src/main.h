@@ -8,12 +8,10 @@ Serves as the entry point.
 #define MAIN_H
 
 /**
-Invokes everything.
-
-@param argc The amount of command-line arguments.
-@param argv The command-line arguments.
-@return Zero if successful and something else otherwise.
+@param argc The amount of command line arguments.
+@param argv The command line arguments in a NULL terminated array.
+@return The value 0 if successful and something else otherwise.
 **/
-int main(int argc, char* const argv[]);
+int main(int argc, char** argv);
 
 #endif

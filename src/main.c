@@ -5,14 +5,11 @@
 #ifndef MAIN_C
 #define MAIN_C
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#include "main.h" // main
+#include "parser.h" // parse
 
-int main(const int argc, const char* const argv[]) {
-	// Yes!
+int main(const int argc, char** const argv) {
+	return parse(argv);
 }
 
 #endif
