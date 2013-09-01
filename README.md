@@ -133,7 +133,7 @@ The flags are explained in the previous section and the commands in the followin
 
 #### Configuring
 
-The command `configure` opens the persistent configuration in the default text editor.
+The command `configure` opens the persistent configuration file in the default text editor.
 
 The command `set (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
 
@@ -145,7 +145,7 @@ The command `obliterate` deletes the persistent configuration.
 
 #### Indexing
 
-The command `make` creates a new index file.
+The command `make (template)` creates a new index file based on the given `(template)`.
 
 The command `edit` opens the index file in the default text editor.
 
@@ -198,7 +198,7 @@ and create some dummy files and directories.
 
 We can now create an index file and add some entries to it.
 
-	[user@arch /tmp]$ indefinix make
+	[user@arch /tmp]$ indefinix make empty
 	Created a new index "INDEX".
 	[user@arch /tmp]$ indefinix add music "performed scores"
 	Added a new entry "music".

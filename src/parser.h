@@ -1,5 +1,5 @@
 /**
-Parses things.
+Carries out the user's wishes.
 
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -8,7 +8,7 @@ Parses things.
 #define PARSER_H
 
 /**
-Parses the arguments.
+Parses and manages the delegation of the given arguments.
 
 @param arguments The arguments.
 @return The error code.

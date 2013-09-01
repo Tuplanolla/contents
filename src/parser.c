@@ -7,11 +7,7 @@
 
 #include "parser.h"
 
-/*
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-*/
+#include <stdio.h> // printf
 
 /**
 Parses the
@@ -31,7 +27,7 @@ Parses the
   touch and
   destroy and
  the keys
-  name,
+  location,
   editor,
   completion,
   order,
@@ -49,7 +45,11 @@ Parses the
   tailsuffix and
   unusual.
 **/
-int parse(const char* const* const arguments) {
+int parse(const char* const* arguments) {
+	const char* argument;
+	while ((argument = *arguments++)) {
+		printf("%s\n", argument);
+	}
 	return 0;
 }
 

@@ -14,7 +14,7 @@ CC = /usr/bin/gcc $(FLAGS)
 SRC = src
 OBJ = obj
 BIN = bin
-SOURCES = $(SRC)/main.c $(SRC)/parser.c
+SOURCES = $(SRC)/main.c $(SRC)/helper.c $(SRC)/parser.c
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/indefinix
 
