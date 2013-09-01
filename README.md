@@ -17,6 +17,7 @@ Using an index solves that problem.
 ## Installation
 
 Indefinix is written in C and thus works on "any" system.
+Currently the focus is Linux, but any other system should be trivial to support.
 
 The following examples are from a (freshly installed) Arch Linux.
 
@@ -74,20 +75,20 @@ the byproducts of the compilation can be removed.
 
 ### Configuration
 
-Indefinix can be configured persistently with the command `indefinix set (key) (value) (...)` or temporarily with optional flags in the short form `-(k) (value) (...)` or the long form `--(key) (value) (...)`.
+Indefinix can be configured persistently with the command `indefinix set (key) (values)` or temporarily with optional flags in the short form `-(k) (values)` or the long form `--(key) (values)`.
 Persistent configurations are saved to `~/.indefinix` if needed while temporary configurations are lost when the program exits.
 
-The key `name`, abbreviated as `n`, contains the expected name of the index files.
+The key `location`, abbreviated as `l`, contains the expected name of the index files.
 The default value is `INDEX`.
-Any file name is a valid `name`.
+Any file name is a valid `location`.
 
 The key `editor`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
 The default value is empty unless a text editor is detected automatically.
 Any path to an executable is a valid `editor`.
 
-The key `completion`, abbreviated as `c`, contains the shortest command length that's allowed to be automatically completed.
+The key `completion`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
 The default value is `1`.
-Automatic completion can be disabled with `0`, but `1` is recommended since every command has a unique initial and destructive actions have prompts.
+Automatic completion can be disabled with `0`, but `1` is recommended since every command has a unique initial and destructive actions require verification.
 
 The key `order`, abbreviated as `o`, contains the order used in the index file.
 The default value is `normal,directories,hidden`.
@@ -97,9 +98,9 @@ The key `wrapping`, abbreviated as `w`, contains the way to process long lines.
 The default value is `wrap`.
 Either of the values `wrap` or `none` is a valid `wrapping`.
 
-The key `alignment`, abbreviated as `a`, contains the text alignment to use in the columns of the index files.
+The key `justification`, abbreviated as `j`, contains the text alignment to use in the columns of the index files.
 The default value is `left left`.
-Any `(position) (position)` pair is valid `alignment`, where `(position)` is either `left`, `right` or `center`.
+Any `(alignment) (alignment)` pair is a valid `justification`, where `(alignment)` is either `left`, `right` or `center`.
 
 The key `filling`, abbreviated as `f`, contains how the columns of the index files are padded.
 The default value is `fill fill`.
@@ -122,28 +123,23 @@ The default value is `"not indexed" "not present"`.
 
 Note that changing the affixes unexpectedly may confuse the parser.
 
-The character `%` is equivalent to the default value of a key unless it's followed by another `%` and interpreted as a literal percent sign.
-
 ### Usage
 
-A brief usage reference can be printed by calling Indefinix without any arguments.
-
-	[user@arch /tmp]$ indefinix
-
-Indefinix can be used with the commands `indefinix (flags) (command) (argument) (...) (flags)`, where the `(flags)` are optional and the `(command)` can be partial if it's unambiguous.
+Indefinix can be used with the command `indefinix (flags) (command) (arguments) (flags) (...)`, where the `(flags)` are optional and the `(command)` can be partial if it's unambiguous and automatic command completion is allowed.
+The omitted part `(...)` can contain further commands and flags.
 The order of commands and flags matters as it determines their order of application.
 
 The flags are explained in the previous section and the commands in the following subsections.
 
-#### Configuration
+#### Configuring
 
 The command `configure` opens the persistent configuration in the default text editor.
 
 The command `set (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
 
-The command `pop (key) (...)` changes the persistent configuration by removing the given keys.
+The command `pop (key)` changes the persistent configuration by removing the given `(key)`.
 
-The command `get (key) (...)` looks up the given keys in the persistent configuration.
+The command `get (key)` looks up the given `(key)` in the persistent configuration.
 
 The command `obliterate` deletes the persistent configuration.
 
@@ -153,19 +149,31 @@ The command `make` creates a new index file.
 
 The command `edit` opens the index file in the default text editor.
 
-The command `add (entry) (description) (...)` adds the given `(entry)` to the index file with the given descriptions.
+The command `add (entry) (description)` adds the given `(entry)` to the index file with the given `(description)`.
 
-The command `remove (entry) (...)` removes the given entries from the index file.
+The command `remove (entry)` removes the given `(entry)` from the index file.
 
-The command `update (entry) (description) (...)` changes the given `(entry)` in the index file to have the given descriptions.
+The command `update (entry) (description)` changes the given `(entry)` in the index file to have the given `(description)`.
 
-The command `lookup (entry) (...)` looks up the given entries in the index file or lists them all.
+The command `lookup (entry)` looks up the given `(entry)` in the index file or lists them all.
 
-The command `find (string) (...)` searches the index file for the given strings.
+The command `find (string)` searches the index file for the given `(string)`.
 
 The command `touch` rebuilds the index file if it's mangled.
 
 The command `destroy` deletes the index file.
+
+#### Special Cases
+
+In addition to configuration keys and index entries, there are a handful of special cases.
+
+The special key `all` is equivalent to every key simultaneously.
+
+The special value `%` is equivalent to the default value of a key, unless it's followed by another `%`, forcing the string `%%` to be interpreted as a literal percent sign.
+
+The special flags `--yes`, abbreviated `-y`, and `--no`, abbreviated `-n`, automatically answer interactive prompts if they come up.
+
+The special flag `--help`, abbreviated as `-h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
 
 #### Example
 
@@ -192,11 +200,11 @@ We can now create an index file and add some entries to it.
 
 	[user@arch /tmp]$ indefinix make
 	Created a new index "INDEX".
-	[user@arch /tmp]$ indefinix add music performed scores
+	[user@arch /tmp]$ indefinix add music "performed scores"
 	Added a new entry "music".
 	[user@arch /tmp]$ indefinix add documents "books, papers and other text documents"
 	Added a new entry "documents".
-	[user@arch /tmp]$ indefinix add LICENSE legal "nonsense"
+	[user@arch /tmp]$ indefinix add LICENSE "legal nonsense"
 	Added a new entry "LICENSE".
 
 Let's see how it looks.
@@ -208,14 +216,18 @@ Let's see how it looks.
 	(LICENSE (legal nonsense))
 
 It looks like a mess, so it's best to reset the configuration.
-We also have to rebuild the index since the configuration changes.
+We also have to rebuild the index to avoid confusing the parser later.
 
-	[user@arch /tmp]$ indefinix touch -o % -a % -f % -i % -p % -hp % -ts %
+	[user@arch /tmp]$ indefinix touch configure all %
+
+The configuration could also be removed instead.
+
+	[user@arch /tmp]$ indefinix touch --all %
 	[user@arch /tmp]$ indefinix obliterate
 	Do you really want to delete the configuration file "/home/user/.indefinix"? (y / N) y
 	Obliterated the persistent configuration.
 
-Let's take a look at it again, but only at specific things.
+Let's take a look at the index again, but only at specific things.
 
 	[user@arch /tmp]$ indefinix lookup pictures documents LICENSE nothing/ more
 	pictures   - not indexed
@@ -227,7 +239,7 @@ Let's take a look at it again, but only at specific things.
 
 It's looking good, but the description of music needs to be more accurate.
 
-	[user@arch /tmp]$ indefinix update music recorded pressure waves
+	[user@arch /tmp]$ indefinix update music "recorded pressure waves"
 	Updated the entry "music".
 
 Now it's easier to find.
