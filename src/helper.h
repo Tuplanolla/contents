@@ -2,6 +2,7 @@
 Helps the user.
 
 @author Sampsa "Tuplanolla" Kiiskinen
+@file
 **/
 
 #ifndef HELPER_H

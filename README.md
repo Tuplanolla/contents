@@ -78,50 +78,55 @@ the byproducts of the compilation can be removed.
 Indefinix can be configured persistently with the command `indefinix set (key) (values)` or temporarily with optional flags in the short form `-(k) (values)` or the long form `--(key) (values)`.
 Persistent configurations are saved to `~/.indefinix` if needed while temporary configurations are lost when the program exits.
 
-The key `location`, abbreviated as `l`, contains the expected name of the index files.
+The key `location (name)`, abbreviated as `l`, contains the expected name of the index files.
 The default value is `INDEX`.
-Any file name is a valid `location`.
+Any file name is a valid `(name)`.
 
-The key `editor`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
+The key `editor (path)`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
 The default value is empty unless a text editor is detected automatically.
-Any path to an executable is a valid `editor`.
+Any path to an executable is a valid `(path)`.
 
-The key `completion`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
+The key `completion (number)`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
 The default value is `1`.
+Any unsigned integer is a valid `(number)`.
 Automatic completion can be disabled with `0`, but `1` is recommended since every command has a unique initial and destructive actions require verification.
 
-The key `order`, abbreviated as `o`, contains the order used in the index file.
-The default value is `normal,directories,hidden`.
-Any string in the form `(sorting) (grouping) (hiding)` is a valid order string, where `(sorting)` is either `normal`, `reverse` or `none`, `(grouping)` is either `directories`, `files` or `none` and `(hiding)` is either `hidden` or `none`.
+The key `order (sorting) (grouping) (hiding)`, abbreviated as `o`, contains the order used in the index file.
+The default value is `normal directories hidden`.
+Either `normal`, `reverse` or `none` is a valid `(sorting)`; either `directories`, `files` or `none` is a valid `(grouping)` and either `hidden` or `none` is a valid `(hiding)`.
 
-The key `wrapping`, abbreviated as `w`, contains the way to process long lines.
+The key `wrapping (wrapping)`, abbreviated as `w`, contains the way to process long lines.
 The default value is `wrap`.
-Either of the values `wrap` or `none` is a valid `wrapping`.
+Either `wrap` or `none` is a valid `(wrapping)`.
 
-The key `justification`, abbreviated as `j`, contains the text alignment to use in the columns of the index files.
+The key `justification (alignment) (alignment)`, abbreviated as `j`, contains the text alignment to use in the columns of the index files.
 The default value is `left left`.
-Any `(alignment) (alignment)` pair is a valid `justification`, where `(alignment)` is either `left`, `right` or `center`.
+Either `left`, `right` or `center` is a valid `(alignment)`.
 
-The key `filling`, abbreviated as `f`, contains how the columns of the index files are padded.
+The key `filling (padding) (padding)`, abbreviated as `f`, contains how the columns of the index files are padded.
 The default value is `fill fill`.
-Any `(padding) (padding)` pair is valid `filling`, where `(padding)` is either `fill` or `none`.
+Either `fill` or `none` is a valid `(padding)`.
 
-The key `infix`, abbreviated as `i`, contains the text that comes between the columns.
+The key `yes`, abbreviated as `y`, and `no`, abbreviated as `n`, automatically answer interactive prompts if they come up.
+
+The key `infix (string)`, abbreviated as `i`, contains the text that comes between the columns.
 The default value is `"   "` (three spaces).
 
-Similarly the keys `prefix`, abbreviated as `p`, and `suffix`, abbreviated as `s`, contain the texts that come before the first column and after the last column respectively.
+Similarly the keys `prefix (string)`, abbreviated as `p`, and `suffix (string)`, abbreviated as `s`, contain the texts that come before the first column and after the last column respectively.
 The default values are both `""`.
 
-Furthermore the keys `headinfix`, abbreviated as `hi`; `headprefix`, abbreviated as `hp`, and `headsuffix`, abbreviated as `hs`, contain the corresponding texts on the first line only.
+Furthermore the keys `headinfix (string)`, abbreviated as `hi`; `headprefix (string)`, abbreviated as `hp`, and `headsuffix (string)`, abbreviated as `hs`, contain the corresponding texts on the first line only.
 The default values are empty except for `" - "` for `headinfix`.
 
-Finally the keys `tailinfix`, abbreviated as `ti`; `tailprefix`, abbreviated as `tp`, and `tailsuffix`, abbreviated as `ts`, contain the corresponding texts on the last line only.
+Finally the keys `tailinfix (string)`, abbreviated as `ti`; `tailprefix (string)`, abbreviated as `tp`, and `tailsuffix (string)`, abbreviated as `ts`, contain the corresponding texts on the last line only.
 The default values are empty.
 
-The key `unusual`, abbreviated as `u`, contains the texts that are displayed in unusual situations.
+Note that changing the affixes unexpectedly may confuse the parser.
+
+The key `unusual (string) (string)`, abbreviated as `u`, contains the texts that are displayed in unusual situations.
 The default value is `"not indexed" "not present"`.
 
-Note that changing the affixes unexpectedly may confuse the parser.
+Obviously any string is a valid `(string)`.
 
 ### Usage
 
@@ -171,9 +176,12 @@ The special key `all` is equivalent to every key simultaneously.
 
 The special value `%` is equivalent to the default value of a key, unless it's followed by another `%`, forcing the string `%%` to be interpreted as a literal percent sign.
 
-The special flags `--yes`, abbreviated `-y`, and `--no`, abbreviated `-n`, automatically answer interactive prompts if they come up.
-
 The special flag `--help`, abbreviated as `-h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
+
+The special flag `--version`, abbreviated as `-v`, prints version information.
+
+The special command `bind (command) (arguments)` gives all the subsequent arguments to the next command.
+It absorbs everything, including all flags.
 
 #### Example
 
@@ -229,7 +237,7 @@ The configuration could also be removed instead.
 
 Let's take a look at the index again, but only at specific things.
 
-	[user@arch /tmp]$ indefinix lookup pictures documents LICENSE nothing/ more
+	[user@arch /tmp]$ indefinix bind lookup pictures documents LICENSE nothing/ more
 	pictures   - not indexed
 	documents/ - books, papers and
 	             other text documents

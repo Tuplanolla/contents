@@ -2,6 +2,7 @@
 Carries out the user's wishes.
 
 @author Sampsa "Tuplanolla" Kiiskinen
+@file
 **/
 
 #ifndef PARSER_H

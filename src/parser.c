@@ -1,50 +1,14 @@
 /**
 @author Sampsa "Tuplanolla" Kiiskinen
+@file
 **/
-
-#ifndef PARSER_C
-#define PARSER_C
 
 #include "parser.h"
 
 #include <stdio.h> // printf
 
-/**
-Parses the
- the commands
-  configure,
-  set,
-  pop,
-  get,
-  obliterate,
-  make,
-  edit,
-  add,
-  remove,
-  update,
-  lookup,
-  find,
-  touch and
-  destroy and
- the keys
-  location,
-  editor,
-  completion,
-  order,
-  wrapping,
-  alignment,
-  filling,
-  infix,
-  prefix,
-  suffix,
-  headinfix,
-  headprefix,
-  headsuffix,
-  tailinfix,
-  tailprefix,
-  tailsuffix and
-  unusual.
-**/
+#include "project.h" // get_name, get_version, get_target
+
 int parse(const char* const* arguments) {
 	const char* argument;
 	while ((argument = *arguments++)) {
@@ -52,5 +16,3 @@ int parse(const char* const* arguments) {
 	}
 	return 0;
 }
-
-#endif
