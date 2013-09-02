@@ -83,7 +83,7 @@ The default value is `INDEX`.
 Any file name is a valid `(name)`.
 
 The key `editor (path)`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
-The default value is empty unless a text editor is detected automatically.
+The default value is `%n` unless a simple text editor is detected automatically.
 Any path to an executable is a valid `(path)`.
 
 The key `completion (number)`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
@@ -93,33 +93,29 @@ Automatic completion can be disabled with `0`, but `1` is recommended since ever
 
 The key `order (sorting) (grouping) (hiding)`, abbreviated as `o`, contains the order used in the index file.
 The default value is `normal directories hidden`.
-Either `normal`, `reverse` or `none` is a valid `(sorting)`; either `directories`, `files` or `none` is a valid `(grouping)` and either `hidden` or `none` is a valid `(hiding)`.
+Any of `normal`, `reverse` or `none` is a valid `(sorting)`; either `directories`, `files` or `none` is a valid `(grouping)` and either `hidden` or `none` is a valid `(hiding)`.
 
-The key `wrapping (wrapping)`, abbreviated as `w`, contains the way to process long lines.
+The key `wrapping (continuation)`, abbreviated as `w`, contains the way to process long lines.
 The default value is `wrap`.
-Either `wrap` or `none` is a valid `(wrapping)`.
+Any of `wrap` or `none` is a valid `(continuation)`.
 
 The key `justification (alignment) (alignment)`, abbreviated as `j`, contains the text alignment to use in the columns of the index files.
 The default value is `left left`.
-Either `left`, `right` or `center` is a valid `(alignment)`.
+Any of `left`, `right` or `center` is a valid `(alignment)`.
 
 The key `filling (padding) (padding)`, abbreviated as `f`, contains how the columns of the index files are padded.
 The default value is `fill fill`.
-Either `fill` or `none` is a valid `(padding)`.
+Any of `fill` or `none` is a valid `(padding)`.
 
-The key `yes`, abbreviated as `y`, and `no`, abbreviated as `n`, automatically answer interactive prompts if they come up.
+The key `interaction (answer)`, abbreviated as `i` automatically answers interactive prompts if they come up.
+The default value is `%n`.
+Any of `yes` or `no` is a valid `(answer)`.
 
-The key `infix (string)`, abbreviated as `i`, contains the text that comes between the columns.
-The default value is `"   "` (three spaces).
+The key `affix (string) (string) (string)`, abbreviated as `a`, contains the text that comes before, between and after the columns of the index files.
+The default value is `"   " "" ""` (the first part having three spaces).
 
-Similarly the keys `prefix (string)`, abbreviated as `p`, and `suffix (string)`, abbreviated as `s`, contain the texts that come before the first column and after the last column respectively.
-The default values are both `""`.
-
-Furthermore the keys `headinfix (string)`, abbreviated as `hi`; `headprefix (string)`, abbreviated as `hp`, and `headsuffix (string)`, abbreviated as `hs`, contain the corresponding texts on the first line only.
-The default values are empty except for `" - "` for `headinfix`.
-
-Finally the keys `tailinfix (string)`, abbreviated as `ti`; `tailprefix (string)`, abbreviated as `tp`, and `tailsuffix (string)`, abbreviated as `ts`, contain the corresponding texts on the last line only.
-The default values are empty.
+Furthermore the keys `headaffix (string) (string) (string)`, abbreviated as `ha` and `tailaffix (string) (string) (string)`, abbreviated as `ta`, work like affix, but only apply to the first and last lines respectively.
+The default values are `%n " - " %n` and `%n %n %n`.
 
 Note that changing the affixes unexpectedly may confuse the parser.
 
@@ -140,7 +136,7 @@ The flags are explained in the previous section and the commands in the followin
 
 The command `configure` opens the persistent configuration file in the default text editor.
 
-The command `set (key) (value)` changes the persistent configuration by associating the given `(key)` with the given `(value)`.
+The command `set (key) (values)` changes the persistent configuration by associating the given `(key)` with the given `(values)`.
 
 The command `pop (key)` changes the persistent configuration by removing the given `(key)`.
 
@@ -172,16 +168,22 @@ The command `destroy` deletes the index file.
 
 In addition to configuration keys and index entries, there are a handful of special cases.
 
-The special key `all` is equivalent to every key simultaneously.
+The special key `preset (selection)`, abbreviated as `p`, is equivalent to every key simultaneously.
+The default value is, rather self referentially, `default`.
+The key doesn't have a persistent value, so it can only be written.
+Only `default` is a valid `(selection)`.
 
-The special value `%` is equivalent to the default value of a key, unless it's followed by another `%`, forcing the string `%%` to be interpreted as a literal percent sign.
+The special value `%` is equivalent to an empty value and different from `""` and the string `%%` is interpreted as a literal `%`.
 
 The special flag `--help`, abbreviated as `-h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
 
 The special flag `--version`, abbreviated as `-v`, prints version information.
 
-The special command `bind (command) (arguments)` gives all the subsequent arguments to the next command.
-It absorbs everything, including all flags.
+The special command `bind (command) (arguments)` gives all the subsequent arguments to the next command, flags included.
+The two following commands are identical for example.
+
+	[user@arch ~]$ indefinix bind lookup pictures videos --unusual "minor error" "major error"
+	[user@arch ~]$ indefinix lookup pictures lookup videos lookup --unusual lookup "minor error" lookup "major error"
 
 #### Example
 
@@ -190,10 +192,9 @@ Let's begin by configuring Indefinix for a Lisp fanatic.
 	[user@arch ~]$ indefinix configure order none directories hidden
 	[user@arch ~]$ indefinix configure alignment left left
 	[user@arch ~]$ indefinix configure filling none none
-	[user@arch ~]$ indefinix configure infix " ("
-	[user@arch ~]$ indefinix configure prefix " "
-	[user@arch ~]$ indefinix configure headprefix "("
-	[user@arch ~]$ indefinix configure tailsuffix "))"
+	[user@arch ~]$ indefinix configure affix " " " (" ""
+	[user@arch ~]$ indefinix configure headaffix "(" % %
+	[user@arch ~]$ indefinix configure tailaffix % % "))"
 
 We'll then move to the directory we want to index
 
@@ -226,11 +227,11 @@ Let's see how it looks.
 It looks like a mess, so it's best to reset the configuration.
 We also have to rebuild the index to avoid confusing the parser later.
 
-	[user@arch /tmp]$ indefinix touch configure all %
+	[user@arch /tmp]$ indefinix touch configure preset default
 
 The configuration could also be removed instead.
 
-	[user@arch /tmp]$ indefinix touch --all %
+	[user@arch /tmp]$ indefinix touch --preset default
 	[user@arch /tmp]$ indefinix obliterate
 	Do you really want to delete the configuration file "/home/user/.indefinix"? (y / N) y
 	Obliterated the persistent configuration.

@@ -10,7 +10,7 @@
 static const char usage[] = "\
 Usage: indefinix (flags) (command) (arguments) (...) (flags)\n\
 Configuration Commands: configure\n\
-                        set (key) (value)\n\
+                        set (key) (values)\n\
                         pop (key)\n\
                         get (key)\n\
                         obliterate\n\
@@ -23,27 +23,20 @@ Indexing Commands: make (template)\n\
                    find (string)\n\
                    touch\n\
                    destroy\n\
-Special Commands: bind\n\
+Special Commands: bind (command) (arguments)\n\
 Configuration Keys: location (name)\n\
                     editor (path)\n\
                     completion (number)\n\
                     order (sorting) (grouping) (hiding)\n\
-                    wrapping (wrapping)\n\
+                    wrapping (continuation)\n\
                     justification (alignment) (alignment)\n\
                     filling (padding) (padding)\n\
-                    yes\n\
-                    no\n\
-                    infix (string)\n\
-                    prefix (string)\n\
-                    suffix (string)\n\
-                    headinfix (string)\n\
-                    headprefix (string)\n\
-                    headsuffix (string)\n\
-                    tailinfix (string)\n\
-                    tailprefix (string)\n\
-                    tailsuffix (string)\n\
+                    interaction (answer)\n\
+                    affix (string) (string) (string)\n\
+                    headaffix (string) (string) (string)\n\
+                    tailaffix (string) (string) (string)\n\
                     unusual (string) (string)\n\
-Special Configuration Keys: all\n\
+Special Configuration Keys: preset (selection)\n\
 ";
 
 int help(void) {

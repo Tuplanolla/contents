@@ -1,0 +1,618 @@
+digraph states {
+	graph                                      [rankdir = LR,
+	                                            overlap = false,
+	                                            dpi = 48]
+
+	execution                                  [label = "(execution)",
+	                                            shape = box]
+	main                                       [label = "indefinix"]
+	IN                                         [shape = point]
+	OUT                                        [shape = point]
+	command_IN                                 [shape = point]
+	command_OUT                                [shape = point]
+	flag_IN                                    [shape = point]
+	flag_OUT                                   [shape = point]
+	configure_IN                               [shape = point]
+	configure_OUT                              [shape = point]
+	set_IN                                     [shape = point]
+	set_OUT                                    [shape = point]
+	pop_IN                                     [shape = point]
+	pop_OUT                                    [shape = point]
+	get_IN                                     [shape = point]
+	get_OUT                                    [shape = point]
+	obliterate_IN                              [shape = point]
+	obliterate_OUT                             [shape = point]
+	make_IN                                    [shape = point]
+	make_OUT                                   [shape = point]
+	edit_IN                                    [shape = point]
+	edit_OUT                                   [shape = point]
+	add_IN                                     [shape = point]
+	add_OUT                                    [shape = point]
+	remove_IN                                  [shape = point]
+	remove_OUT                                 [shape = point]
+	update_IN                                  [shape = point]
+	update_OUT                                 [shape = point]
+	lookup_IN                                  [shape = point]
+	lookup_OUT                                 [shape = point]
+	find_IN                                    [shape = point]
+	find_OUT                                   [shape = point]
+	touch_IN                                   [shape = point]
+	touch_OUT                                  [shape = point]
+	destroy_IN                                 [shape = point]
+	destroy_OUT                                [shape = point]
+	bind_IN                                    [shape = point]
+	bind_OUT                                   [shape = point]
+	bind_configure_IN                          [shape = point]
+	bind_configure_OUT                         [shape = point]
+	bind_set_IN                                [shape = point]
+	bind_set_OUT                               [shape = point]
+	bind_pop_IN                                [shape = point]
+	bind_pop_OUT                               [shape = point]
+	bind_get_IN                                [shape = point]
+	bind_get_OUT                               [shape = point]
+	bind_obliterate_IN                         [shape = point]
+	bind_obliterate_OUT                        [shape = point]
+	bind_make_IN                               [shape = point]
+	bind_make_OUT                              [shape = point]
+	bind_edit_IN                               [shape = point]
+	bind_edit_OUT                              [shape = point]
+	bind_add_IN                                [shape = point]
+	bind_add_OUT                               [shape = point]
+	bind_remove_IN                             [shape = point]
+	bind_remove_OUT                            [shape = point]
+	bind_update_IN                             [shape = point]
+	bind_update_OUT                            [shape = point]
+	bind_lookup_IN                             [shape = point]
+	bind_lookup_OUT                            [shape = point]
+	bind_find_IN                               [shape = point]
+	bind_find_OUT                              [shape = point]
+	bind_touch_IN                              [shape = point]
+	bind_touch_OUT                             [shape = point]
+	bind_destroy_IN                            [shape = point]
+	bind_destroy_OUT                           [shape = point]
+	termination                                [label = "(termination)",
+	                                            shape = box]
+	subgraph _cluster_command {
+		configure                                  [label = "configure"]
+		set                                        [label = "set"]
+		pop                                        [label = "pop"]
+		get                                        [label = "get"]
+		obliterate                                 [label = "obliterate"]
+		make                                       [label = "make"]
+		edit                                       [label = "edit"]
+		add                                        [label = "add"]
+		remove                                     [label = "remove"]
+		update                                     [label = "update"]
+		lookup                                     [label = "lookup"]
+		find                                       [label = "find"]
+		touch                                      [label = "touch"]
+		destroy                                    [label = "destroy"]
+		bind                                       [label = "bind"]
+	}
+	subgraph _cluster_parameter {
+		make_template                              [label = "(template)"]
+		add_entry                                  [label = "(entry)"]
+		add_entry_description                      [label = "(description)"]
+		remove_entry                               [label = "(entry)"]
+		update_entry                               [label = "(entry)"]
+		update_entry_description                   [label = "(description)"]
+		lookup_entry                               [label = "(entry)"]
+		find_string                                [label = "(string)"]
+	}
+	subgraph _cluster_key {
+		set_location                               [label = "location"]
+		set_editor                                 [label = "editor"]
+		set_completion                             [label = "completion"]
+		set_order                                  [label = "order"]
+		set_wrapping                               [label = "wrapping"]
+		set_justification                          [label = "justification"]
+		set_filling                                [label = "filling"]
+		set_interaction                            [label = "interaction"]
+		set_affix                                  [label = "affix"]
+		set_unusual                                [label = "unusual"]
+		set_preset                                 [label = "preset"]
+		pop_location                               [label = "location"]
+		pop_editor                                 [label = "editor"]
+		pop_completion                             [label = "completion"]
+		pop_order                                  [label = "order"]
+		pop_wrapping                               [label = "wrapping"]
+		pop_justification                          [label = "justification"]
+		pop_filling                                [label = "filling"]
+		pop_interaction                            [label = "interaction"]
+		pop_affix                                  [label = "affix"]
+		pop_unusual                                [label = "unusual"]
+		get_location                               [label = "location"]
+		get_editor                                 [label = "editor"]
+		get_completion                             [label = "completion"]
+		get_order                                  [label = "order"]
+		get_wrapping                               [label = "wrapping"]
+		get_justification                          [label = "justification"]
+		get_filling                                [label = "filling"]
+		get_interaction                            [label = "interaction"]
+		get_affix                                  [label = "affix"]
+		get_unusual                                [label = "unusual"]
+	}
+	subgraph _cluster_value {
+		set_location_name                          [label = "(name)"]
+		set_editor_path                            [label = "(path)"]
+		set_completion_number                      [label = "(number)"]
+		set_order_sorting                          [label = "(sorting)"]
+		set_order_sorting_grouping                 [label = "(grouping)"]
+		set_order_sorting_grouping_hiding          [label = "(hiding)"]
+		set_wrapping_continuation                  [label = "(continuation)"]
+		set_justification_alignment                [label = "(alignment)"]
+		set_justification_alignment_alignment      [label = "(alignment)"]
+		set_filling_padding                        [label = "(padding)"]
+		set_filling_padding_padding                [label = "(padding)"]
+		set_interaction_answer                     [label = "(answer)"]
+		set_affix_string                           [label = "(string)"]
+		set_affix_string_string                    [label = "(string)"]
+		set_affix_string_string_string             [label = "(string)"]
+		set_unusual_string                         [label = "(string)"]
+		set_unusual_string_string                  [label = "(string)"]
+		set_preset_selection                       [label = "(selection)"]
+	}
+	subgraph _cluster_bound_command {
+		bind_configure                             [label = "configure"]
+		bind_set                                   [label = "set"]
+		bind_pop                                   [label = "pop"]
+		bind_get                                   [label = "get"]
+		bind_obliterate                            [label = "obliterate"]
+		bind_make                                  [label = "make"]
+		bind_edit                                  [label = "edit"]
+		bind_add                                   [label = "add"]
+		bind_remove                                [label = "remove"]
+		bind_update                                [label = "update"]
+		bind_lookup                                [label = "lookup"]
+		bind_find                                  [label = "find"]
+		bind_touch                                 [label = "touch"]
+		bind_destroy                               [label = "destroy"]
+		bind_bind                                  [label = "bind"]
+	}
+	subgraph _cluster_bound_parameter {
+		bind_make_template                         [label = "(template)"]
+		bind_add_entry                             [label = "(entry)"]
+		bind_add_entry_description                 [label = "(description)"]
+		bind_remove_entry                          [label = "(entry)"]
+		bind_update_entry                          [label = "(entry)"]
+		bind_update_entry_description              [label = "(description)"]
+		bind_lookup_entry                          [label = "(entry)"]
+		bind_find_string                           [label = "(string)"]
+	}
+	subgraph _cluster_bound_key {
+		bind_set_location                          [label = "location"]
+		bind_set_editor                            [label = "editor"]
+		bind_set_completion                        [label = "completion"]
+		bind_set_order                             [label = "order"]
+		bind_set_wrapping                          [label = "wrapping"]
+		bind_set_justification                     [label = "justification"]
+		bind_set_filling                           [label = "filling"]
+		bind_set_interaction                       [label = "interaction"]
+		bind_set_affix                             [label = "affix"]
+		bind_set_unusual                           [label = "unusual"]
+		bind_set_preset                            [label = "preset"]
+		bind_pop_location                          [label = "location"]
+		bind_pop_editor                            [label = "editor"]
+		bind_pop_completion                        [label = "completion"]
+		bind_pop_order                             [label = "order"]
+		bind_pop_wrapping                          [label = "wrapping"]
+		bind_pop_justification                     [label = "justification"]
+		bind_pop_filling                           [label = "filling"]
+		bind_pop_interaction                       [label = "interaction"]
+		bind_pop_affix                             [label = "affix"]
+		bind_pop_unusual                           [label = "unusual"]
+		bind_get_location                          [label = "location"]
+		bind_get_editor                            [label = "editor"]
+		bind_get_completion                        [label = "completion"]
+		bind_get_order                             [label = "order"]
+		bind_get_wrapping                          [label = "wrapping"]
+		bind_get_justification                     [label = "justification"]
+		bind_get_filling                           [label = "filling"]
+		bind_get_interaction                       [label = "interaction"]
+		bind_get_affix                             [label = "affix"]
+		bind_get_unusual                           [label = "unusual"]
+	}
+	subgraph _cluster_bound_value {
+		bind_set_location_name                     [label = "(name)"]
+		bind_set_editor_path                       [label = "(path)"]
+		bind_set_completion_number                 [label = "(number)"]
+		bind_set_order_sorting                     [label = "(sorting)"]
+		bind_set_order_sorting_grouping            [label = "(grouping)"]
+		bind_set_order_sorting_grouping_hiding     [label = "(hiding)"]
+		bind_set_wrapping_continuation             [label = "(continuation)"]
+		bind_set_justification_alignment           [label = "(alignment)"]
+		bind_set_justification_alignment_alignment [label = "(alignment)"]
+		bind_set_filling_padding                   [label = "(padding)"]
+		bind_set_filling_padding_padding           [label = "(padding)"]
+		bind_set_interaction_answer                [label = "(answer)"]
+		bind_set_affix_string                      [label = "(string)"]
+		bind_set_affix_string_string               [label = "(string)"]
+		bind_set_affix_string_string_string        [label = "(string)"]
+		bind_set_unusual_string                    [label = "(string)"]
+		bind_set_unusual_string_string             [label = "(string)"]
+		bind_set_preset_selection                  [label = "(selection)"]
+	}
+	subgraph _cluster_flag_key {
+		flag_location                              [label = "--location\n-l"]
+		flag_editor                                [label = "--editor\n-e"]
+		flag_completion                            [label = "--completion\n-c"]
+		flag_order                                 [label = "--order\n-o"]
+		flag_wrapping                              [label = "--wrapping\n-w"]
+		flag_justification                         [label = "--justification\n-j"]
+		flag_filling                               [label = "--filling\n-f"]
+		flag_interaction                           [label = "--interaction\n-i"]
+		flag_affix                                 [label = "--affix\n-a"]
+		flag_unusual                               [label = "--unusual\n-u"]
+		flag_preset                                [label = "--preset\n-p"]
+	}
+	subgraph _cluster_flag_value {
+		flag_location_name                         [label = "(name)"]
+		flag_editor_path                           [label = "(path)"]
+		flag_completion_number                     [label = "(number)"]
+		flag_order_sorting                         [label = "(sorting)"]
+		flag_order_sorting_grouping                [label = "(grouping)"]
+		flag_order_sorting_grouping_hiding         [label = "(hiding)"]
+		flag_wrapping_continuation                 [label = "(continuation)"]
+		flag_justification_alignment               [label = "(alignment)"]
+		flag_justification_alignment_alignment     [label = "(alignment)"]
+		flag_filling_padding                       [label = "(padding)"]
+		flag_filling_padding_padding               [label = "(padding)"]
+		flag_interaction_answer                    [label = "(answer)"]
+		flag_affix_string                          [label = "(string)"]
+		flag_affix_string_string                   [label = "(string)"]
+		flag_affix_string_string_string            [label = "(string)"]
+		flag_unusual_string                        [label = "(string)"]
+		flag_unusual_string_string                 [label = "(string)"]
+		flag_preset_selection                      [label = "(selection)"]
+	}
+
+	execution                                  -> main
+	main                                       -> IN
+	IN                                         -> command_IN
+	IN                                         -> flag_IN
+	OUT                                        -> IN
+	OUT                                        -> termination
+	command_IN                                 -> configure_IN
+	command_IN                                 -> set_IN
+	command_IN                                 -> pop_IN
+	command_IN                                 -> get_IN
+	command_IN                                 -> obliterate_IN
+	command_IN                                 -> make_IN
+	command_IN                                 -> edit_IN
+	command_IN                                 -> add_IN
+	command_IN                                 -> remove_IN
+	command_IN                                 -> update_IN
+	command_IN                                 -> lookup_IN
+	command_IN                                 -> find_IN
+	command_IN                                 -> touch_IN
+	command_IN                                 -> destroy_IN
+	command_IN                                 -> bind
+	command_OUT                                -> OUT
+	configure_IN                               -> configure
+	configure                                  -> configure_OUT
+	configure_OUT                              -> command_OUT
+	set_IN                                     -> set
+	set                                        -> set_location
+	set                                        -> set_editor
+	set                                        -> set_completion
+	set                                        -> set_order
+	set                                        -> set_wrapping
+	set                                        -> set_justification
+	set                                        -> set_filling
+	set                                        -> set_interaction
+	set                                        -> set_affix
+	set                                        -> set_unusual
+	set                                        -> set_preset
+	set_location                               -> set_location_name
+	set_editor                                 -> set_editor_path
+	set_completion                             -> set_completion_number
+	set_order                                  -> set_order_sorting
+	set_wrapping                               -> set_wrapping_continuation
+	set_justification                          -> set_justification_alignment
+	set_filling                                -> set_filling_padding
+	set_interaction                            -> set_interaction_answer
+	set_affix                                  -> set_affix_string
+	set_unusual                                -> set_unusual_string
+	set_preset                                 -> set_preset_selection
+	set_location_name                          -> set_OUT
+	set_editor_path                            -> set_OUT
+	set_completion_number                      -> set_OUT
+	set_order_sorting                          -> set_order_sorting_grouping
+	set_order_sorting_grouping                 -> set_order_sorting_grouping_hiding
+	set_order_sorting_grouping_hiding          -> set_OUT
+	set_wrapping_continuation                  -> set_OUT
+	set_justification_alignment                -> set_justification_alignment_alignment
+	set_justification_alignment_alignment      -> set_OUT
+	set_filling_padding                        -> set_filling_padding_padding
+	set_filling_padding_padding                -> set_OUT
+	set_interaction_answer                     -> set_OUT
+	set_affix_string                           -> set_affix_string_string
+	set_affix_string_string                    -> set_affix_string_string_string
+	set_affix_string_string_string             -> set_OUT
+	set_unusual_string                         -> set_unusual_string_string
+	set_unusual_string_string                  -> set_OUT
+	set_preset_selection                       -> set_OUT
+	set_OUT                                    -> command_OUT
+	pop_IN                                     -> pop
+	pop                                        -> pop_location
+	pop                                        -> pop_editor
+	pop                                        -> pop_completion
+	pop                                        -> pop_order
+	pop                                        -> pop_wrapping
+	pop                                        -> pop_justification
+	pop                                        -> pop_filling
+	pop                                        -> pop_interaction
+	pop                                        -> pop_affix
+	pop                                        -> pop_unusual
+	pop_location                               -> pop_OUT
+	pop_editor                                 -> pop_OUT
+	pop_completion                             -> pop_OUT
+	pop_order                                  -> pop_OUT
+	pop_wrapping                               -> pop_OUT
+	pop_justification                          -> pop_OUT
+	pop_filling                                -> pop_OUT
+	pop_interaction                            -> pop_OUT
+	pop_affix                                  -> pop_OUT
+	pop_unusual                                -> pop_OUT
+	pop_OUT                                    -> command_OUT
+	get_IN                                     -> get
+	get_OUT                                    -> command_OUT
+	get                                        -> get_location
+	get                                        -> get_editor
+	get                                        -> get_completion
+	get                                        -> get_order
+	get                                        -> get_wrapping
+	get                                        -> get_justification
+	get                                        -> get_filling
+	get                                        -> get_interaction
+	get                                        -> get_affix
+	get                                        -> get_unusual
+	get_location                               -> get_OUT
+	get_editor                                 -> get_OUT
+	get_completion                             -> get_OUT
+	get_order                                  -> get_OUT
+	get_wrapping                               -> get_OUT
+	get_justification                          -> get_OUT
+	get_filling                                -> get_OUT
+	get_interaction                            -> get_OUT
+	get_affix                                  -> get_OUT
+	get_unusual                                -> get_OUT
+	obliterate_IN                              -> obliterate
+	obliterate                                 -> obliterate_OUT
+	obliterate_OUT                             -> command_OUT
+	make_IN                                    -> make
+	make                                       -> make_template
+	make_template                              -> make_OUT
+	make_OUT                                   -> command_OUT
+	edit_IN                                    -> edit
+	edit                                       -> edit_OUT
+	edit_OUT                                   -> command_OUT
+	add_IN                                     -> add
+	add                                        -> add_entry
+	add_entry                                  -> add_entry_description
+	add_entry_description                      -> add_OUT
+	add_OUT                                    -> command_OUT
+	remove_IN                                  -> remove
+	remove                                     -> remove_entry
+	remove_entry                               -> remove_OUT
+	remove_OUT                                 -> command_OUT
+	update_IN                                  -> update
+	update                                     -> update_entry
+	update_entry                               -> update_entry_description
+	update_entry_description                   -> update_OUT
+	update_OUT                                 -> command_OUT
+	lookup_IN                                  -> lookup
+	lookup                                     -> lookup_entry
+	lookup_entry                               -> lookup_OUT
+	lookup_OUT                                 -> command_OUT
+	find_IN                                    -> find
+	find                                       -> find_string
+	find_string                                -> find_OUT
+	find_OUT                                   -> command_OUT
+	touch_IN                                   -> touch
+	touch                                      -> touch_OUT
+	touch_OUT                                  -> command_OUT
+	destroy_IN                                 -> destroy
+	destroy                                    -> destroy_OUT
+	destroy_OUT                                -> command_OUT
+	bind                                       -> bind_IN
+	bind_IN                                    -> bind_configure
+	bind_IN                                    -> bind_set
+	bind_IN                                    -> bind_pop
+	bind_IN                                    -> bind_get
+	bind_IN                                    -> bind_obliterate
+	bind_IN                                    -> bind_make
+	bind_IN                                    -> bind_edit
+	bind_IN                                    -> bind_add
+	bind_IN                                    -> bind_remove
+	bind_IN                                    -> bind_update
+	bind_IN                                    -> bind_lookup
+	bind_IN                                    -> bind_find
+	bind_IN                                    -> bind_touch
+	bind_IN                                    -> bind_destroy
+	bind_IN                                    -> bind_bind
+	bind_configure                             -> bind_configure_IN
+	bind_configure_IN                          -> bind_configure_OUT
+	bind_configure_OUT                         -> bind_configure_IN
+	bind_configure_OUT                         -> bind_OUT
+	bind_set                                   -> bind_set_IN
+	bind_set_IN                                -> bind_set_location
+	bind_set_IN                                -> bind_set_editor
+	bind_set_IN                                -> bind_set_completion
+	bind_set_IN                                -> bind_set_order
+	bind_set_IN                                -> bind_set_wrapping
+	bind_set_IN                                -> bind_set_justification
+	bind_set_IN                                -> bind_set_filling
+	bind_set_IN                                -> bind_set_interaction
+	bind_set_IN                                -> bind_set_affix
+	bind_set_IN                                -> bind_set_unusual
+	bind_set_IN                                -> bind_set_preset
+	bind_set_location                          -> bind_set_location_name
+	bind_set_editor                            -> bind_set_editor_path
+	bind_set_completion                        -> bind_set_completion_number
+	bind_set_order                             -> bind_set_order_sorting
+	bind_set_wrapping                          -> bind_set_wrapping_continuation
+	bind_set_justification                     -> bind_set_justification_alignment
+	bind_set_filling                           -> bind_set_filling_padding
+	bind_set_interaction                       -> bind_set_interaction_answer
+	bind_set_affix                             -> bind_set_affix_string
+	bind_set_unusual                           -> bind_set_unusual_string
+	bind_set_preset                            -> bind_set_preset_selection
+	bind_set_location_name                     -> bind_set_OUT
+	bind_set_editor_path                       -> bind_set_OUT
+	bind_set_completion_number                 -> bind_set_OUT
+	bind_set_order_sorting                     -> bind_set_order_sorting_grouping
+	bind_set_order_sorting_grouping            -> bind_set_order_sorting_grouping_hiding
+	bind_set_order_sorting_grouping_hiding     -> bind_set_OUT
+	bind_set_wrapping_continuation             -> bind_set_OUT
+	bind_set_justification_alignment           -> bind_set_justification_alignment_alignment
+	bind_set_justification_alignment_alignment -> bind_set_OUT
+	bind_set_filling_padding                   -> bind_set_filling_padding_padding
+	bind_set_filling_padding_padding           -> bind_set_OUT
+	bind_set_interaction_answer                -> bind_set_OUT
+	bind_set_affix_string                      -> bind_set_affix_string_string
+	bind_set_affix_string_string               -> bind_set_affix_string_string_string
+	bind_set_affix_string_string_string        -> bind_set_OUT
+	bind_set_unusual_string                    -> bind_set_unusual_string_string
+	bind_set_unusual_string_string             -> bind_set_OUT
+	bind_set_preset_selection                  -> bind_set_OUT
+	bind_set_OUT                               -> bind_set_IN
+	bind_set_OUT                               -> bind_OUT
+	bind_pop                                   -> bind_pop_IN
+	bind_pop_IN                                -> bind_pop_location
+	bind_pop_IN                                -> bind_pop_editor
+	bind_pop_IN                                -> bind_pop_completion
+	bind_pop_IN                                -> bind_pop_order
+	bind_pop_IN                                -> bind_pop_wrapping
+	bind_pop_IN                                -> bind_pop_justification
+	bind_pop_IN                                -> bind_pop_filling
+	bind_pop_IN                                -> bind_pop_interaction
+	bind_pop_IN                                -> bind_pop_affix
+	bind_pop_IN                                -> bind_pop_unusual
+	bind_pop_location                          -> bind_pop_OUT
+	bind_pop_editor                            -> bind_pop_OUT
+	bind_pop_completion                        -> bind_pop_OUT
+	bind_pop_order                             -> bind_pop_OUT
+	bind_pop_wrapping                          -> bind_pop_OUT
+	bind_pop_justification                     -> bind_pop_OUT
+	bind_pop_filling                           -> bind_pop_OUT
+	bind_pop_interaction                       -> bind_pop_OUT
+	bind_pop_affix                             -> bind_pop_OUT
+	bind_pop_unusual                           -> bind_pop_OUT
+	bind_pop_OUT                               -> bind_pop_IN
+	bind_pop_OUT                               -> bind_OUT
+	bind_get                                   -> bind_get_IN
+	bind_get_IN                                -> bind_get_location
+	bind_get_IN                                -> bind_get_editor
+	bind_get_IN                                -> bind_get_completion
+	bind_get_IN                                -> bind_get_order
+	bind_get_IN                                -> bind_get_wrapping
+	bind_get_IN                                -> bind_get_justification
+	bind_get_IN                                -> bind_get_filling
+	bind_get_IN                                -> bind_get_interaction
+	bind_get_IN                                -> bind_get_affix
+	bind_get_IN                                -> bind_get_unusual
+	bind_get_location                          -> bind_get_OUT
+	bind_get_editor                            -> bind_get_OUT
+	bind_get_completion                        -> bind_get_OUT
+	bind_get_order                             -> bind_get_OUT
+	bind_get_wrapping                          -> bind_get_OUT
+	bind_get_justification                     -> bind_get_OUT
+	bind_get_filling                           -> bind_get_OUT
+	bind_get_interaction                       -> bind_get_OUT
+	bind_get_affix                             -> bind_get_OUT
+	bind_get_unusual                           -> bind_get_OUT
+	bind_get_OUT                               -> bind_get_IN
+	bind_get_OUT                               -> bind_OUT
+	bind_obliterate                            -> bind_obliterate_IN
+	bind_obliterate_IN                         -> bind_obliterate_OUT
+	bind_obliterate_OUT                        -> bind_obliterate_IN
+	bind_obliterate_OUT                        -> bind_OUT
+	bind_make                                  -> bind_make_IN
+	bind_make_IN                               -> bind_make_template
+	bind_make_template                         -> bind_make_OUT
+	bind_make_OUT                              -> bind_make_IN
+	bind_make_OUT                              -> bind_OUT
+	bind_edit                                  -> bind_edit_IN
+	bind_edit_IN                               -> bind_edit_OUT
+	bind_edit_OUT                              -> bind_edit_IN
+	bind_edit_OUT                              -> bind_OUT
+	bind_add                                   -> bind_add_IN
+	bind_add_IN                                -> bind_add_entry
+	bind_add_entry                             -> bind_add_entry_description
+	bind_add_entry_description                 -> bind_add_OUT
+	bind_add_OUT                               -> bind_add_IN
+	bind_add_OUT                               -> bind_OUT
+	bind_remove                                -> bind_remove_IN
+	bind_remove_IN                             -> bind_remove_entry
+	bind_remove_entry                          -> bind_remove_OUT
+	bind_remove_OUT                            -> bind_remove_IN
+	bind_remove_OUT                            -> bind_OUT
+	bind_update                                -> bind_update_IN
+	bind_update_IN                             -> bind_update_entry
+	bind_update_entry                          -> bind_update_entry_description
+	bind_update_entry_description              -> bind_update_OUT
+	bind_update_OUT                            -> bind_update_IN
+	bind_update_OUT                            -> bind_OUT
+	bind_lookup                                -> bind_lookup_IN
+	bind_lookup_IN                             -> bind_lookup_entry
+	bind_lookup_entry                          -> bind_lookup_OUT
+	bind_lookup_OUT                            -> bind_lookup_IN
+	bind_lookup_OUT                            -> bind_OUT
+	bind_find                                  -> bind_find_IN
+	bind_find_IN                               -> bind_find_string
+	bind_find_string                           -> bind_find_OUT
+	bind_find_OUT                              -> bind_find_IN
+	bind_find_OUT                              -> bind_OUT
+	bind_touch                                 -> bind_touch_IN
+	bind_touch_IN                              -> bind_touch_OUT
+	bind_touch_OUT                             -> bind_touch_IN
+	bind_touch_OUT                             -> bind_OUT
+	bind_destroy                               -> bind_destroy_IN
+	bind_destroy_IN                            -> bind_destroy_OUT
+	bind_destroy_OUT                           -> bind_destroy_IN
+	bind_destroy_OUT                           -> bind_OUT
+	bind_bind                                  -> bind_IN
+	bind_OUT                                   -> termination
+	flag_IN                                    -> flag_location
+	flag_IN                                    -> flag_editor
+	flag_IN                                    -> flag_completion
+	flag_IN                                    -> flag_order
+	flag_IN                                    -> flag_wrapping
+	flag_IN                                    -> flag_justification
+	flag_IN                                    -> flag_filling
+	flag_IN                                    -> flag_interaction
+	flag_IN                                    -> flag_affix
+	flag_IN                                    -> flag_unusual
+	flag_IN                                    -> flag_preset
+	flag_OUT                                   -> OUT
+	flag_location                              -> flag_location_name
+	flag_editor                                -> flag_editor_path
+	flag_completion                            -> flag_completion_number
+	flag_order                                 -> flag_order_sorting
+	flag_wrapping                              -> flag_wrapping_continuation
+	flag_justification                         -> flag_justification_alignment
+	flag_filling                               -> flag_filling_padding
+	flag_interaction                           -> flag_interaction_answer
+	flag_affix                                 -> flag_affix_string
+	flag_unusual                               -> flag_unusual_string
+	flag_preset                                -> flag_preset_selection
+	flag_location_name                         -> flag_OUT
+	flag_editor_path                           -> flag_OUT
+	flag_completion_number                     -> flag_OUT
+	flag_order_sorting                         -> flag_order_sorting_grouping
+	flag_order_sorting_grouping                -> flag_order_sorting_grouping_hiding
+	flag_order_sorting_grouping_hiding         -> flag_OUT
+	flag_wrapping_continuation                 -> flag_OUT
+	flag_justification_alignment               -> flag_justification_alignment_alignment
+	flag_justification_alignment_alignment     -> flag_OUT
+	flag_filling_padding                       -> flag_filling_padding_padding
+	flag_filling_padding_padding               -> flag_OUT
+	flag_interaction_answer                    -> flag_OUT
+	flag_affix_string                          -> flag_affix_string_string
+	flag_affix_string_string                   -> flag_affix_string_string_string
+	flag_affix_string_string_string            -> flag_OUT
+	flag_unusual_string                        -> flag_unusual_string_string
+	flag_unusual_string_string                 -> flag_OUT
+	flag_preset_selection                      -> flag_OUT
+}
