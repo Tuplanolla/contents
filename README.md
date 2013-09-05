@@ -173,7 +173,8 @@ The default value is, rather self referentially, `default`.
 The key doesn't have a persistent value, so it can only be written.
 Only `default` is a valid `(selection)`.
 
-The special value `%` is equivalent to an empty value and different from `""` and the string `%%` is interpreted as a literal `%`.
+The special value `%` is equivalent to an empty (essentially `NULL`) value and different from `""`.
+The string `%%` works as a literal `%` since `%` alone is reserved.
 
 The special flag `--help`, abbreviated as `-h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
 

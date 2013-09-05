@@ -244,6 +244,8 @@ digraph states {
 		flag_affix                                 [label = "--affix\n-a"]
 		flag_unusual                               [label = "--unusual\n-u"]
 		flag_preset                                [label = "--preset\n-p"]
+		flag_help                                  [label = "--help\n-h"]
+		flag_version                               [label = "--version\n-v"]
 	}
 	subgraph _cluster_flag_value {
 		flag_location_name                         [label = "(name)"]
@@ -270,6 +272,7 @@ digraph states {
 	main                                       -> IN
 	IN                                         -> command_IN
 	IN                                         -> flag_IN
+	IN                                         -> OUT
 	OUT                                        -> IN
 	OUT                                        -> termination
 	command_IN                                 -> configure_IN
@@ -585,6 +588,8 @@ digraph states {
 	flag_IN                                    -> flag_affix
 	flag_IN                                    -> flag_unusual
 	flag_IN                                    -> flag_preset
+	flag_IN                                    -> flag_help
+	flag_IN                                    -> flag_version
 	flag_OUT                                   -> OUT
 	flag_location                              -> flag_location_name
 	flag_editor                                -> flag_editor_path
@@ -615,4 +620,6 @@ digraph states {
 	flag_unusual_string                        -> flag_unusual_string_string
 	flag_unusual_string_string                 -> flag_OUT
 	flag_preset_selection                      -> flag_OUT
+	flag_help                                  -> flag_OUT
+	flag_version                               -> flag_OUT
 }
