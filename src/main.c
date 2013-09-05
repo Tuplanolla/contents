@@ -3,7 +3,6 @@
 @file
 **/
 
-#include "helper.h" // help
 #include "parser.h" // parse
 
 /**
@@ -12,8 +11,5 @@
 @return The number <code>0</code> if successful and something else otherwise.
 **/
 int main(const int length, const char* const* const arguments) {
-	if (length > 1)
-		return parse(1 + arguments);
-	else
-		return help();
+	return parse(1 + arguments);
 }

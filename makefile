@@ -21,7 +21,7 @@ BINARY = $(BIN)/indefinix
 all: build
 
 run: build
-	$(EXECUTABLE)
+	$(BINARY) $(ARGUMENTS)
 
 build: $(SOURCES) prepare $(BINARY)
 
