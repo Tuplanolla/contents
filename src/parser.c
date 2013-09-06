@@ -9,20 +9,18 @@
 
 #include "data.h" // struct container
 #include "resolver.h" // resolve
-#include "project.h" // project_name, project_version, project_target
 #include "helper.h" // help
 
 int execute(const struct action resolution) {
 	FILE* const debug_stream = stdout;
 	FILE* const stream = stdout;
 
-	/*
-	switch (resolution.thing) {
+	switch (resolution.thing.c) {
 	case COMMAND_HELP:
 		return print_help(stream);
 	case COMMAND_VERSION:
+		return print_summary(stream);
 	}
-	*/
 	return -1;
 }
 
@@ -34,7 +32,7 @@ int parse(const char* const* arguments) {
 		printf("Instance: %s (%s)\n", container.instance.name, container.instance.abbreviation);
 	switch (container.type) {
 	case TYPE_ERROR:
-		break; // return -1; // resolvation problem
+		break; // return -1; // resolution problem
 	case TYPE_END:
 		return 0; // done
 	case TYPE_COMMAND:

@@ -7,7 +7,7 @@
 
 #include <stdio.h> // fprintf
 
-#include "project.h" // project_name, project_version, project_target
+#include "project.h" // project_*
 
 static const char usage[] = "\
 Usage: indefinix (flags) (command) (arguments) (...) (flags)\n\

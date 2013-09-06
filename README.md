@@ -25,7 +25,7 @@ The following examples are from a (freshly installed) Arch Linux.
 
 Binaries only need to be downloaded, extracted and moved to a suitable `$LOCATION`.
 
-	[user@arch ~]$ wget https://github.com/Tuplanolla/indefinix/blob/master/indefinix.tar.gz
+	[user@arch ~]$ wget https://github.com/Tuplanolla/indefinix/blob/master/pkg/indefinix.tar.gz
 	[user@arch ~]$ tar -xf indefinix.tar.gz
 	[user@arch ~]$ mv indefinix/bin/* $LOCATION
 
@@ -63,9 +63,13 @@ and Indefinix can be built.
 	[user@arch indefinix]$ make
 
 The binaries go in the `bin` directory and temporary objects in the `obj` directory.
-After moving the binaries to a suitable `$LOCATION`
+After automatically moving the binaries to `/usr/local/bin` or `/usr/bin`
 
-	[user@arch ~]$ mv indefinix/bin/* $LOCATION
+	[user@arch indefinix]$ make install
+
+or manually to a suitable `$LOCATION`,
+
+	[user@arch indefinix]$ mv bin/* $LOCATION
 
 the byproducts of the compilation can be removed.
 
@@ -298,5 +302,6 @@ The directories are
 * `/obj` for temporary build files,
 * `/lib` for libraries,
 * `/bin` for binaries,
+* `/pkg` for packages,
 * `/doc` for documentation and
 * `/etc` for other files.

@@ -1,5 +1,3 @@
-RM = /bin/rm -f -r
-MKDIR = /bin/mkdir -p
 SIZE = 32766
 DEBUG = -g -save-temps=obj -fverbose-asm -masm=intel\
 		-O0\
@@ -11,24 +9,54 @@ FLAGS = -std=c11\
 		$(DEBUG)\
 #		-lm -lconfig -letc
 CC = /usr/bin/gcc $(FLAGS)
+MKDIR = /bin/mkdir -p
+RM = /bin/rm -f
+CP = /bin/cp -u
+TAR = /bin/tar -c
+DOXYGEN = /usr/bin/doxygen
+PRIMARY = /usr/local/bin
+SECONDARY = /usr/bin
 SRC = src
 OBJ = obj
 BIN = bin
+PKG = pkg
+DOX = dox
+NAME = indefinix
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
 SOURCES = $(SRC)/data.c $(SRC)/helper.c $(SRC)/main.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
-BINARY = $(BIN)/indefinix
+BINARY = $(BIN)/$(NAME)
 
 all: build
 
 run: build
 	$(BINARY) $(ARGUMENTS)
 
+package: build
+	$(TAR) -f $(PKG)/$(NAME).tar.gz -C .. $(NAME)/$(BIN)/$(NAME)
+
+document: $(SOURCES)
+	$(DOXYGEN)
+
+install: build
+	$(CP) $(BINARY) $(PRIMARY)/$(NAME) || $(CP) $(BINARY) $(SECONDARY)/$(NAME)
+
+uninstall:
+	$(RM) $(PRIMARY)/$(BINARY) && $(RM) $(SECONDARY)/$(NAME)
+
 build: $(SOURCES) prepare $(BINARY)
 
 prepare:
 	$(MKDIR) $(OBJ)
 	$(MKDIR) $(BIN)
+	$(MKDIR) $(PKG)
+	$(MKDIR) $(DOX)
+
+clean:
+	$(RM) -r $(OBJ)
+	$(RM) -r $(BIN)
+	$(RM) -r $(PKG)
+	$(RM) -r $(DOX)
 
 $(BINARY): $(OBJECTS)
 	$(CC) -o $@ $^
@@ -36,8 +64,4 @@ $(BINARY): $(OBJECTS)
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -c -o $@ $<
 
-clean:
-	$(RM) $(OBJ)
-	$(RM) $(BIN)
-
-.PHONY: all run clean prepare
+.PHONY: all run package document install uninstall build prepare clean
