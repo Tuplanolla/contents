@@ -1,8 +1,8 @@
 /**
-Carries out the user's wishes.
+Understands and carries out the user's wishes.
 
-@author Sampsa "Tuplanolla" Kiiskinen
 @file
+@author Sampsa "Tuplanolla" Kiiskinen
 **/
 
 #ifndef PARSER_H
@@ -12,7 +12,7 @@ Carries out the user's wishes.
 Parses and manages the delegation of the given arguments.
 
 @param arguments The arguments.
-@return The error code.
+@return The number <code>0</code> if successful and <code>-1</code> otherwise.
 **/
 int parse(const char* const* arguments);
 

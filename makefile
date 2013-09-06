@@ -14,7 +14,8 @@ CC = /usr/bin/gcc $(FLAGS)
 SRC = src
 OBJ = obj
 BIN = bin
-SOURCES = $(SRC)/main.c $(SRC)/helper.c $(SRC)/parser.c
+# find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
+SOURCES = $(SRC)/data.c $(SRC)/helper.c $(SRC)/main.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/indefinix
 

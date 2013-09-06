@@ -1,32 +1,22 @@
 /**
-@author Sampsa "Tuplanolla" Kiiskinen
 @file
+@author Sampsa "Tuplanolla" Kiiskinen
 **/
 
 #include "project.h"
 
-static const char name[] = "Indefinix";
+#include "target.h" // TARGET_*
 
-static const char version[] = "0.0.0";
+const char* const project_name = "Indefinix";
 
-#define TARGET static const char target[]
-#ifdef __linux__
+const char* const project_version = "0.0.0";
+
+#define TARGET const char* const project_target
+#if defined TARGET_LINUX
 TARGET = "Linux";
-#elif _WIN32
+#elif defined TARGET_WINDOWS
 TARGET = "Windows";
 #else
-TARGET = "Unsupported";
+TARGET = "Unknown";
 #endif
 #undef TARGET
-
-const char* get_name(void) {
-	return name;
-}
-
-const char* get_version(void) {
-	return version;
-}
-
-const char* get_target(void) {
-	return target;
-}

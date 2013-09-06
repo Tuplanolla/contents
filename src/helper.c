@@ -1,11 +1,13 @@
 /**
-@author Sampsa "Tuplanolla" Kiiskinen
 @file
+@author Sampsa "Tuplanolla" Kiiskinen
 **/
 
 #include "helper.h"
 
-#include <stdio.h> // printf
+#include <stdio.h> // fprintf
+
+#include "project.h" // project_name, project_version, project_target
 
 static const char usage[] = "\
 Usage: indefinix (flags) (command) (arguments) (...) (flags)\n\
@@ -36,9 +38,12 @@ Configuration Keys: location (name)\n\
                     headaffix (string) (string) (string)\n\
                     tailaffix (string) (string) (string)\n\
                     unusual (string) (string)\n\
-Special Configuration Keys: preset (selection)\n\
-";
+Special Configuration Keys: preset (selection)";
 
-int help(void) {
-	return printf("%s", usage) <= 0;
+int print_help(FILE* const stream) {
+	return fprintf(stream, "%s\n", usage) <= 0;
+}
+
+int print_summary(FILE* const stream) {
+	return fprintf(stream, "%s version %s for %s\n", project_name, project_version, project_target) <= 0;
 }

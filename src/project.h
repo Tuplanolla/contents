@@ -1,32 +1,26 @@
 /**
 Provides project information for the user.
 
-@author Sampsa "Tuplanolla" Kiiskinen
 @file
+@author Sampsa "Tuplanolla" Kiiskinen
 **/
 
 #ifndef PROJECT_H
 #define PROJECT_H
 
 /**
-Returns the project's full name.
-
-@return The name.
+The project's full name.
 **/
-const char* get_name(void);
+extern const char* const project_name;
 
 /**
-Returns the project's version.
-
-@return The version.
+The project's version.
 **/
-const char* get_version(void);
+extern const char* const project_version;
 
 /**
-Returns the project's target platform.
-
-@return The target.
+The project's compilation target.
 **/
-const char* get_target(void);
+extern const char* const project_target;
 
 #endif

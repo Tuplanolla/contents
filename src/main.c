@@ -1,6 +1,6 @@
 /**
-@author Sampsa "Tuplanolla" Kiiskinen
 @file
+@author Sampsa "Tuplanolla" Kiiskinen
 **/
 
 #include "parser.h" // parse
@@ -11,5 +11,5 @@
 @return The number <code>0</code> if successful and something else otherwise.
 **/
 int main(const int length, const char* const* const arguments) {
-	return parse(1 + arguments);
+	return -parse(arguments + 1);
 }
