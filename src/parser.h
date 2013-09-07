@@ -1,5 +1,5 @@
 /**
-Understands and carries out the user's wishes.
+Separates and delegates the user's wishes.
 
 @file
 @author Sampsa "Tuplanolla" Kiiskinen

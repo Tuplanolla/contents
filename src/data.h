@@ -1,4 +1,6 @@
 /**
+Provides common data structures to the user.
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -12,18 +14,24 @@ enum type {
 	TYPE_ERROR,
 	TYPE_END,
 	TYPE_COMMAND,
-	TYPE_FLAG
+	TYPE_FLAG,
+
+	TYPE_COUNT
 };
 
 enum command {
 	COMMAND_HELP,
 	COMMAND_VERSION,
-	COMMAND_CONFIGURE
+	COMMAND_CONFIGURE,
+
+	COMMAND_COUNT
 };
 
 enum flag {
 	FLAG_HELP,
-	FLAG_VERSION
+	FLAG_VERSION,
+
+	FLAG_COUNT
 };
 
 struct action {
@@ -40,11 +48,6 @@ struct container {
 	enum type type;
 	struct action instance;
 };
-
-/**
-The amount of commands.
-**/
-#define COMMAND_COUNT 3
 
 /**
 The commands.

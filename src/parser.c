@@ -7,30 +7,16 @@
 
 #include <stdio.h> // FILE, fprintf, stdout
 
-#include "data.h" // struct container
+#include "data.h" // struct action, struct container
 #include "resolver.h" // resolve
-#include "helper.h" // help
-
-int execute(const struct action resolution) {
-	FILE* const debug_stream = stdout;
-	FILE* const stream = stdout;
-
-	switch (resolution.thing.c) {
-	case COMMAND_HELP:
-		return print_help(stream);
-	case COMMAND_VERSION:
-		return print_summary(stream);
-	}
-	return -1;
-}
+#include "executor.h" // execute
 
 int parse(const char* const* arguments) {
-	FILE* const debug_stream = stdout;
-	FILE* const stream = stdout;
+	FILE* const debug_stream = stderr;
 
 	fprintf(debug_stream, "Resolving: %s\n", *arguments);
 	const struct container container = resolve(*arguments, 3);
-	fprintf(debug_stream, "Type: %d\n", container.type);
+	fprintf(debug_stream, "Type: %u\n", container.type);
 	switch (container.type) {
 	case TYPE_ERROR:
 		fprintf(debug_stream, "Resolution failed!\n");
@@ -40,10 +26,10 @@ int parse(const char* const* arguments) {
 		return 0; // done
 	case TYPE_COMMAND:
 		fprintf(debug_stream, "Instance: %s (%s)\n", container.instance.name, container.instance.abbreviation);
-		/*
-		if (execute(container.instance, arguments + 1) != 0)
+		if (execute(container.instance, arguments + 1) == -1) {
+			fprintf(debug_stream, "Execution failed!\n");
 			return -1; // execution problem
-			*/
+		}
 	case TYPE_FLAG:
 		break;
 	}

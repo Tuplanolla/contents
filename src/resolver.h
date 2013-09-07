@@ -1,4 +1,6 @@
 /**
+Interprets the user's commands.
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
