@@ -25,17 +25,21 @@ int execute(const struct action resolution) {
 }
 
 int parse(const char* const* arguments) {
-	printf("Resolving: %s\n", *arguments);
+	FILE* const debug_stream = stdout;
+	FILE* const stream = stdout;
+
+	fprintf(debug_stream, "Resolving: %s\n", *arguments);
 	const struct container container = resolve(*arguments, 3);
-	printf("Type: %d\n", container.type);
-	if (container.type > 1)
-		printf("Instance: %s (%s)\n", container.instance.name, container.instance.abbreviation);
+	fprintf(debug_stream, "Type: %d\n", container.type);
 	switch (container.type) {
 	case TYPE_ERROR:
-		break; // return -1; // resolution problem
+		fprintf(debug_stream, "Resolution failed!\n");
+		return -1; // resolution problem
 	case TYPE_END:
+		fprintf(debug_stream, "That's all.\n");
 		return 0; // done
 	case TYPE_COMMAND:
+		fprintf(debug_stream, "Instance: %s (%s)\n", container.instance.name, container.instance.abbreviation);
 		/*
 		if (execute(container.instance, arguments + 1) != 0)
 			return -1; // execution problem
@@ -43,6 +47,6 @@ int parse(const char* const* arguments) {
 	case TYPE_FLAG:
 		break;
 	}
-	printf("\n");
-	return parse(arguments + 1); // next with tco
+	fprintf(debug_stream, "\n");
+	return parse(arguments + 1 + container.instance.arity); // next with tco
 }

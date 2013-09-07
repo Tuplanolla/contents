@@ -1,4 +1,5 @@
 /**
+@file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
@@ -28,9 +29,11 @@ struct container resolve(const char* const argument, const size_t limit) {
 		size_t matches = 0;
 		for (size_t attempt = 0;
 				attempt < matching_command_count;
-				++attempt) {
-			if (matching_commands[attempt]->name[character] == argument[character])
-				matches++;
+				) {
+			if (matching_commands[attempt]->name[character] == argument[character]) {
+				++matches;
+				++attempt;
+			}
 			else {
 				--matching_command_count;
 				for (size_t match = attempt;

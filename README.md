@@ -303,5 +303,5 @@ The directories are
 * `/lib` for libraries,
 * `/bin` for binaries,
 * `/pkg` for packages,
-* `/doc` for documentation and
+* `/dox` for automatic documentation and
 * `/etc` for other files.

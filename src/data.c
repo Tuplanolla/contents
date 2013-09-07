@@ -21,5 +21,13 @@ const struct action commands[COMMAND_COUNT] = {
 		.thing = {
 			.c = COMMAND_VERSION
 		}
+	},
+	{
+		.name = "configure",
+		.abbreviation = "c",
+		.arity = 0,
+		.thing = {
+			.c = COMMAND_CONFIGURE
+		}
 	}
 };

@@ -17,7 +17,8 @@ enum type {
 
 enum command {
 	COMMAND_HELP,
-	COMMAND_VERSION
+	COMMAND_VERSION,
+	COMMAND_CONFIGURE
 };
 
 enum flag {
@@ -43,7 +44,7 @@ struct container {
 /**
 The amount of commands.
 **/
-#define COMMAND_COUNT 2
+#define COMMAND_COUNT 3
 
 /**
 The commands.
