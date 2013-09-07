@@ -3,10 +3,11 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
+#include <stdlib.h> // malloc()
 #include <stddef.h> // size_t
 #include <string.h> // strlen()
 
-static size_t minimum(const size_t x, const size_t y) {
+size_t minimum(const size_t x, const size_t y) {
 	if (x < y)
 		return x;
 	return y;
@@ -15,15 +16,16 @@ static size_t minimum(const size_t x, const size_t y) {
 size_t distance(const char* const x, const char* const y) {
 	const size_t x_length = strlen(x),
 			y_length = strlen(y);
-	size_t distances[x_length + 1][y_length + 1]; // -Wvla
+#define AT(x, y) ((x) * y_length + (y))
+	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
 	for (size_t character = 0;
 			character <= x_length;
 			++character)
-		distances[character][0] = character;
+		distances[AT(character, 0)] = character;
 	for (size_t character = 0;
 			character <= y_length;
 			++character)
-		distances[0][character] = character;
+		distances[AT(0, character)] = character;
 	for (size_t row = 0;
 			row < x_length;
 			++row) {
@@ -35,19 +37,22 @@ size_t distance(const char* const x, const char* const y) {
 				cost = 0;
 			else
 				cost = 1;
-			distances[row + 1][column + 1] = minimum(
-					distances[row][column + 1] + 1, // deletion
-					minimum(distances[row + 1][column] + 1, // insertion
-					distances[row][column] + cost)); // substitution
+			distances[AT(row + 1, column + 1)] = minimum(
+					distances[AT(row, column + 1)] + 1, // deletion
+					minimum(distances[AT(row + 1, column)] + 1, // insertion
+					distances[AT(row, column)] + cost)); // substitution
 			if (row > 1
 					&& column > 1
 					&& x[row] == y[column - 1]
 					&& x[row - 1] == y[column]) {
-				distances[row + 1][column + 1] = minimum(
-						distances[row + 1][column + 1],
-						distances[row - 1][column - 1] + cost); // swapping
+				distances[AT(row + 1, column + 1)] = minimum(
+						distances[AT(row + 1, column + 1)],
+						distances[AT(row - 1, column - 1)] + cost); // swapping
 			}
 		}
 	}
-	return distances[x_length][y_length];
+	const size_t result = distances[AT(x_length, y_length)];
+	free(distances);
+#undef AT
+	return result;
 }

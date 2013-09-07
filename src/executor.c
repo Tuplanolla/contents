@@ -18,8 +18,6 @@ int execute(const struct action resolution, const char* const* const arguments) 
 		return print_help(stream);
 	case COMMAND_VERSION:
 		return print_summary(stream);
-	default:
-		return 0; // temporary
 	}
 	return -1;
 }

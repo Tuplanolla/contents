@@ -8,6 +8,8 @@ Calculates complicated things for the user.
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 
+size_t minimum(size_t x, size_t y); // TODO __attribute__ ((const))
+
 /**
 Returns the edit distance between two strings.
 
@@ -15,6 +17,6 @@ Returns the edit distance between two strings.
 @param y The second string.
 @return The edit distance.
 **/
-size_t distance(const char* x, const char* y);
+size_t distance(const char* x, const char* y); // TODO __attribute__ ((pure))
 
 #endif

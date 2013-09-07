@@ -3,7 +3,7 @@ digraph states {
 	                                            overlap = false,
 	                                            dpi = 48]
 
-	EXECUTION                                  [label = "(EXECUTION)",
+	EXECUTION                                  [label = "(execution)",
 	                                            shape = box]
 	main                                       [label = "indefinix"]
 	IN                                         [shape = point]
@@ -78,7 +78,7 @@ digraph states {
 	bind_help_OUT                              [shape = point]
 	bind_version_IN                            [shape = point]
 	bind_version_OUT                           [shape = point]
-	TERMINATION                                [label = "(TERMINATION)",
+	TERMINATION                                [label = "(termination)",
 	                                            shape = box]
 	subgraph _cluster_command {
 		configure                                  [label = "configure"]

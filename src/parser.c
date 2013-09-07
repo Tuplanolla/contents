@@ -8,37 +8,52 @@
 #include <stdio.h> // FILE, stdout, fprintf()
 
 #include "data.h" // struct action, struct container, struct holder
-#include "resolver.h" // resolve(), approximate()
+#include "resolver.h" // resolve(), correct(), organize()
 #include "executor.h" // execute()
-
-#define ever (;;)
+#include "calculator.h" // minimum()
 
 int parse(const char* const* arguments) {
 	FILE* const debug_stream = stderr;
-	const size_t limit = 3;
+	const size_t limit = 4,
+			score = 5,
+			suggerations = 3;
 
-	const char* const argument;
-	for ever {
-		fprintf(debug_stream, "Resolving: %s\n", *arguments);
+	for (size_t position = 0;
+			;
+			++position) {
+		fprintf(debug_stream, "Resolving %s.\n", *arguments);
 		const struct container container = resolve(*arguments, limit);
-		fprintf(debug_stream, "Type: %u\n", container.type);
 		switch (container.type) {
 		case TYPE_ERROR:
 			fprintf(debug_stream, "Resolution failed!\n");
-			const struct holder guesses = approximate(*arguments, limit);
-			fprintf(debug_stream, "Did you mean %s, %s or %s?\n", guesses.guesses[0].instance->name,
-					guesses.guesses[1].instance->name,
-					guesses.guesses[2].instance->name); // dangerous
+			const struct holder unsorted_guesses = correct(*arguments, limit);
+			const struct holder guesses = filter(unsorted_guesses, score);
+			const size_t suggestions = minimum(suggerations, guesses.count);
+			fprintf(debug_stream, "Did you mean");
+			for (size_t iterator = 0;
+					iterator < suggestions;
+					++iterator) {
+				if (iterator != 0) {
+					if (iterator == suggestions - 1)
+						fprintf(debug_stream, " or ");
+					else
+						fprintf(debug_stream, ", ");
+				} else
+					fprintf(debug_stream, " ");
+				fprintf(debug_stream, "%s (distance %zu)", guesses.guesses[iterator].instance->name, guesses.guesses[iterator].distance);
+			}
+			fprintf(debug_stream, "?\n");
 			return -1; // resolution problem
 		case TYPE_END:
 			return 0; // done
 		case TYPE_COMMAND:
 			if (execute(container.instance, arguments + 1) == -1) {
+				fprintf(debug_stream, "Failed!\n");
 				return -1; // execution problem
 			}
 		case TYPE_FLAG:
 			break;
 		}
-		arguments += 1 + container.instance.arity;
+		arguments += container.instance.arity + 1; // TODO handle variadic etc
 	}
 }

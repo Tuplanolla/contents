@@ -19,6 +19,23 @@ enum type {
 	TYPE_COUNT
 };
 
+enum arity {
+	ARITY_NILADIC,
+	ARITY_MONADIC,
+	ARITY_DYADIC,
+	ARITY_TRIADIC,
+	ARITY_TETRADIC,
+	ARITY_PENTADIC,
+	ARITY_HEXADIC,
+	ARITY_HEPTADIC,
+	ARITY_OCTADIC,
+	ARITY_NONADIC,
+	ARITY_DECADIC,
+	ARITY_VARIADIC,
+
+	ARITY_COUNT
+};
+
 enum command {
 	COMMAND_CONFIGURE,
 	COMMAND_SET,
@@ -60,8 +77,7 @@ enum key {
 
 struct action {
 	const char* name;
-	const char* abbreviation;
-	size_t arity;
+	enum arity arity;
 	enum command command;
 };
 
@@ -70,12 +86,20 @@ struct container {
 	struct action instance;
 };
 
+struct property {
+	const char* name;
+	const char* abbreviation;
+	enum arity arity;
+	enum key key;
+};
+
 struct guess {
 	size_t distance;
-	struct action* instance;
+	const struct action* instance;
 };
 
 struct holder {
+	size_t count;
 	struct guess guesses[COMMAND_COUNT];
 };
 

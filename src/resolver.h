@@ -30,6 +30,8 @@ Automatically completes the given argument if it's longer than the given limit o
 @param argument The automatic completion limit.
 @return The guesses in a container.
 **/
-struct holder approximate(const char* argument, size_t limit);
+struct holder correct(const char* argument, size_t limit);
+
+struct holder filter(struct holder result, size_t score);
 
 #endif

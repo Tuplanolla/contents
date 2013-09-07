@@ -7,9 +7,10 @@
 
 #include <stddef.h> // NULL, size_t
 #include <string.h> // strlen()
-#include <stdlib.h> // qsort()
+#include <stdlib.h> // qsort(), malloc(), free()
 
 #include "data.h" // COMMAND_*, TYPE_*, commands, struct action, struct guess
+#include "calculator.h" // distance()
 
 struct container resolve(const char* const argument, const size_t limit) {
 	struct container result;
@@ -34,8 +35,7 @@ struct container resolve(const char* const argument, const size_t limit) {
 			if (matching_commands[attempt]->name[character] == argument[character]) {
 				++matches;
 				++attempt;
-			}
-			else {
+			} else { // TODO shift
 				--matching_command_count;
 				for (size_t match = attempt;
 						match < matching_command_count;
@@ -57,26 +57,69 @@ struct container resolve(const char* const argument, const size_t limit) {
 	return result;
 }
 
-static int comparator(const struct guess* const x, const struct guess* const y) {
-	if (x->distance < y->distance)
+static void destructive_truncate(char* const x, const size_t limit) {
+	size_t character;
+	for (character = 0;
+			character < limit;
+			++character) {
+		if (x[character] == '\0')
+			return;
+	}
+	x[character] = '\0';
+}
+
+static char* allocating_truncate(const char* const x, const size_t limit) {
+	char* const result = malloc(strlen(x) + 1);
+	size_t character;
+	for (character = 0;
+			character < limit;
+			++character) {
+		result[character] = x[character];
+		if (x[character] == '\0')
+			return result;
+	}
+	result[character] = '\0';
+	return result;
+}
+
+struct holder correct(const char* const argument, size_t limit) { // TODO null
+	struct holder result = {
+		.count = COMMAND_COUNT
+	};
+	char* const truncated_argument = allocating_truncate(argument, limit); // TODO rethink limit
+	for (size_t command = 0;
+			command < result.count;
+			++command) {
+		const char* const guess = commands[command].name;
+		char* const truncated_guess = allocating_truncate(guess, limit);
+//		result.guesses[command].distance = distance(truncated_argument, truncated_guess);
+		result.guesses[command].distance = distance(argument, guess);
+		result.guesses[command].instance = &commands[command];
+		free(truncated_guess);
+	}
+	free(truncated_argument);
+	return result;
+}
+
+static int comparator(const void* const x, const void* const y) {
+	const struct guess* const actual_x = x,
+			* const actual_y = y;
+	if (actual_x->distance < actual_y->distance)
 		return -1;
-	if (x->distance > y->distance)
+	if (actual_x->distance > actual_y->distance)
 		return 1;
 	return 0;
 }
 
-struct holder approximate(const char* argument, size_t limit) {
-	struct holder result;
-	for (size_t command = 0;
-			command < COMMAND_COUNT;
-			++command) {
-		result.guesses[command].distance = distance(argument, commands[command].name);
-		result.guesses[command].instance = &commands[command];
+struct holder filter(struct holder result, const size_t score) {
+	qsort(&result.guesses, result.count, sizeof result.guesses[0], comparator);
+	for (size_t now = 0;
+			now < result.count;
+			++now) {
+		if (result.guesses[now].distance > score) {
+			result.count = now;
+			break;
+		}
 	}
-	qsort(&result.guesses, COMMAND_COUNT, sizeof result.guesses[0], comparator);
-	for (size_t command = 0;
-			command < COMMAND_COUNT;
-			++command)
-		printf("Found %s (%zu).\n", result.guesses[command].instance->name, result.guesses[command].distance);
 	return result;
 }
