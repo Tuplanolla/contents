@@ -1,4 +1,5 @@
 /**
+Incomplete!
 Carries out the user's requests.
 
 @file
@@ -10,6 +11,9 @@ Carries out the user's requests.
 
 #include "data.h" // struct action
 
+/**
+Does something.
+**/
 int execute(struct action resolution, const char* const* arguments);
 
 #endif

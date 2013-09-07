@@ -5,9 +5,9 @@
 
 #include "helper.h"
 
-#include <stdio.h> // fprintf()
+#include <stdio.h> // FILE, fprintf()
 
-#include "project.h" // project_*
+#include "project.h" // project_name, project_version, project_target
 
 static const char usage[] = "\
 Usage: indefinix (flags) (command) (arguments) (...) (flags)\n\

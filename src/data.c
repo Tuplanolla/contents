@@ -166,4 +166,10 @@ const struct property properties[] = {
 		.arity = ARITY_DYADIC,
 		.key = KEY_UNUSUAL
 	},
+	{
+		.name = "preset",
+		.abbreviation = "p",
+		.arity = ARITY_MONADIC,
+		.key = KEY_PRESET
+	}
 };

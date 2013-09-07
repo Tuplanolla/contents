@@ -3,9 +3,11 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include <stdlib.h> // malloc()
+#include "calculator.h"
+
 #include <stddef.h> // size_t
 #include <string.h> // strlen()
+#include <stdlib.h> // malloc(), free()
 
 size_t minimum(const size_t x, const size_t y) {
 	if (x < y)
@@ -37,18 +39,17 @@ size_t distance(const char* const x, const char* const y) {
 				cost = 0;
 			else
 				cost = 1;
-			distances[AT(row + 1, column + 1)] = minimum(
-					distances[AT(row, column + 1)] + 1, // deletion
-					minimum(distances[AT(row + 1, column)] + 1, // insertion
-					distances[AT(row, column)] + cost)); // substitution
+			distances[AT(row + 1, column + 1)] = minimum(minimum(
+					distances[AT(row, column + 1)] + 1, // deleted
+					distances[AT(row + 1, column)] + 1), // inserted
+					distances[AT(row, column)] + cost); // modified
 			if (row > 1
 					&& column > 1
 					&& x[row] == y[column - 1]
-					&& x[row - 1] == y[column]) {
+					&& x[row - 1] == y[column])
 				distances[AT(row + 1, column + 1)] = minimum(
-						distances[AT(row + 1, column + 1)],
-						distances[AT(row - 1, column - 1)] + cost); // swapping
-			}
+						distances[AT(row + 1, column + 1)], // ignored
+						distances[AT(row - 1, column - 1)] + cost); // swapped
 		}
 	}
 	const size_t result = distances[AT(x_length, y_length)];

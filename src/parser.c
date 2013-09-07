@@ -1,4 +1,6 @@
 /**
+Incomplete!
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -27,14 +29,13 @@ int parse(const char* const* arguments) {
 		case TYPE_ERROR:
 			fprintf(debug_stream, "Resolution failed!\n");
 			const struct holder unsorted_guesses = correct(*arguments, limit);
-			const struct holder guesses = filter(unsorted_guesses, score);
-			const size_t suggestions = minimum(suggerations, guesses.count);
+			const struct holder guesses = filter(unsorted_guesses, suggerations, score);
 			fprintf(debug_stream, "Did you mean");
 			for (size_t iterator = 0;
-					iterator < suggestions;
+					iterator < guesses.count;
 					++iterator) {
 				if (iterator != 0) {
-					if (iterator == suggestions - 1)
+					if (iterator == guesses.count - 1)
 						fprintf(debug_stream, " or ");
 					else
 						fprintf(debug_stream, ", ");

@@ -1,5 +1,5 @@
 /**
-Provides common data structures to the user.
+Provides common data structures for the user.
 
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
@@ -10,6 +10,9 @@ Provides common data structures to the user.
 
 #include <stddef.h> // size_t
 
+/**
+Some types.
+**/
 enum type {
 	TYPE_ERROR,
 	TYPE_END,
@@ -19,6 +22,9 @@ enum type {
 	TYPE_COUNT
 };
 
+/**
+Some amounts of arguments.
+**/
 enum arity {
 	ARITY_NILADIC,
 	ARITY_MONADIC,
@@ -36,6 +42,9 @@ enum arity {
 	ARITY_COUNT
 };
 
+/**
+Some actions.
+**/
 enum command {
 	COMMAND_CONFIGURE,
 	COMMAND_SET,
@@ -58,6 +67,9 @@ enum command {
 	COMMAND_COUNT
 };
 
+/**
+Some keys.
+**/
 enum key {
 	KEY_LOCATION,
 	KEY_EDITOR,
@@ -71,21 +83,31 @@ enum key {
 	KEY_HEADAFFIX,
 	KEY_TAILAFFIX,
 	KEY_UNUSUAL,
+	KEY_PRESET,
 
 	KEY_COUNT
 };
 
+/**
+Something.
+**/
 struct action {
 	const char* name;
 	enum arity arity;
 	enum command command;
 };
 
+/**
+Something.
+**/
 struct container {
 	enum type type;
 	struct action instance;
 };
 
+/**
+Something.
+**/
 struct property {
 	const char* name;
 	const char* abbreviation;
@@ -93,11 +115,17 @@ struct property {
 	enum key key;
 };
 
+/**
+Something.
+**/
 struct guess {
 	size_t distance;
 	const struct action* instance;
 };
 
+/**
+Something.
+**/
 struct holder {
 	size_t count;
 	struct guess guesses[COMMAND_COUNT];

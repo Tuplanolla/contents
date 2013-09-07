@@ -1,4 +1,5 @@
 /**
+Incomplete!
 Interprets the user's commands.
 
 @file
@@ -32,6 +33,14 @@ Automatically completes the given argument if it's longer than the given limit o
 **/
 struct holder correct(const char* argument, size_t limit);
 
-struct holder filter(struct holder result, size_t score);
+/**
+Returns the given amount of results that have less than the given distance.
+Sorts the results according to distance.
+
+@param argument The argument.
+@param argument The automatic completion limit.
+@return The guesses in a container.
+**/
+struct holder filter(struct holder result, size_t limit, size_t score);
 
 #endif

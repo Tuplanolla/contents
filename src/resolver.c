@@ -1,4 +1,6 @@
 /**
+Incomplete!
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -111,12 +113,13 @@ static int comparator(const void* const x, const void* const y) {
 	return 0;
 }
 
-struct holder filter(struct holder result, const size_t score) {
+struct holder filter(struct holder result, const size_t limit, const size_t score) {
 	qsort(&result.guesses, result.count, sizeof result.guesses[0], comparator);
 	for (size_t now = 0;
 			now < result.count;
 			++now) {
-		if (result.guesses[now].distance > score) {
+		if (now >= limit
+				|| result.guesses[now].distance > score) {
 			result.count = now;
 			break;
 		}

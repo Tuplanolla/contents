@@ -8,7 +8,18 @@ Calculates complicated things for the user.
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 
-size_t minimum(size_t x, size_t y); // TODO __attribute__ ((const))
+#include <stddef.h> // size_t
+
+#include "gnu.h" // __attribute__
+
+/**
+Returns the smallest given size.
+
+@param x The first size.
+@param y The second size.
+@return The smallest size.
+**/
+size_t minimum(size_t x, size_t y) __attribute__ ((const));
 
 /**
 Returns the edit distance between two strings.
@@ -17,6 +28,6 @@ Returns the edit distance between two strings.
 @param y The second string.
 @return The edit distance.
 **/
-size_t distance(const char* x, const char* y); // TODO __attribute__ ((pure))
+size_t distance(const char* x, const char* y) __attribute__ ((pure));
 
 #endif
