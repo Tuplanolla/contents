@@ -5,10 +5,10 @@
 
 #include "resolver.h"
 
-#include <stddef.h> // size_t
-#include <string.h> // strlen
+#include <stddef.h> // NULL, size_t
+#include <string.h> // strlen()
 
-#include "data.h" // COMMAND_COUNT, commands
+#include "data.h" // COMMAND_*, TYPE_*, commands
 
 struct container resolve(const char* const argument, const size_t limit) {
 	struct container result;
@@ -54,4 +54,8 @@ struct container resolve(const char* const argument, const size_t limit) {
 		}
 	}
 	return result;
+}
+
+struct holder approximate(const char* argument, size_t limit) {
+	return (struct holder ){}; // TODO this
 }

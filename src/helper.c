@@ -5,7 +5,7 @@
 
 #include "helper.h"
 
-#include <stdio.h> // fprintf
+#include <stdio.h> // fprintf()
 
 #include "project.h" // project_*
 

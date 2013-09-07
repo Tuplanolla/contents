@@ -22,7 +22,7 @@ enum type {
 enum command {
 	COMMAND_HELP,
 	COMMAND_VERSION,
-	COMMAND_CONFIGURE,
+	COMMAND_TEST,
 
 	COMMAND_COUNT
 };
@@ -47,6 +47,16 @@ struct action {
 struct container {
 	enum type type;
 	struct action instance;
+};
+
+struct guess {
+	size_t distance;
+	struct action* instance;
+};
+
+struct holder {
+	size_t count;
+	struct guess guesses[COMMAND_COUNT];
 };
 
 /**

@@ -23,11 +23,11 @@ const struct action commands[COMMAND_COUNT] = {
 		}
 	},
 	{
-		.name = "configure",
-		.abbreviation = "c",
-		.arity = 0,
+		.name = "test",
+		.abbreviation = "t",
+		.arity = 1,
 		.thing = {
-			.c = COMMAND_CONFIGURE
+			.c = COMMAND_TEST
 		}
 	}
 };

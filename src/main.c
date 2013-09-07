@@ -3,7 +3,7 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "parser.h" // parse
+#include "parser.h" // parse()
 
 /**
 @param length The length of <code>arguments</code>.
