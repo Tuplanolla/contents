@@ -1,6 +1,7 @@
 /**
 Encourages the user to choose GNU tools.
 
+@file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 

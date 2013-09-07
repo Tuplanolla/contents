@@ -18,7 +18,7 @@ Returns the command the given argument refers to if possible.
 Automatically completes the given argument if it's longer than the given limit or the given limit is zero.
 
 @param argument The argument.
-@param argument The automatic completion limit.
+@param limit The automatic completion limit.
 @return The command in a container.
 **/
 struct container resolve(const char* argument, size_t limit);
@@ -28,7 +28,7 @@ Returns the distances of all commands from the given argument.
 Automatically completes the given argument if it's longer than the given limit or the given limit is zero.
 
 @param argument The argument.
-@param argument The automatic completion limit.
+@param limit The automatic completion limit.
 @return The guesses in a container.
 **/
 struct holder correct(const char* argument, size_t limit);
@@ -37,10 +37,11 @@ struct holder correct(const char* argument, size_t limit);
 Returns the given amount of results that have less than the given distance.
 Sorts the results according to distance.
 
-@param argument The argument.
-@param argument The automatic completion limit.
+@param result The argument.
+@param limit The amount.
+@param distance The distance.
 @return The guesses in a container.
 **/
-struct holder filter(struct holder result, size_t limit, size_t score);
+struct holder filter(struct holder result, size_t limit, size_t distance);
 
 #endif
