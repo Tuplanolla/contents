@@ -7,8 +7,9 @@
 
 #include <stddef.h> // NULL, size_t
 #include <string.h> // strlen()
+#include <stdlib.h> // qsort()
 
-#include "data.h" // COMMAND_*, TYPE_*, commands
+#include "data.h" // COMMAND_*, TYPE_*, commands, struct action, struct guess
 
 struct container resolve(const char* const argument, const size_t limit) {
 	struct container result;
@@ -56,6 +57,26 @@ struct container resolve(const char* const argument, const size_t limit) {
 	return result;
 }
 
+static int comparator(const struct guess* const x, const struct guess* const y) {
+	if (x->distance < y->distance)
+		return -1;
+	if (x->distance > y->distance)
+		return 1;
+	return 0;
+}
+
 struct holder approximate(const char* argument, size_t limit) {
-	return (struct holder ){}; // TODO this
+	struct holder result;
+	for (size_t command = 0;
+			command < COMMAND_COUNT;
+			++command) {
+		result.guesses[command].distance = distance(argument, commands[command].name);
+		result.guesses[command].instance = &commands[command];
+	}
+	qsort(&result.guesses, COMMAND_COUNT, sizeof result.guesses[0], comparator);
+	for (size_t command = 0;
+			command < COMMAND_COUNT;
+			++command)
+		printf("Found %s (%zu).\n", result.guesses[command].instance->name, result.guesses[command].distance);
+	return result;
 }

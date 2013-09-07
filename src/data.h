@@ -20,28 +20,49 @@ enum type {
 };
 
 enum command {
+	COMMAND_CONFIGURE,
+	COMMAND_SET,
+	COMMAND_POP,
+	COMMAND_GET,
+	COMMAND_OBLITERATE,
+	COMMAND_MAKE,
+	COMMAND_EDIT,
+	COMMAND_ADD,
+	COMMAND_REMOVE,
+	COMMAND_UPDATE,
+	COMMAND_LOOKUP,
+	COMMAND_FIND,
+	COMMAND_TOUCH,
+	COMMAND_DESTROY,
 	COMMAND_HELP,
 	COMMAND_VERSION,
-	COMMAND_TEST,
+	COMMAND_BIND,
 
 	COMMAND_COUNT
 };
 
-enum flag {
-	FLAG_HELP,
-	FLAG_VERSION,
+enum key {
+	KEY_LOCATION,
+	KEY_EDITOR,
+	KEY_COMPLETION,
+	KEY_ORDER,
+	KEY_WRAPPING,
+	KEY_JUSTIFICATION,
+	KEY_FILLING,
+	KEY_INTERACTION,
+	KEY_AFFIX,
+	KEY_HEADAFFIX,
+	KEY_TAILAFFIX,
+	KEY_UNUSUAL,
 
-	FLAG_COUNT
+	KEY_COUNT
 };
 
 struct action {
 	const char* name;
 	const char* abbreviation;
 	size_t arity;
-	union {
-		enum command c;
-		enum flag f;
-	} thing;
+	enum command command;
 };
 
 struct container {
@@ -55,7 +76,6 @@ struct guess {
 };
 
 struct holder {
-	size_t count;
 	struct guess guesses[COMMAND_COUNT];
 };
 

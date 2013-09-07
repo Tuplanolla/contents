@@ -3,7 +3,7 @@ digraph states {
 	                                            overlap = false,
 	                                            dpi = 48]
 
-	execution                                  [label = "(execution)",
+	EXECUTION                                  [label = "(EXECUTION)",
 	                                            shape = box]
 	main                                       [label = "indefinix"]
 	IN                                         [shape = point]
@@ -40,6 +40,10 @@ digraph states {
 	touch_OUT                                  [shape = point]
 	destroy_IN                                 [shape = point]
 	destroy_OUT                                [shape = point]
+	help_IN                                    [shape = point]
+	help_OUT                                   [shape = point]
+	version_IN                                 [shape = point]
+	version_OUT                                [shape = point]
 	bind_IN                                    [shape = point]
 	bind_OUT                                   [shape = point]
 	bind_configure_IN                          [shape = point]
@@ -70,7 +74,11 @@ digraph states {
 	bind_touch_OUT                             [shape = point]
 	bind_destroy_IN                            [shape = point]
 	bind_destroy_OUT                           [shape = point]
-	termination                                [label = "(termination)",
+	bind_help_IN                               [shape = point]
+	bind_help_OUT                              [shape = point]
+	bind_version_IN                            [shape = point]
+	bind_version_OUT                           [shape = point]
+	TERMINATION                                [label = "(TERMINATION)",
 	                                            shape = box]
 	subgraph _cluster_command {
 		configure                                  [label = "configure"]
@@ -88,6 +96,8 @@ digraph states {
 		touch                                      [label = "touch"]
 		destroy                                    [label = "destroy"]
 		bind                                       [label = "bind"]
+		help                                       [label = "help"]
+		version                                    [label = "version"]
 	}
 	subgraph _cluster_parameter {
 		make_template                              [label = "(template)"]
@@ -167,6 +177,8 @@ digraph states {
 		bind_find                                  [label = "find"]
 		bind_touch                                 [label = "touch"]
 		bind_destroy                               [label = "destroy"]
+		bind_help                                  [label = "help"]
+		bind_version                               [label = "version"]
 		bind_bind                                  [label = "bind"]
 	}
 	subgraph _cluster_bound_parameter {
@@ -268,13 +280,13 @@ digraph states {
 		flag_preset_selection                      [label = "(selection)"]
 	}
 
-	execution                                  -> main
+	EXECUTION                                  -> main
 	main                                       -> IN
 	IN                                         -> command_IN
 	IN                                         -> flag_IN
-	IN                                         -> OUT
+	IN                                         -> TERMINATION
 	OUT                                        -> IN
-	OUT                                        -> termination
+	OUT                                        -> TERMINATION
 	command_IN                                 -> configure_IN
 	command_IN                                 -> set_IN
 	command_IN                                 -> pop_IN
@@ -289,6 +301,8 @@ digraph states {
 	command_IN                                 -> find_IN
 	command_IN                                 -> touch_IN
 	command_IN                                 -> destroy_IN
+	command_IN                                 -> help_IN
+	command_IN                                 -> version_IN
 	command_IN                                 -> bind
 	command_OUT                                -> OUT
 	configure_IN                               -> configure
@@ -418,6 +432,12 @@ digraph states {
 	destroy_IN                                 -> destroy
 	destroy                                    -> destroy_OUT
 	destroy_OUT                                -> command_OUT
+	help_IN                                    -> help
+	help                                       -> help_OUT
+	help_OUT                                   -> command_OUT
+	version_IN                                 -> version
+	version                                    -> version_OUT
+	version_OUT                                -> command_OUT
 	bind                                       -> bind_IN
 	bind_IN                                    -> bind_configure
 	bind_IN                                    -> bind_set
@@ -433,6 +453,8 @@ digraph states {
 	bind_IN                                    -> bind_find
 	bind_IN                                    -> bind_touch
 	bind_IN                                    -> bind_destroy
+	bind_IN                                    -> bind_help
+	bind_IN                                    -> bind_version
 	bind_IN                                    -> bind_bind
 	bind_configure                             -> bind_configure_IN
 	bind_configure_IN                          -> bind_configure_OUT
@@ -575,8 +597,16 @@ digraph states {
 	bind_destroy_IN                            -> bind_destroy_OUT
 	bind_destroy_OUT                           -> bind_destroy_IN
 	bind_destroy_OUT                           -> bind_OUT
+	bind_help                                  -> bind_help_IN
+	bind_help_IN                               -> bind_help_OUT
+	bind_help_OUT                              -> bind_help_IN
+	bind_help_OUT                              -> bind_OUT
+	bind_version                               -> bind_version_IN
+	bind_version_IN                            -> bind_version_OUT
+	bind_version_OUT                           -> bind_version_IN
+	bind_version_OUT                           -> bind_OUT
 	bind_bind                                  -> bind_IN
-	bind_OUT                                   -> termination
+	bind_OUT                                   -> TERMINATION
 	flag_IN                                    -> flag_location
 	flag_IN                                    -> flag_editor
 	flag_IN                                    -> flag_completion

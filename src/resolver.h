@@ -13,7 +13,7 @@ Interprets the user's commands.
 #include "data.h"
 
 /**
-Tries to find which command corresponds to the given argument.
+Returns the command the given argument refers to if possible.
 Automatically completes the given argument if it's longer than the given limit or the given limit is zero.
 
 @param argument The argument.
@@ -23,7 +23,7 @@ Automatically completes the given argument if it's longer than the given limit o
 struct container resolve(const char* argument, size_t limit);
 
 /**
-Finds which commands are closest to the given argument.
+Returns the distances of all commands from the given argument.
 Automatically completes the given argument if it's longer than the given limit or the given limit is zero.
 
 @param argument The argument.

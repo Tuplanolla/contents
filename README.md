@@ -168,6 +168,12 @@ The command `touch` rebuilds the index file if it's mangled.
 
 The command `destroy` deletes the index file.
 
+#### General
+
+The command `help` prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
+
+The command `version` prints a short summary, including version information.
+
 #### Special Cases
 
 In addition to configuration keys and index entries, there are a handful of special cases.
@@ -179,10 +185,6 @@ Only `default` is a valid `(selection)`.
 
 The special value `%` is equivalent to an empty (essentially `NULL`) value and different from `""`.
 The string `%%` works as a literal `%` since `%` alone is reserved.
-
-The special flag `--help`, abbreviated as `-h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
-
-The special flag `--version`, abbreviated as `-v`, prints version information.
 
 The special command `bind (command) (arguments)` gives all the subsequent arguments to the next command, flags included.
 The two following commands are identical for example.

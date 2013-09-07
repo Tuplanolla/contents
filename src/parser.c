@@ -26,20 +26,19 @@ int parse(const char* const* arguments) {
 		case TYPE_ERROR:
 			fprintf(debug_stream, "Resolution failed!\n");
 			const struct holder guesses = approximate(*arguments, limit);
+			fprintf(debug_stream, "Did you mean %s, %s or %s?\n", guesses.guesses[0].instance->name,
+					guesses.guesses[1].instance->name,
+					guesses.guesses[2].instance->name); // dangerous
 			return -1; // resolution problem
 		case TYPE_END:
-			fprintf(debug_stream, "That's all.\n");
 			return 0; // done
 		case TYPE_COMMAND:
-			fprintf(debug_stream, "Instance: %s (%s)\n", container.instance.name, container.instance.abbreviation);
 			if (execute(container.instance, arguments + 1) == -1) {
-				fprintf(debug_stream, "Execution failed!\n");
 				return -1; // execution problem
 			}
 		case TYPE_FLAG:
 			break;
 		}
-		fprintf(debug_stream, "\n");
 		arguments += 1 + container.instance.arity;
 	}
 }

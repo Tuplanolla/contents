@@ -25,6 +25,8 @@ Indexing Commands: make (template)\n\
                    find (string)\n\
                    touch\n\
                    destroy\n\
+General Commands: help\n\
+                  version\n\
 Special Commands: bind (command) (arguments)\n\
 Configuration Keys: location (name)\n\
                     editor (path)\n\

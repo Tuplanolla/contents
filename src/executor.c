@@ -13,13 +13,13 @@
 int execute(const struct action resolution, const char* const* const arguments) {
 	FILE* const stream = stdout;
 
-	switch (resolution.thing.c) {
+	switch (resolution.command) {
 	case COMMAND_HELP:
 		return print_help(stream);
 	case COMMAND_VERSION:
 		return print_summary(stream);
-	case COMMAND_TEST:
-		return 0;
+	default:
+		return 0; // temporary
 	}
 	return -1;
 }

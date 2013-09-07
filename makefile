@@ -23,7 +23,7 @@ PKG = pkg
 DOX = dox
 NAME = indefinix
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/data.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/main.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c
+SOURCES = $(SRC)/calculator.c $(SRC)/data.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/main.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/$(NAME)
 
