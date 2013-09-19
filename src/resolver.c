@@ -11,22 +11,22 @@ Incomplete!
 #include <string.h> // strlen()
 #include <stdlib.h> // qsort(), malloc(), free()
 
-#include "data.h" // COMMAND_*, TYPE_*, commands, struct action, struct guess
-#include "calculator.h" // distance()
+#include "data.h" // COMMAND_*, RESOLUTION_*, actions, struct action, struct guess
+#include "calculator.h" // distance(), maximum()
 
-struct container resolve(const char* const argument, const size_t limit) {
-	struct container result;
+struct maybe resolve(const char* const argument, const size_t limit) {
+	struct maybe result;
 	if (argument == NULL) {
-		result.type = TYPE_END;
+		result.type = RESOLUTION_END;
 		return result;
 	}
-	result.type = TYPE_ERROR;
+	result.type = RESOLUTION_ERROR;
 	const struct action* matching_commands[COMMAND_COUNT];
 	size_t matching_command_count = COMMAND_COUNT;
 	for (size_t match = 0;
 			match < COMMAND_COUNT;
 			++match)
-		matching_commands[match] = &commands[match];
+		matching_commands[match] = &actions[match];
 	for (size_t character = 0, length = strlen(argument);
 			character < length;
 			++character) {
@@ -46,13 +46,13 @@ struct container resolve(const char* const argument, const size_t limit) {
 			}
 		}
 		if (matches == 0) {
-			result.type = TYPE_ERROR;
+			result.type = RESOLUTION_ERROR;
 			break;
 		} else if (matches == 1
 				&& ((limit == 0
 				&& character == length - 1)
 				|| character >= limit - 1)) {
-			result.type = TYPE_COMMAND;
+			result.type = RESOLUTION_COMMAND;
 			result.instance = *matching_commands[0];
 		}
 	}
@@ -71,7 +71,7 @@ static void destructive_truncate(char* const x, const size_t limit) {
 }
 
 static char* allocating_truncate(const char* const x, const size_t limit) {
-	char* const result = malloc(strlen(x) + 1);
+	char* const result = malloc(strlen(x) + 1); // TODO short circuit
 	size_t character;
 	for (character = 0;
 			character < limit;
@@ -84,23 +84,22 @@ static char* allocating_truncate(const char* const x, const size_t limit) {
 	return result;
 }
 
-struct holder correct(const char* const argument, size_t limit) { // TODO null
-	struct holder result = {
+struct proposal correct(const char* const argument, size_t limit) { // TODO null
+	struct proposal proposal = {
 		.count = COMMAND_COUNT
 	};
-	char* const truncated_argument = allocating_truncate(argument, limit); // TODO rethink limit
+	const size_t autocompletion = limit == 0 ? 1024 : limit; // TODO bad
+	const size_t argument_length = strlen(argument);
 	for (size_t command = 0;
-			command < result.count;
+			command < proposal.count;
 			++command) {
-		const char* const guess = commands[command].name;
-		char* const truncated_guess = allocating_truncate(guess, limit);
-//		result.guesses[command].distance = distance(truncated_argument, truncated_guess);
-		result.guesses[command].distance = distance(argument, guess);
-		result.guesses[command].instance = &commands[command];
+		const char* const guess = actions[command].name;
+		char* const truncated_guess = allocating_truncate(guess, maximum(autocompletion, argument_length));
+		proposal.guesses[command].distance = distance(argument, truncated_guess);
+		proposal.guesses[command].instance = &actions[command];
 		free(truncated_guess);
 	}
-	free(truncated_argument);
-	return result;
+	return proposal;
 }
 
 static int comparator(const void* const x, const void* const y) {
@@ -113,16 +112,16 @@ static int comparator(const void* const x, const void* const y) {
 	return 0;
 }
 
-struct holder filter(struct holder result, const size_t limit, const size_t distance) {
-	qsort(&result.guesses, result.count, sizeof result.guesses[0], comparator);
-	for (size_t now = 0;
-			now < result.count;
-			++now) {
-		if (now >= limit
-				|| result.guesses[now].distance > distance) {
-			result.count = now;
+struct proposal filter(struct proposal proposal, const size_t limit, const size_t distance) {
+	qsort(&proposal.guesses, proposal.count, sizeof proposal.guesses[0], comparator);
+	for (size_t guess = 0;
+			guess < proposal.count;
+			++guess) {
+		if (guess >= limit
+				|| proposal.guesses[guess].distance > distance) {
+			proposal.count = guess;
 			break;
 		}
 	}
-	return result;
+	return proposal;
 }

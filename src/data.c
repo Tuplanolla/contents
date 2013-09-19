@@ -5,7 +5,7 @@
 
 #include "data.h"
 
-const struct action commands[COMMAND_COUNT] = {
+const struct action actions[COMMAND_COUNT] = {
 	{
 		.name = "configure",
 		.arity = ARITY_NILADIC,
@@ -93,7 +93,7 @@ const struct action commands[COMMAND_COUNT] = {
 	}
 };
 
-const struct property properties[] = {
+const struct property properties[KEY_COUNT] = {
 	{
 		.name = "location",
 		.abbreviation = "l",

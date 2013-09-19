@@ -22,6 +22,15 @@ Returns the smallest given size.
 size_t minimum(size_t x, size_t y) __attribute__ ((const));
 
 /**
+Returns the biggest given size.
+
+@param x The first size.
+@param y The second size.
+@return The biggest size.
+**/
+size_t maximum(size_t x, size_t y) __attribute__ ((const));
+
+/**
 Returns the edit distance between two strings.
 
 @param x The first string.

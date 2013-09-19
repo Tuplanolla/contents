@@ -49,3 +49,23 @@ int print_help(FILE* const stream) {
 int print_summary(FILE* const stream) {
 	return fprintf(stream, "%s version %s for %s\n", project_name, project_version, project_target) <= 0;
 }
+
+int print_suggestions(FILE* stream, struct proposal proposal) {
+	fprintf(stream, "Did you mean");
+	for (size_t iterator = 0;
+			iterator < proposal.count;
+			++iterator) {
+		if (iterator != 0) {
+			if (iterator == proposal.count - 1)
+				fprintf(stream, " or ");
+			else
+				fprintf(stream, ", ");
+		} else
+			fprintf(stream, " ");
+		const struct guess guess = proposal.guesses[iterator];
+		fprintf(stream, "%s (%zu corrections away)", guess.instance->name, guess.distance);
+	}
+	fprintf(stream, "?\n");
+	return 0;
+}
+

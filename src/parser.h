@@ -1,6 +1,6 @@
 /**
 Incomplete!
-Separates and delegates the user's wishes.
+Separates and delegates the execution of the user's wishes.
 
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
@@ -10,10 +10,10 @@ Separates and delegates the user's wishes.
 #define PARSER_H
 
 /**
-Parses and manages the delegation of the given arguments.
+Parses the given arguments and delegates their execution.
 
 @param arguments The arguments.
-@return The number <code>0</code> if successful and <code>-1</code> otherwise.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
 **/
 int parse(const char* const* arguments);
 

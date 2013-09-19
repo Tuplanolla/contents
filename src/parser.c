@@ -7,54 +7,49 @@ Incomplete!
 
 #include "parser.h"
 
+#include <stdbool.h> // true
 #include <stdio.h> // FILE, stdout, fprintf()
 
-#include "data.h" // struct action, struct container, struct holder
+#include "data.h" // struct action, struct maybe, struct proposal
 #include "resolver.h" // resolve(), correct(), organize()
 #include "executor.h" // execute()
 #include "calculator.h" // minimum()
+#include "state.h" // target_stream
+#include "helper.h" // print_suggestions(), print_help()
+#include "logger.h" // track()
 
-int parse(const char* const* arguments) {
-	FILE* const debug_stream = stderr;
-	const size_t limit = 4,
-			score = 5,
-			suggerations = 3;
+int parse(const char* const* const arguments) {
+	const size_t autocompletion = 3, suggestions = 3, score = 5; // TODO remove
 
-	for (size_t position = 0;
-			;
-			++position) {
-		fprintf(debug_stream, "Resolving %s.\n", *arguments);
-		const struct container container = resolve(*arguments, limit);
+	for (size_t position = 0, number = 0;
+			true;
+			++position, ++number) {
+		const char* const argument = arguments[position];
+		track("Resolving the argument at the position %zu as the command number %zu.\n", position + 1, number + 1);
+		const struct maybe container = resolve(argument, autocompletion);
 		switch (container.type) {
-		case TYPE_ERROR:
-			fprintf(debug_stream, "Resolution failed!\n");
-			const struct holder unsorted_guesses = correct(*arguments, limit);
-			const struct holder guesses = filter(unsorted_guesses, suggerations, score);
-			fprintf(debug_stream, "Did you mean");
-			for (size_t iterator = 0;
-					iterator < guesses.count;
-					++iterator) {
-				if (iterator != 0) {
-					if (iterator == guesses.count - 1)
-						fprintf(debug_stream, " or ");
-					else
-						fprintf(debug_stream, ", ");
-				} else
-					fprintf(debug_stream, " ");
-				fprintf(debug_stream, "%s (distance %zu)", guesses.guesses[iterator].instance->name, guesses.guesses[iterator].distance);
+		case RESOLUTION_ERROR:
+			track("Resolved the argument \"%s\" to nothing.\n", argument);
+			const struct proposal unsorted_guesses = correct(argument, autocompletion);
+			const struct proposal guesses = filter(unsorted_guesses, suggestions, score);
+			print_suggestions(target_stream, guesses);
+			return -1;
+		case RESOLUTION_END:
+			track("Resolved the end of arguments.\n");
+			if (number == 0)
+				print_help(target_stream);
+			return 0;
+		case RESOLUTION_COMMAND:
+			track("Resolved the argument \"%s\" to the command \"%s\".\n", argument, container.instance.name);
+			if (execute(container.instance, &arguments[position + 1]) == -1) { // TODO delay execution
+				track("Couldn't execute the command \"%s\".\n", container.instance.name);
+				return -1;
 			}
-			fprintf(debug_stream, "?\n");
-			return -1; // resolution problem
-		case TYPE_END:
-			return 0; // done
-		case TYPE_COMMAND:
-			if (execute(container.instance, arguments + 1) == -1) {
-				fprintf(debug_stream, "Failed!\n");
-				return -1; // execution problem
-			}
-		case TYPE_FLAG:
+		case RESOLUTION_FLAG:
 			break;
 		}
-		arguments += container.instance.arity + 1; // TODO handle variadic etc
+		position += container.instance.arity; // TODO handle variadic commands and premature sentinels etc
 	}
+	track("Reached a supposedly impossible condition.\n");
+	return -1;
 }

@@ -7,7 +7,7 @@ Incomplete!
 
 #include "project.h"
 
-#include "target.h" // TARGET_*
+#include "target.h" // TARGET_LINUX, TARGET_WINDOWS
 
 const char* const project_name = "Indefinix";
 

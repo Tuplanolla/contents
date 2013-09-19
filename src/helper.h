@@ -10,6 +10,8 @@ Prints information for the user.
 
 #include <stdio.h> // FILE
 
+#include "data.h" // struct proposal
+
 /**
 Prints a short usage reference to the given stream.
 
@@ -25,5 +27,14 @@ Prints a short project summary to the given stream.
 @return The number <code>0</code> if successful and <code>-1</code> otherwise.
 **/
 int print_summary(FILE* stream);
+
+/**
+Prints a list of argument correction guesses to the given stream.
+
+@param stream The stream.
+@param proposal The guesses.
+@return The number <code>0</code> if successful and <code>-1</code> otherwise.
+**/
+int print_suggestions(FILE* stream, struct proposal proposal);
 
 #endif

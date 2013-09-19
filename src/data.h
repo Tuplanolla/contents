@@ -11,19 +11,19 @@ Provides common data structures for the user.
 #include <stddef.h> // size_t
 
 /**
-Some types.
+The results of argument resolution.
 **/
-enum type {
-	TYPE_ERROR,
-	TYPE_END,
-	TYPE_COMMAND,
-	TYPE_FLAG,
+enum resolution {
+	RESOLUTION_ERROR,
+	RESOLUTION_END,
+	RESOLUTION_COMMAND,
+	RESOLUTION_FLAG,
 
-	TYPE_COUNT
+	RESOLUTION_COUNT
 };
 
 /**
-Some amounts of arguments.
+The amounts of arguments actions and properties consume.
 **/
 enum arity {
 	ARITY_NILADIC,
@@ -43,7 +43,7 @@ enum arity {
 };
 
 /**
-Some actions.
+The commands.
 **/
 enum command {
 	COMMAND_CONFIGURE,
@@ -68,7 +68,7 @@ enum command {
 };
 
 /**
-Some keys.
+The configuration keys.
 **/
 enum key {
 	KEY_LOCATION,
@@ -89,7 +89,7 @@ enum key {
 };
 
 /**
-Something.
+An action, which is essentially a name bound to a command and its parameters.
 **/
 struct action {
 	const char* name;
@@ -98,15 +98,15 @@ struct action {
 };
 
 /**
-Something.
+The result of resolving an argument, which can be an error.
 **/
-struct container {
-	enum type type;
+struct maybe {
+	enum resolution type;
 	struct action instance;
 };
 
 /**
-Something.
+A property, which is essentially a name bound to a key and its values.
 **/
 struct property {
 	const char* name;
@@ -116,7 +116,7 @@ struct property {
 };
 
 /**
-Something.
+The result of correcting an argument, if resolution failed.
 **/
 struct guess {
 	size_t distance;
@@ -124,16 +124,21 @@ struct guess {
 };
 
 /**
-Something.
+A list of argument corrections.
 **/
-struct holder {
+struct proposal {
 	size_t count;
 	struct guess guesses[COMMAND_COUNT];
 };
 
 /**
-The commands.
+The actions.
 **/
-extern const struct action commands[COMMAND_COUNT];
+extern const struct action actions[COMMAND_COUNT];
+
+/**
+The properties.
+**/
+extern const struct property properties[KEY_COUNT];
 
 #endif

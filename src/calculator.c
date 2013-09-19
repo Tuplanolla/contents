@@ -15,9 +15,14 @@ size_t minimum(const size_t x, const size_t y) {
 	return y;
 }
 
+size_t maximum(const size_t x, const size_t y) {
+	if (x > y)
+		return x;
+	return y;
+}
+
 size_t distance(const char* const x, const char* const y) {
-	const size_t x_length = strlen(x),
-			y_length = strlen(y);
+	const size_t x_length = strlen(x), y_length = strlen(y);
 #define AT(x, y) ((x) * y_length + (y))
 	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
 	for (size_t character = 0;
