@@ -7,49 +7,53 @@ Incomplete!
 
 #include "parser.h"
 
-#include <stdbool.h> // true
+#include <stddef.h> // size_t
+#include <stdlib.h> // malloc(), free()
 #include <stdio.h> // FILE, stdout, fprintf()
 
-#include "data.h" // struct action, struct maybe, struct proposal
-#include "resolver.h" // resolve(), correct(), organize()
-#include "executor.h" // execute()
-#include "calculator.h" // minimum()
-#include "state.h" // target_stream
+#include "state.h" // struct state, hold()
+#include "data.h" // struct maybe, struct action, struct proposal
+#include "resolver.h" // resolve(), correct(), filter()
 #include "helper.h" // print_suggestions(), print_help()
-#include "logger.h" // track()
 
-int parse(const char* const* const arguments) {
-	const size_t autocompletion = 3, suggestions = 3, score = 5; // TODO remove
-
-	for (size_t position = 0, number = 0;
-			true;
-			++position, ++number) {
-		const char* const argument = arguments[position];
-		track("Resolving the argument at the position %zu as the command number %zu.\n", position + 1, number + 1);
-		const struct maybe container = resolve(argument, autocompletion);
-		switch (container.type) {
-		case RESOLUTION_ERROR:
-			track("Resolved the argument \"%s\" to nothing.\n", argument);
-			const struct proposal unsorted_guesses = correct(argument, autocompletion);
-			const struct proposal guesses = filter(unsorted_guesses, suggestions, score);
-			print_suggestions(target_stream, guesses);
+int parse(struct state* const state) {
+	if (state == NULL)
+		return -1;
+	for (size_t position = 0;
+			;
+			++position) {
+		const char* const argument = state->arguments[position];
+		struct maybe* const maybe = resolve(state->actions, argument, state->automatic_completion_length);
+		if (maybe == NULL)
 			return -1;
-		case RESOLUTION_END:
-			track("Resolved the end of arguments.\n");
-			if (number == 0)
-				print_help(target_stream);
-			return 0;
-		case RESOLUTION_COMMAND:
-			track("Resolved the argument \"%s\" to the command \"%s\".\n", argument, container.instance.name);
-			if (execute(container.instance, &arguments[position + 1]) == -1) { // TODO delay execution
-				track("Couldn't execute the command \"%s\".\n", container.instance.name);
-				return -1;
-			}
-		case RESOLUTION_FLAG:
-			break;
+		int result = 0;
+		switch (maybe->type) {
+		case RESOLUTION_ERROR: {
+			struct proposal* const proposal = correct(state->actions, argument, state->automatic_completion_length);
+			struct proposal* const filtered_proposal = filter(proposal, state->suggestion_count, state->maximum_suggestion_distance);
+			free(proposal);
+			print_suggestions(state->target_stream, filtered_proposal);
+			free(filtered_proposal);
+			result = -1;
+			goto done;
 		}
-		position += container.instance.arity; // TODO handle variadic commands and premature sentinels etc
+		case RESOLUTION_END:
+			if (position == 0)
+				print_help(state->target_stream);
+			result = 0;
+			goto done;
+		case RESOLUTION_COMMAND:
+			if (hold(state, maybe) == -1) {
+				result = -1;
+				goto done;
+			}
+		}
+		position += maybe->instance->arity; // TODO handle variadic commands and premature sentinels etc
+		free(maybe);
+		continue;
+	done:
+		free(maybe);
+		return result;
 	}
-	track("Reached a supposedly impossible condition.\n");
-	return -1;
+	return -1; // impossible
 }

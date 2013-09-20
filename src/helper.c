@@ -6,6 +6,7 @@
 #include "helper.h"
 
 #include <stdio.h> // FILE, fprintf()
+#include <stddef.h> // NULL
 
 #include "project.h" // project_name, project_version, project_target
 
@@ -43,29 +44,36 @@ Configuration Keys: location (name)\n\
 Special Configuration Keys: preset (selection)";
 
 int print_help(FILE* const stream) {
-	return fprintf(stream, "%s\n", usage) <= 0;
+	if (stream == NULL)
+		return -1;
+	return -(fprintf(stream, "%s\n", usage) <= 0);
 }
 
 int print_summary(FILE* const stream) {
-	return fprintf(stream, "%s version %s for %s\n", project_name, project_version, project_target) <= 0;
+	if (stream == NULL)
+		return -1;
+	return -(fprintf(stream, "%s version %s for %s\n", project_name, project_version, project_target) <= 0);
 }
 
-int print_suggestions(FILE* stream, struct proposal proposal) {
-	fprintf(stream, "Did you mean");
-	for (size_t iterator = 0;
-			iterator < proposal.count;
-			++iterator) {
-		if (iterator != 0) {
-			if (iterator == proposal.count - 1)
-				fprintf(stream, " or ");
-			else
-				fprintf(stream, ", ");
-		} else
-			fprintf(stream, " ");
-		const struct guess guess = proposal.guesses[iterator];
-		fprintf(stream, "%s (%zu corrections away)", guess.instance->name, guess.distance);
+int print_suggestions(FILE* const stream, const struct proposal* const proposal) {
+	const size_t count = proposal->count;
+	if (stream == NULL || count == 0)
+		return -1;
+	int result = 0;
+	result |= fprintf(stream, "Did you mean") <= 0;
+	const size_t last = count - 1;
+	for (size_t current = 0;
+			current < count;
+			++current) {
+		if (current == 0)
+			result |= fprintf(stream, " ");
+		else if (current < last)
+			result |= fprintf(stream, ", ");
+		else
+			result |= fprintf(stream, " or ");
+		const struct suggestion* const guess = &proposal->guesses[current];
+		result |= fprintf(stream, "%s", guess->instance->name);
 	}
-	fprintf(stream, "?\n");
-	return 0;
+	result |= fprintf(stream, "?\n");
+	return -(result != 0);
 }
-

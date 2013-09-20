@@ -14,6 +14,7 @@ Carries out the user's requests.
 /**
 Does something.
 **/
-int execute(struct action resolution, const char* const* arguments);
+int execute(struct state* state)
+		__attribute__ ((nonnull));
 
 #endif

@@ -5,6 +5,8 @@
 
 #include "data.h"
 
+#include "state.h" // struct action, struct property
+
 const struct action actions[COMMAND_COUNT] = {
 	{
 		.name = "configure",

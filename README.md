@@ -14,6 +14,8 @@ Finding out what certain files or directories are for requires looking inside th
 Sometimes even that's not sufficient.
 Using an index solves that problem.
 
+Writing a perfect nontrivial C program, where every character has its place, is also intriguing.
+
 ## Installation
 
 Indefinix is written in C and thus works on "any" system.
