@@ -12,21 +12,15 @@ Keeps the state away from the user.
 #include <stdbool.h> // bool
 #include <stdio.h> // FILE
 
-/**
-The results of argument resolution.
-**/
-enum resolution {
-	RESOLUTION_ERROR,
-	RESOLUTION_END,
-	RESOLUTION_COMMAND,
-	RESOLUTION_FLAG,
+enum type {
+	TYPE_ERROR,
+	TYPE_END,
+	TYPE_COMMAND,
+	TYPE_FLAG,
 
-	RESOLUTION_COUNT
+	TYPE_COUNT
 };
 
-/**
-The amounts of arguments actions and properties consume.
-**/
 enum arity {
 	ARITY_NILADIC,
 	ARITY_MONADIC,
@@ -44,9 +38,6 @@ enum arity {
 	ARITY_COUNT
 };
 
-/**
-The commands.
-**/
 enum command {
 	COMMAND_CONFIGURE,
 	COMMAND_SET,
@@ -70,9 +61,6 @@ enum command {
 	COMMAND_COUNT
 };
 
-/**
-The configuration keys.
-**/
 enum key {
 	KEY_LOCATION,
 	KEY_EDITOR,
@@ -91,26 +79,17 @@ enum key {
 	KEY_COUNT
 };
 
-/**
-An action, which is essentially a name bound to a command and its parameters.
-**/
 struct action {
 	const char* name;
 	enum arity arity;
 	enum command command;
 };
 
-/**
-The result of resolving an argument, which can be an error.
-**/
-struct maybe {
-	enum resolution type;
-	const struct action* instance;
+struct actions {
+	size_t count;
+	const struct action* actions;
 };
 
-/**
-A property, which is essentially a name bound to a key and its values.
-**/
 struct property {
 	const char* name;
 	const char* abbreviation;
@@ -118,33 +97,26 @@ struct property {
 	enum key key;
 };
 
-/**
-The result of correcting an argument, if resolution failed.
-**/
+struct resolution {
+	enum type type;
+	const struct action* action;
+};
+
 struct suggestion {
 	size_t distance;
-	const struct action* instance;
+	const struct action* action;
 };
 
-/**
-A list of argument corrections.
-**/
 struct proposal {
 	size_t count;
-	struct suggestion* guesses;
+	struct suggestion* suggestions;
 };
 
-/**
-An executable.
-**/
 struct executable {
 	struct executable* next;
-	struct maybe* maybe;
+	struct resolution* maybe;
 };
 
-/**
-A mutable state.
-**/
 struct state {
 	const struct action* actions;
 	const struct property* properties;
@@ -163,16 +135,16 @@ struct state {
 /**
 Destroys a state.
 
-Frees memory.
-
 @param state The state.
 **/
-void destroy_state(struct state* state);
+int destroy_state(struct state* state);
 
 /**
 Creates a new state.
 
-Allocates memory.
+Leaks memory if
+ the return value isn't <code>NULL</code> and
+ isn't given to <code>destroy_state()</code>.
 
 Fails if <code>malloc()</code> fails.
 
@@ -194,7 +166,7 @@ Fails if
 @return The number <code>0</code> if successful or
  <code>-1</code> otherwise.
 **/
-int hold(struct state* const state, struct maybe* const maybe)
+int hold(struct state* const state, struct resolution* const maybe)
 		__attribute__ ((nonnull));
 
 /**
@@ -209,7 +181,7 @@ Fails if
 @return The executable if successful or
  <code>NULL</code> otherwise.
 **/
-const struct maybe* release(struct state* const state)
+const struct resolution* release(struct state* const state)
 		__attribute__ ((nonnull));
 
 #endif

@@ -12,13 +12,17 @@
 
 #include "data.h" // actions, properties
 
-void destroy_state(struct state* state) {
+int destroy_state(struct state* state) {
 	free(state);
+	return 0;
 }
 
 struct state* create_state(void) {
 	struct state* const state = malloc(sizeof *state);
-	state->actions = &actions[0];
+	struct actions* const factions = malloc(sizeof *actions);
+	factions->count = COMMAND_COUNT;
+	factions->actions = actions;
+	state->actions = factions;
 	state->properties = &properties[0];
 	state->automatic_completion_length = 0;
 	state->suggestion_count = 3;
@@ -32,7 +36,7 @@ struct state* create_state(void) {
 	return state;
 }
 
-int hold(struct state* const state, struct maybe* const maybe) {
+int hold(struct state* const state, struct resolution* const maybe) {
 	if (state == NULL || maybe == NULL)
 		return -1;
 	struct executable* const last = malloc(sizeof *last);
@@ -48,13 +52,13 @@ int hold(struct state* const state, struct maybe* const maybe) {
 	return 0;
 }
 
-const struct maybe* release(struct state* const state) {
+const struct resolution* release(struct state* const state) {
 	if (state == NULL)
 		return NULL;
 	struct executable* const first = state->first_executable;
 	if (first == NULL)
 		return NULL;
-	const struct maybe* const maybe = first->maybe;
+	const struct resolution* const maybe = first->maybe;
 	free(first);
 	struct executable* const second = state->first_executable->next;
 	if (second == NULL)

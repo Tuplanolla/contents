@@ -71,8 +71,8 @@ int print_suggestions(FILE* const stream, const struct proposal* const proposal)
 			result |= fprintf(stream, ", ");
 		else
 			result |= fprintf(stream, " or ");
-		const struct suggestion* const guess = &proposal->guesses[current];
-		result |= fprintf(stream, "%s", guess->instance->name);
+		const struct suggestion* const guess = &proposal->suggestions[current];
+		result |= fprintf(stream, "%s", guess->action->name);
 	}
 	result |= fprintf(stream, "?\n");
 	return -(result != 0);

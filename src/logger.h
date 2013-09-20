@@ -11,6 +11,12 @@ Keeps track of the user.
 #include <stdio.h> // FILE
 #include <stdarg.h> // va_list
 
+#ifdef DEBUG
+#define LOG printf
+#else
+#define LOG (void )
+#endif
+
 /**
 Logs the given message like <code>vfprintf()</code>.
 

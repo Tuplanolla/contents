@@ -11,8 +11,10 @@ Interprets the user's commands.
 
 #include <stddef.h> // size_t
 
-#include "state.h" // struct action, struct maybe, struct proposal
+#include "state.h" // struct action, struct resolution, struct proposal
 #include "gnu.h" // __attribute__
+
+int destroy_resolution(struct resolution* resolution);
 
 /**
 Finds which of the given actions the given argument refers to.
@@ -20,19 +22,19 @@ Automatically completes the given argument if
  it's longer than the given limit or
  the given limit is zero.
 
-Allocates memory.
+Leaks memory if
+ the return value isn't <code>NULL</code> and
+ isn't given to <code>destroy_state()</code>.
 
-Fails if
- the actions are <code>NULL</code> or
- <code>malloc()</code> fails.
+Fails if <code>malloc()</code> fails.
 
 @param actions The actions.
 @param argument The argument.
 @param limit The automatic completion limit.
 @return A resolution, which may contain the action.
 **/
-struct maybe* resolve(const struct action* actions, const char* argument, size_t limit)
-		__attribute__ ((nonnull (1, 2)));
+struct resolution* create_resolution(const struct actions* actions, const char* argument, size_t limit)
+		__attribute__ ((nonnull (1)));
 
 /**
 Finds the edit distances of the given actions from the given argument.
@@ -46,7 +48,7 @@ Fails if .
 
 @param argument The argument.
 @param limit The automatic completion limit.
-@return The guesses in a container.
+@return The suggestions in a container.
 **/
 struct proposal* correct(const struct action* actions, const char* argument, size_t limit)
 		__attribute__ ((nonnull (1, 2)));
@@ -62,7 +64,7 @@ Fails if .
 @param fail The failure.
 @param limit The amount.
 @param distance The distance.
-@return The guesses in a container.
+@return The suggestions in a container.
 **/
 struct proposal* filter(const struct proposal* proposal, size_t limit, size_t distance)
 		__attribute__ ((nonnull (1)));

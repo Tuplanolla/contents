@@ -8,60 +8,62 @@ Incomplete!
 #include "resolver.h"
 
 #include <stddef.h> // size_t, NULL
-#include <string.h> // strlen(), memcpy()
+#include <string.h> // strlen(), memcpy(), memmove()
 #include <stdlib.h> // qsort(), malloc(), free()
 
-#include "state.h" // COMMAND_*, RESOLUTION_*, struct action, struct suggestion
+#include "state.h" // COMMAND_*, TYPE_*, struct action, struct suggestion
 #include "calculator.h" // distance(), minimum(), maximum()
 
-struct maybe* resolve(const struct action* const actions, const char* const argument, const size_t limit) {
-	if (actions == NULL)
+int destroy_resolution(struct resolution* const resolution) {
+	free(resolution);
+	return 0;
+}
+
+struct resolution* create_resolution(const struct actions* const actions, const char* const argument, const size_t limit) {
+	struct resolution* const resolution = malloc(sizeof *resolution);
+	if (resolution == NULL)
 		return NULL;
-	struct maybe* const maybe = malloc(sizeof *maybe);
-	if (maybe == NULL)
-		return NULL;
+	resolution->action = NULL;
 	if (argument == NULL) {
-		maybe->type = RESOLUTION_END;
-		return maybe;
+		resolution->type = TYPE_END;
+		return resolution;
 	}
-	maybe->type = RESOLUTION_ERROR;
-	const struct action** const matching_actions = malloc(COMMAND_COUNT * sizeof *matching_actions);
-	size_t matching_action_count = COMMAND_COUNT;
-	for (size_t match = 0;
-			match < COMMAND_COUNT;
-			++match)
-		matching_actions[match] = &actions[match];
-	for (size_t character = 0, length = strlen(argument);
-			character < length;
+	const struct action** const candidates = malloc(actions->count * sizeof *candidates);
+	if (candidates == NULL) {
+		free(resolution);
+		return NULL;
+	}
+	for (size_t action = 0;
+			action < actions->count;
+			++action)
+		candidates[action] = &actions->actions[action];
+	resolution->type = TYPE_ERROR;
+	const size_t argument_length = strlen(argument);
+	for (size_t character = 0, candidate_count = actions->count;
+			character < argument_length;
 			++character) {
-		size_t matches = 0;
-		for (size_t potential_match = 0;
-				potential_match < matching_action_count;
+		for (size_t candidate = 0;
+				candidate < candidate_count;
 				) {
-			if (matching_actions[potential_match]->name[character] == argument[character]) {
-				++matches;
-				++potential_match;
+			if (candidates[candidate]->name[character] == argument[character]) {
+				++candidate;
 			} else {
-				--matching_action_count;
-				for (size_t match = potential_match;
-						match < matching_action_count;
-						++match)
-					matching_actions[match] = matching_actions[match + 1];
+				--candidate_count;
+				memmove(&candidates[candidate], &candidates[candidate + 1], (candidate_count - candidate) * sizeof *candidates);
 			}
 		}
-		if (matches == 0) {
-			maybe->type = RESOLUTION_ERROR;
+		if (candidate_count == 0) {
+			resolution->type = TYPE_ERROR;
 			break;
-		} else if (matches == 1
-				&& ((limit == 0
-				&& character == length - 1)
-				|| character >= limit - 1)) {
-			maybe->type = RESOLUTION_COMMAND;
-			maybe->instance = matching_actions[0];
+		} else if (candidate_count == 1
+				&& ((limit == 0 && character == argument_length - 1)
+				|| (limit != 0 && character >= limit - 1))) {
+			resolution->type = TYPE_COMMAND;
+			resolution->action = candidates[0];
 		}
 	}
-	free(matching_actions);
-	return maybe;
+	free(candidates);
+	return resolution;
 }
 
 static char* truncate(const char* const str, const size_t limit) {
@@ -88,11 +90,11 @@ struct proposal* correct(const struct action* actions, const char* const argumen
 		const char* const suggestion = actions[action].name;
 		if (limit != 0) {
 			char* const truncated_guess = truncate(suggestion, truncation_length);
-			proposal->guesses[action].distance = distance(argument, truncated_guess);
+			proposal->suggestions[action].distance = distance(argument, truncated_guess);
 			free(truncated_guess);
 		} else
-			proposal->guesses[action].distance = distance(argument, suggestion);
-		proposal->guesses[action].instance = &actions[action];
+			proposal->suggestions[action].distance = distance(argument, suggestion);
+		proposal->suggestions[action].action = &actions[action];
 	}
 	return proposal;
 }
@@ -109,12 +111,12 @@ static int comparator(const void* const x, const void* const y) {
 
 struct proposal* filter(const struct proposal* const proposal, const size_t limit, const size_t distance) {
 	const size_t count = proposal->count;
-	const size_t size = count * sizeof *proposal->guesses;
+	const size_t size = count * sizeof *proposal->suggestions;
 	struct suggestion* const suggestions = malloc(size);
-	memcpy(suggestions, proposal->guesses, size);
+	memcpy(suggestions, proposal->suggestions, size);
 	qsort(suggestions, count, sizeof *suggestions, comparator);
 	struct proposal* const result = malloc(sizeof *result);
-	result->guesses = suggestions;
+	result->suggestions = suggestions;
 	for (size_t suggestion = 0;
 			suggestion < count;
 			++suggestion) {

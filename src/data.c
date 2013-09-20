@@ -7,7 +7,7 @@
 
 #include "state.h" // struct action, struct property
 
-const struct action actions[COMMAND_COUNT] = {
+const struct action actions[] = {
 	{
 		.name = "configure",
 		.arity = ARITY_NILADIC,
@@ -92,6 +92,12 @@ const struct action actions[COMMAND_COUNT] = {
 		.name = "bind",
 		.arity = ARITY_VARIADIC,
 		.command = COMMAND_BIND
+	},
+	{
+		.name = "suggest",
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_SUGGEST,
+		//.internal = true
 	}
 };
 

@@ -13,7 +13,7 @@ Provides immutable data for the user.
 /**
 The actions.
 **/
-extern const struct action actions[COMMAND_COUNT];
+extern const struct action actions[];
 
 /**
 The properties.

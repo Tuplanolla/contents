@@ -29,16 +29,13 @@ int main(const int count __attribute__ ((unused)),
 	if (state == NULL)
 		return 1;
 	state->arguments = arguments + 1;
-	int result = 0;
 	if (parse(state) == -1) {
-		result = 2;
-		goto end;
+		destroy_state(state);
+		return 2;
 	}
 	if (execute(state) == -1) {
-		result = 3;
-		goto end;
+		destroy_state(state);
+		return 3;
 	}
-end:
-	destroy_state(state);
-	return result;
+	return 0;
 }
