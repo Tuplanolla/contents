@@ -7,6 +7,7 @@ RELEASE = -s\
 		-O3\
 		-Wall -Wextra
 FLAGS = -std=c11\
+		-I .\
 		$(DEBUG)\
 #		-lm -lconfig -letc
 CC = /usr/bin/gcc $(FLAGS)
@@ -18,23 +19,34 @@ DOXYGEN = /usr/bin/doxygen
 PRIMARY = /usr/local/bin
 SECONDARY = /usr/bin
 SRC = src
+TST = tst
 OBJ = obj
 BIN = bin
 PKG = pkg
 DOX = dox
 NAME = indefinix
+MAIN_SOURCES = $(SRC)/main.c
+TEST_SOURCES = $(TST)/cheat.c
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/calculator.c $(SRC)/data.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/logger.c $(SRC)/main.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c $(SRC)/state.c
+SOURCES = $(SRC)/calculator.c $(SRC)/data.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/logger.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c $(SRC)/state.c
+MAIN_OBJECTS = $(MAIN_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
+TEST_OBJECTS = $(TEST_SOURCES:$(TST)/%.c=$(OBJ)/%.o)
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/$(NAME)
+SUITE = $(BIN)/test-$(NAME)
 
 all: build
 
 run: build
 	$(BINARY) $(ARGUMENTS)
 
+harness: build $(SUITE)
+
+test: build harness
+	$(SUITE) $(ARGUMENTS)
+
 package: build
-	$(TAR) -f $(PKG)/$(NAME).tar.gz -C .. $(NAME)/$(BIN)/$(NAME)
+	$(TAR) -f $(PKG)/$(NAME).tar.gz -C .. $(NAME)/$(BINARY)
 
 document: $(SOURCES)
 	$(DOXYGEN)
@@ -44,6 +56,9 @@ install: build
 
 uninstall:
 	$(RM) $(PRIMARY)/$(BINARY) && $(RM) $(SECONDARY)/$(NAME)
+
+wipe:
+	$(RM) $(HOME)/.$(NAME)
 
 build: $(SOURCES) prepare $(BINARY)
 
@@ -59,10 +74,16 @@ clean:
 	$(RM) -r $(PKG)
 	$(RM) -r $(DOX)
 
-$(BINARY): $(OBJECTS)
+$(BINARY): $(MAIN_OBJECTS) $(OBJECTS)
+	$(CC) -o $@ $^
+
+$(SUITE): $(TEST_OBJECTS) $(OBJECTS)
 	$(CC) -o $@ $^
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -c -o $@ $<
 
-.PHONY: all run package document install uninstall build prepare clean
+$(OBJ)/%.o: $(TST)/%.c
+	$(CC) -c -o $@ $<
+
+.PHONY: all run harness test package document install uninstall wipe build prepare clean
