@@ -24,10 +24,6 @@ struct resolution* create_resolution(const struct actions* const actions, const 
 	if (resolution == NULL)
 		return NULL;
 	resolution->action = NULL;
-	if (argument == NULL) {
-		resolution->type = TYPE_END;
-		return resolution;
-	}
 	const struct action** const candidates = malloc(actions->count * sizeof *candidates);
 	if (candidates == NULL) {
 		free(resolution);
@@ -66,15 +62,20 @@ struct resolution* create_resolution(const struct actions* const actions, const 
 	return resolution;
 }
 
-static char* truncate(const char* const str, const size_t limit) {
-	const size_t length = minimum(limit, strlen(str));
+static int destroy_truncation(char* const string) {
+	free(string);
+	return 0;
+}
+
+static char* create_truncation(const char* const string, const size_t limit) {
+	const size_t length = minimum(limit, strlen(string));
 	char* const result = malloc(length + 1);
-	memcpy(result, str, length);
+	memcpy(result, string, length);
 	result[length] = '\0';
 	return result;
 }
 
-struct proposal* correct(const struct action* actions, const char* const argument, const size_t limit) {
+struct proposal* correct(const struct actions* actions, const char* const argument, const size_t limit) {
 	if (argument == NULL)
 		return NULL;
 	struct proposal* const proposal = malloc(sizeof *proposal);
@@ -87,14 +88,14 @@ struct proposal* correct(const struct action* actions, const char* const argumen
 	for (size_t action = 0;
 			action < proposal->count;
 			++action) {
-		const char* const suggestion = actions[action].name;
+		const char* const suggestion = actions->actions[action].name;
 		if (limit != 0) {
-			char* const truncated_guess = truncate(suggestion, truncation_length);
+			char* const truncated_guess = create_truncation(suggestion, truncation_length);
 			proposal->suggestions[action].distance = distance(argument, truncated_guess);
-			free(truncated_guess);
+			destroy_truncation(truncated_guess);
 		} else
 			proposal->suggestions[action].distance = distance(argument, suggestion);
-		proposal->suggestions[action].action = &actions[action];
+		proposal->suggestions[action].action = &actions->actions[action];
 	}
 	return proposal;
 }

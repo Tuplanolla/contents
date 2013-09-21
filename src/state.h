@@ -97,6 +97,11 @@ struct property {
 	enum key key;
 };
 
+struct invocation {
+	const struct action* command;
+	const char* const* arguments;
+};
+
 struct resolution {
 	enum type type;
 	const struct action* action;
@@ -137,7 +142,8 @@ Destroys a state.
 
 @param state The state.
 **/
-int destroy_state(struct state* state);
+int
+destroy_state(struct state* state);
 
 /**
 Creates a new state.
@@ -151,7 +157,24 @@ Fails if <code>malloc()</code> fails.
 @return The new state if successful or
  <code>NULL</code> otherwise.
 **/
-struct state* create_state(void);
+struct state*
+create_state(void);
+
+/**
+Removes the first executable from the schedule of the given state.
+
+Frees memory.
+
+Fails if
+ the state is <code>NULL</code>,
+ the schedule is empty.
+
+@return The executable if successful or
+ <code>NULL</code> otherwise.
+**/
+const struct invocation*
+release(struct state* const state)
+		__attribute__ ((nonnull));
 
 /**
 Adds the given executable to the end of the schedule of the given state.
@@ -166,22 +189,8 @@ Fails if
 @return The number <code>0</code> if successful or
  <code>-1</code> otherwise.
 **/
-int hold(struct state* const state, struct resolution* const maybe)
-		__attribute__ ((nonnull));
-
-/**
-Removes the first executable from the schedule of the given state.
-
-Frees memory.
-
-Fails if
- the state is <code>NULL</code>,
- the schedule is empty.
-
-@return The executable if successful or
- <code>NULL</code> otherwise.
-**/
-const struct resolution* release(struct state* const state)
+int
+hold(struct state* state, const struct invocation* command)
 		__attribute__ ((nonnull));
 
 #endif

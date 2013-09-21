@@ -5,7 +5,7 @@
 
 #include "calculator.h"
 
-#include <stddef.h> // size_t
+#include <stddef.h> // size_t, NULL
 #include <string.h> // strlen()
 #include <stdlib.h> // malloc(), free()
 
@@ -22,9 +22,12 @@ size_t maximum(const size_t x, const size_t y) {
 }
 
 size_t distance(const char* const x, const char* const y) {
-	const size_t x_length = strlen(x), y_length = strlen(y);
+	const size_t x_length = strlen(x);
+	const size_t y_length = strlen(y);
 #define AT(x, y) ((x) * y_length + (y))
 	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
+	if (distances == NULL)
+		return -1; // SIZE_MAX
 	for (size_t character = 0;
 			character <= x_length;
 			++character)

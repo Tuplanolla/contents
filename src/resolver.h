@@ -14,7 +14,8 @@ Interprets the user's commands.
 #include "state.h" // struct action, struct resolution, struct proposal
 #include "gnu.h" // __attribute__
 
-int destroy_resolution(struct resolution* resolution);
+int
+destroy_resolution(struct resolution* resolution);
 
 /**
 Finds which of the given actions the given argument refers to.
@@ -33,8 +34,9 @@ Fails if <code>malloc()</code> fails.
 @param limit The automatic completion limit.
 @return A resolution, which may contain the action.
 **/
-struct resolution* create_resolution(const struct actions* actions, const char* argument, size_t limit)
-		__attribute__ ((nonnull (1)));
+struct resolution*
+create_resolution(const struct actions* actions, const char* argument, size_t limit)
+		__attribute__ ((nonnull (1, 2)));
 
 /**
 Finds the edit distances of the given actions from the given argument.
@@ -50,7 +52,8 @@ Fails if .
 @param limit The automatic completion limit.
 @return The suggestions in a container.
 **/
-struct proposal* correct(const struct action* actions, const char* argument, size_t limit)
+struct proposal*
+correct(const struct actions* actions, const char* argument, size_t limit)
 		__attribute__ ((nonnull (1, 2)));
 
 /**
@@ -66,7 +69,8 @@ Fails if .
 @param distance The distance.
 @return The suggestions in a container.
 **/
-struct proposal* filter(const struct proposal* proposal, size_t limit, size_t distance)
+struct proposal*
+filter(const struct proposal* proposal, size_t limit, size_t distance)
 		__attribute__ ((nonnull (1)));
 
 #endif

@@ -21,6 +21,11 @@ int parse(struct state* const state) {
 			;
 			++position) {
 		const char* const argument = state->arguments[position];
+		if (argument == NULL) {
+			if (position == 0)
+				hold(state, &state->actions[0], NULL);
+			return 0;
+		}
 		struct resolution* const maybe = create_resolution(state->actions, argument, state->automatic_completion_length);
 		if (maybe == NULL)
 			return -1;
@@ -35,11 +40,6 @@ int parse(struct state* const state) {
 			result = -1;
 			goto done;
 		}
-		case TYPE_END:
-			if (position == 0)
-				print_help(state->target_stream);
-			result = 0;
-			goto done;
 		case TYPE_COMMAND:
 			if (hold(state, maybe) == -1) {
 				result = -1;

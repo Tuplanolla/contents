@@ -44,8 +44,9 @@ GNU extensions are used, but not required.
 	[user@arch ~]$ pacman -S gcc make
 
 The libraries Indefinix depends on are
- the C standard library `libc` and
- a configuration file library `libconfig`.
+ the C standard library `libc`,
+ a configuration file library `libconfig` (although not yet) and
+ an optional unit testing framework `cheat`.
 
 	[user@arch ~]$ pacman -S libc libconfig
 
@@ -76,6 +77,16 @@ or manually to a suitable `$LOCATION`,
 the byproducts of the compilation can be removed.
 
 	[user@arch indefinix]$ make clean
+
+## Uninstallation
+
+Binaries that have been automatically installed can also be automatically uninstalled.
+
+	[user@arch indefinix]$ make uninstall
+
+Uninstallation leaves the configuration untouched, but it can be removed separately.
+
+	[user@arch indefinix]$ make wipe
 
 ## Running
 
@@ -303,9 +314,32 @@ The directories are
 
 * `/` for the most important files,
 * `/src` for sources,
+* `/tst` for tests,
 * `/obj` for temporary build files,
 * `/lib` for libraries,
 * `/bin` for binaries,
 * `/pkg` for packages,
 * `/dox` for automatic documentation and
 * `/etc` for other files.
+
+### Build Targets
+
+Everything is automatic.
+The targets are
+
+* `all` for the default build,
+* `run` for execution,
+* `harness` for test compilation,
+* `test` for test execution,
+* `package` for archive creation,
+* `document` for documentation generation,
+* `install` for installation,
+* `uninstall` for uninstallation,
+* `wipe` for configuration deletion,
+* `build` for compilation,
+* `prepare` for build preparation and
+* `clean` for the removal of produced files.
+
+Some of the targets can take extra arguments.
+
+	[user@arch indefinix]$ make test ARGUMENTS=--nofork
