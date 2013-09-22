@@ -19,18 +19,17 @@ DOXYGEN = /usr/bin/doxygen
 PRIMARY = /usr/local/bin
 SECONDARY = /usr/bin
 SRC = src
-TST = tst
 OBJ = obj
 BIN = bin
 PKG = pkg
 DOX = dox
 NAME = indefinix
 MAIN_SOURCES = $(SRC)/main.c
-TEST_SOURCES = $(TST)/cheat.c
+TEST_SOURCES = $(SRC)/cheat.c
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/calculator.c $(SRC)/data.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/logger.c $(SRC)/parser.c $(SRC)/project.c $(SRC)/resolver.c $(SRC)/state.c
+SOURCES = $(SRC)/array.c
 MAIN_OBJECTS = $(MAIN_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
-TEST_OBJECTS = $(TEST_SOURCES:$(TST)/%.c=$(OBJ)/%.o)
+TEST_OBJECTS = $(TEST_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/$(NAME)
 SUITE = $(BIN)/test-$(NAME)
@@ -40,9 +39,7 @@ all: build
 run: build
 	$(BINARY) $(ARGUMENTS)
 
-harness: build $(SUITE)
-
-test: build harness
+test: harness
 	$(SUITE) $(ARGUMENTS)
 
 package: build
@@ -60,7 +57,9 @@ uninstall:
 wipe:
 	$(RM) $(HOME)/.$(NAME)
 
-build: $(SOURCES) prepare $(BINARY)
+build: $(SOURCES) $(MAIN_SOURCES) prepare $(BINARY)
+
+harness: $(SOURCES) $(TEST_SOURCES) prepare $(SUITE)
 
 prepare:
 	$(MKDIR) $(OBJ)
@@ -83,7 +82,4 @@ $(SUITE): $(TEST_OBJECTS) $(OBJECTS)
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -c -o $@ $<
 
-$(OBJ)/%.o: $(TST)/%.c
-	$(CC) -c -o $@ $<
-
-.PHONY: all run harness test package document install uninstall wipe build prepare clean
+.PHONY: all run test package document install uninstall wipe build harness prepare clean

@@ -5,179 +5,200 @@
 
 #include "data.h"
 
-#include "state.h" // struct action, struct property
+#include "syntax.h" // of ()
+#include "array.h" // array_destroy(), array_create(), array_add()
 
-const struct action actions[] = {
-	{
+static const struct action actions[] = {{
 		.name = "configure",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_CONFIGURE
-	},
-	{
+		.command = COMMAND_CONFIGURE,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "set",
-		.arity = ARITY_VARIADIC,
-		.command = COMMAND_SET
-	},
-	{
+		.command = COMMAND_SET,
+		.arity = ARITY_VARIADIC
+		}, {
 		.name = "pop",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_POP
-	},
-	{
+		.command = COMMAND_POP,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "get",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_GET
-	},
-	{
+		.command = COMMAND_GET,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "obliterate",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_OBLITERATE
-	},
-	{
+		.command = COMMAND_OBLITERATE,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "make",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_MAKE
-	},
-	{
+		.command = COMMAND_MAKE,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "edit",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_EDIT
-	},
-	{
+		.command = COMMAND_EDIT,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "add",
-		.arity = ARITY_DYADIC,
-		.command = COMMAND_ADD
-	},
-	{
+		.command = COMMAND_ADD,
+		.arity = ARITY_DYADIC
+		}, {
 		.name = "remove",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_REMOVE
-	},
-	{
+		.command = COMMAND_REMOVE,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "update",
-		.arity = ARITY_DYADIC,
-		.command = COMMAND_UPDATE
-	},
-	{
+		.command = COMMAND_UPDATE,
+		.arity = ARITY_DYADIC
+		}, {
 		.name = "lookup",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_LOOKUP
-	},
-	{
+		.command = COMMAND_LOOKUP,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "find",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_FIND
-	},
-	{
+		.command = COMMAND_FIND,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "touch",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_TOUCH
-	},
-	{
+		.command = COMMAND_TOUCH,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "destroy",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_DESTROY
-	},
-	{
+		.command = COMMAND_DESTROY,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "help",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_HELP
-	},
-	{
+		.command = COMMAND_HELP,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "version",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_VERSION
-	},
-	{
+		.command = COMMAND_VERSION,
+		.arity = ARITY_NILADIC
+		}, {
 		.name = "bind",
-		.arity = ARITY_VARIADIC,
-		.command = COMMAND_BIND
-	},
-	{
+		.command = COMMAND_BIND,
+		.arity = ARITY_VARIADIC
+		}, {
 		.name = "suggest",
-		.arity = ARITY_MONADIC,
 		.command = COMMAND_SUGGEST,
-		//.internal = true
-	}
-};
+		.arity = ARITY_MONADIC
+		}};
 
-const struct property properties[KEY_COUNT] = {
-	{
+int actions_destroy
+(struct array* of (const struct action*) actions) {
+	return array_destroy(actions);
+}
+
+int actions_create
+(struct array** of (const struct action*) result) {
+	int status = 0;
+	struct array* of (const struct action*) array;
+	if (array_create(&array) == -1) {
+		status = -1;
+		goto array;
+	}
+	for (size_t action = 0; action < COMMAND_COUNT; ++action) {
+		if (array_add_last(array, &actions[action]) == -1) {
+			status = -1;
+			goto all;
+		}
+	}
+	*result = array;
+all:
+	if (array_destroy(array))
+		status = -1;
+array:
+	return status;
+}
+
+static const struct property properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
-		.arity = ARITY_MONADIC,
-		.key = KEY_LOCATION
-	},
-	{
+		.key = KEY_LOCATION,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "editor",
 		.abbreviation = "e",
-		.arity = ARITY_MONADIC,
-		.key = KEY_EDITOR
-	},
-	{
+		.key = KEY_EDITOR,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "completion",
 		.abbreviation = "c",
-		.arity = ARITY_MONADIC,
-		.key = KEY_COMPLETION
-	},
-	{
+		.key = KEY_COMPLETION,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "order",
 		.abbreviation = "o",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_ORDER
-	},
-	{
+		.key = KEY_ORDER,
+		.arity = ARITY_TRIADIC
+		}, {
 		.name = "wrapping",
 		.abbreviation = "w",
-		.arity = ARITY_MONADIC,
-		.key = KEY_WRAPPING
-	},
-	{
+		.key = KEY_WRAPPING,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "justification",
 		.abbreviation = "j",
-		.arity = ARITY_DYADIC,
-		.key = KEY_JUSTIFICATION
-	},
-	{
+		.key = KEY_JUSTIFICATION,
+		.arity = ARITY_DYADIC
+		}, {
 		.name = "filling",
 		.abbreviation = "f",
-		.arity = ARITY_DYADIC,
-		.key = KEY_FILLING
-	},
-	{
+		.key = KEY_FILLING,
+		.arity = ARITY_DYADIC
+		}, {
 		.name = "interaction",
 		.abbreviation = "i",
-		.arity = ARITY_MONADIC,
-		.key = KEY_INTERACTION
-	},
-	{
+		.key = KEY_INTERACTION,
+		.arity = ARITY_MONADIC
+		}, {
 		.name = "affix",
 		.abbreviation = "a",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_AFFIX
-	},
-	{
+		.key = KEY_AFFIX,
+		.arity = ARITY_TRIADIC
+		}, {
 		.name = "headaffix",
 		.abbreviation = "ha",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_HEADAFFIX
-	},
-	{
+		.key = KEY_HEADAFFIX,
+		.arity = ARITY_TRIADIC
+		}, {
 		.name = "tailaffix",
 		.abbreviation = "ta",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_TAILAFFIX
-	},
-	{
+		.key = KEY_TAILAFFIX,
+		.arity = ARITY_TRIADIC
+		}, {
 		.name = "unusual",
 		.abbreviation = "u",
-		.arity = ARITY_DYADIC,
-		.key = KEY_UNUSUAL
-	},
-	{
+		.key = KEY_UNUSUAL,
+		.arity = ARITY_DYADIC
+		}, {
 		.name = "preset",
 		.abbreviation = "p",
-		.arity = ARITY_MONADIC,
-		.key = KEY_PRESET
+		.key = KEY_PRESET,
+		.arity = ARITY_MONADIC
+		}};
+
+int properties_destroy
+(struct array* of (const struct property*) properties) {
+	return array_destroy(properties);
+}
+
+int properties_create
+(struct array** of (const struct property*) result) {
+	int status = 0;
+	struct array* of (const struct property*) array;
+	if (array_create(&array) == -1) {
+		status = -1;
+		goto array;
 	}
-};
+	for (size_t property = 0; property < KEY_COUNT; ++property) {
+		if (array_add_last(array, &properties[property]) == -1) {
+			status = -1;
+			goto all;
+		}
+	}
+	*result = array;
+all:
+	if (array_destroy(array))
+		status = -1;
+array:
+	return status;
+}

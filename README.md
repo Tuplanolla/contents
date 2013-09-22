@@ -187,6 +187,8 @@ The command `help` prints a short usage reference, which also appears when Indef
 
 The command `version` prints a short summary, including version information.
 
+The command `infer (string)` looks for a command that's similar to the given `(string)`.
+
 #### Special Cases
 
 In addition to configuration keys and index entries, there are a handful of special cases.
