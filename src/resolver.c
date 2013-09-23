@@ -7,7 +7,6 @@
 
 #include <stddef.h> // size_t
 
-#include "gnu.h" // __attribute__ (())
 #include "array.h" // struct array
 
 const void* resolve

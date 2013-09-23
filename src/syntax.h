@@ -6,6 +6,6 @@
 #ifndef OF_H
 #define OF_H
 
-#define of(...)
+#define of(...) // of (...)
 
 #endif

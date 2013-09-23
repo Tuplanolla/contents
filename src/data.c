@@ -10,76 +10,76 @@
 
 static struct action actions[] = {{
 		.name = "configure",
-		.command = COMMAND_CONFIGURE,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_CONFIGURE
 		}, {
 		.name = "set",
-		.command = COMMAND_SET,
-		.arity = ARITY_VARIADIC
+		.arity = ARITY_VARIADIC,
+		.command = COMMAND_SET
 		}, {
 		.name = "pop",
-		.command = COMMAND_POP,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_POP
 		}, {
 		.name = "get",
-		.command = COMMAND_GET,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_GET
 		}, {
 		.name = "obliterate",
-		.command = COMMAND_OBLITERATE,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_OBLITERATE
 		}, {
 		.name = "make",
-		.command = COMMAND_MAKE,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_MAKE
 		}, {
 		.name = "edit",
-		.command = COMMAND_EDIT,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_EDIT
 		}, {
 		.name = "add",
-		.command = COMMAND_ADD,
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.command = COMMAND_ADD
 		}, {
 		.name = "remove",
-		.command = COMMAND_REMOVE,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_REMOVE
 		}, {
 		.name = "update",
-		.command = COMMAND_UPDATE,
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.command = COMMAND_UPDATE
 		}, {
 		.name = "lookup",
-		.command = COMMAND_LOOKUP,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_LOOKUP
 		}, {
 		.name = "find",
-		.command = COMMAND_FIND,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_FIND
 		}, {
 		.name = "touch",
-		.command = COMMAND_TOUCH,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_TOUCH
 		}, {
 		.name = "destroy",
-		.command = COMMAND_DESTROY,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_DESTROY
 		}, {
 		.name = "help",
-		.command = COMMAND_HELP,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_HELP
 		}, {
 		.name = "version",
-		.command = COMMAND_VERSION,
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.command = COMMAND_VERSION
 		}, {
 		.name = "bind",
-		.command = COMMAND_BIND,
-		.arity = ARITY_VARIADIC
+		.arity = ARITY_VARIADIC,
+		.command = COMMAND_BIND
 		}, {
-		.name = "suggest",
-		.command = COMMAND_SUGGEST,
-		.arity = ARITY_MONADIC
+		.name = "infer",
+		.arity = ARITY_MONADIC,
+		.command = COMMAND_INFER
 		}};
 
 int actions_create
@@ -107,68 +107,68 @@ int actions_destroy
 static struct property properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
-		.key = KEY_LOCATION,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_LOCATION
 		}, {
 		.name = "editor",
 		.abbreviation = "e",
-		.key = KEY_EDITOR,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_EDITOR
 		}, {
 		.name = "completion",
 		.abbreviation = "c",
-		.key = KEY_COMPLETION,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_COMPLETION
 		}, {
 		.name = "order",
 		.abbreviation = "o",
-		.key = KEY_ORDER,
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.key = KEY_ORDER
 		}, {
 		.name = "wrapping",
 		.abbreviation = "w",
-		.key = KEY_WRAPPING,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_WRAPPING
 		}, {
 		.name = "justification",
 		.abbreviation = "j",
-		.key = KEY_JUSTIFICATION,
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.key = KEY_JUSTIFICATION
 		}, {
 		.name = "filling",
 		.abbreviation = "f",
-		.key = KEY_FILLING,
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.key = KEY_FILLING
 		}, {
 		.name = "interaction",
 		.abbreviation = "i",
-		.key = KEY_INTERACTION,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_INTERACTION
 		}, {
 		.name = "affix",
 		.abbreviation = "a",
-		.key = KEY_AFFIX,
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.key = KEY_AFFIX
 		}, {
 		.name = "headaffix",
 		.abbreviation = "ha",
-		.key = KEY_HEADAFFIX,
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.key = KEY_HEADAFFIX
 		}, {
 		.name = "tailaffix",
 		.abbreviation = "ta",
-		.key = KEY_TAILAFFIX,
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.key = KEY_TAILAFFIX
 		}, {
 		.name = "unusual",
 		.abbreviation = "u",
-		.key = KEY_UNUSUAL,
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.key = KEY_UNUSUAL
 		}, {
 		.name = "preset",
 		.abbreviation = "p",
-		.key = KEY_PRESET,
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.key = KEY_PRESET
 		}};
 
 int properties_create

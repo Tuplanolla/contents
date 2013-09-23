@@ -3,31 +3,34 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "calculator.h" // SIZE_MAX
+#include "calculator.h"
 
 #include <stddef.h> // size_t, NULL
 #include <string.h> // strlen()
 #include <stdlib.h> // malloc(), free()
 
-size_t minimum(const size_t x, const size_t y) {
+size_t minimum
+(const size_t x, const size_t y) {
 	if (x < y)
 		return x;
 	return y;
 }
 
-size_t maximum(const size_t x, const size_t y) {
+size_t maximum
+(const size_t x, const size_t y) {
 	if (x > y)
 		return x;
 	return y;
 }
 
-size_t edit_distance(const char* const x, const char* const y) {
+int edit_distance
+(size_t* result, const char* const x, const char* const y) {
 	const size_t x_length = strlen(x);
 	const size_t y_length = strlen(y);
 #define AT(x, y) ((x) * y_length + (y))
 	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
 	if (distances == NULL)
-		return SIZE_MAX;
+		return -1;
 	for (size_t character = 0;
 			character <= x_length;
 			++character)
@@ -60,8 +63,8 @@ size_t edit_distance(const char* const x, const char* const y) {
 						distances[AT(row - 1, column - 1)] + cost); // swapped
 		}
 	}
-	const size_t result = distances[AT(x_length, y_length)];
+	*result = distances[AT(x_length, y_length)];
 	free(distances);
 #undef AT
-	return result;
+	return 0;
 }

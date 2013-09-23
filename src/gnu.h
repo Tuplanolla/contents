@@ -1,6 +1,4 @@
 /**
-Encourages the user to choose GNU tools.
-
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -10,10 +8,7 @@ Encourages the user to choose GNU tools.
 
 #ifndef __GNUC__
 
-/**
-Disables an unsupported extension.
-**/
-#define __attribute__(x)
+#define __attribute__(...) // __attribute__ ((...))
 
 #endif
 

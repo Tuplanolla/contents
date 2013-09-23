@@ -9,22 +9,20 @@
 #include <stdlib.h> // malloc(), free(), realloc()
 #include <string.h> // memcpy(), memmove()
 
-#include "calculator.h" // maximum, SIZE_MAX
-
-typedef unsigned char byte;
+#include "calculator.h" // maximum
 
 size_t array_capacity
-(struct array* array) {
+(const struct array* const array) {
 	return array->capacity;
 }
 
 size_t array_unit
-(struct array* array) {
+(const struct array* const array) {
 	return array->unit;
 }
 
 size_t array_count
-(struct array* array) {
+(const struct array* const array) {
 	return array->count;
 }
 
@@ -55,6 +53,10 @@ int array_destroy
 	free(array);
 	return 0;
 }
+
+#define SIZE_MAX ((size_t )-1)
+
+typedef unsigned char byte;
 
 int array_add
 (struct array* const array, void* const element, const size_t position) {
