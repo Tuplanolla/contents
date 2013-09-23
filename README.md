@@ -124,14 +124,16 @@ The key `filling (padding) (padding)`, abbreviated as `f`, contains how the colu
 The default value is `fill fill`.
 Any of `fill` or `none` is a valid `(padding)`.
 
-The key `interaction (answer)`, abbreviated as `i` automatically answers interactive prompts if they come up.
+The key `interaction (answer)`, abbreviated as `i`, automatically answers interactive prompts if they come up.
 The default value is `%n`.
 Any of `yes` or `no` is a valid `(answer)`.
+
+The special keys `yes`, abbreviated as `y`, and `no`, abbreviated as `n`, are equivalent to `interaction yes` and `interaction no` respectively.
 
 The key `affix (string) (string) (string)`, abbreviated as `a`, contains the text that comes before, between and after the columns of the index files.
 The default value is `"   " "" ""` (the first part having three spaces).
 
-Furthermore the keys `headaffix (string) (string) (string)`, abbreviated as `ha` and `tailaffix (string) (string) (string)`, abbreviated as `ta`, work like affix, but only apply to the first and last lines respectively.
+Furthermore the keys `headaffix (string) (string) (string)`, abbreviated as `ha`, and `tailaffix (string) (string) (string)`, abbreviated as `ta`, work like affix, but only apply to the first and last lines respectively.
 The default values are `%n " - " %n` and `%n %n %n`.
 
 Note that changing the affixes unexpectedly may confuse the parser.
@@ -183,11 +185,11 @@ The command `destroy` deletes the index file.
 
 #### General
 
-The command `help` prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
+The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
 
-The command `version` prints a short summary, including version information.
+The special command `version`, also available as a flag and abbreviated as `v`, prints a short summary, including version information.
 
-The command `infer (string)` looks for a command that's similar to the given `(string)`.
+The command `infer (string)` looks for a command that's similar to the given `(string)`, which is also invoked when an invalid command is given.
 
 #### Special Cases
 
@@ -211,12 +213,12 @@ The two following commands are identical for example.
 
 Let's begin by configuring Indefinix for a Lisp fanatic.
 
-	[user@arch ~]$ indefinix configure order none directories hidden
-	[user@arch ~]$ indefinix configure alignment left left
-	[user@arch ~]$ indefinix configure filling none none
-	[user@arch ~]$ indefinix configure affix " " " (" ""
-	[user@arch ~]$ indefinix configure headaffix "(" % %
-	[user@arch ~]$ indefinix configure tailaffix % % "))"
+	[user@arch ~]$ indefinix set order none directories hidden
+	[user@arch ~]$ indefinix set alignment left left
+	[user@arch ~]$ indefinix set filling none none
+	[user@arch ~]$ indefinix set affix " " " (" ""
+	[user@arch ~]$ indefinix set headaffix "(" % %
+	[user@arch ~]$ indefinix set tailaffix % % "))"
 
 We'll then move to the directory we want to index
 

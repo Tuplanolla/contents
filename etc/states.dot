@@ -44,6 +44,8 @@ digraph states {
 	help_OUT                                   [shape = point]
 	version_IN                                 [shape = point]
 	version_OUT                                [shape = point]
+	infer_IN                                   [shape = point]
+	infer_OUT                                  [shape = point]
 	bind_IN                                    [shape = point]
 	bind_OUT                                   [shape = point]
 	bind_configure_IN                          [shape = point]
@@ -78,6 +80,8 @@ digraph states {
 	bind_help_OUT                              [shape = point]
 	bind_version_IN                            [shape = point]
 	bind_version_OUT                           [shape = point]
+	bind_infer_IN                              [shape = point]
+	bind_infer_OUT                             [shape = point]
 	TERMINATION                                [label = "(termination)",
 	                                            shape = box]
 	subgraph _cluster_command {
@@ -98,6 +102,7 @@ digraph states {
 		bind                                       [label = "bind"]
 		help                                       [label = "help"]
 		version                                    [label = "version"]
+		infer                                      [label = "infer"]
 	}
 	subgraph _cluster_parameter {
 		make_template                              [label = "(template)"]
@@ -108,6 +113,7 @@ digraph states {
 		update_entry_description                   [label = "(description)"]
 		lookup_entry                               [label = "(entry)"]
 		find_string                                [label = "(string)"]
+		infer_string                               [label = "(string)"]
 	}
 	subgraph _cluster_key {
 		set_location                               [label = "location"]
@@ -118,6 +124,8 @@ digraph states {
 		set_justification                          [label = "justification"]
 		set_filling                                [label = "filling"]
 		set_interaction                            [label = "interaction"]
+		set_yes                                    [label = "yes"]
+		set_no                                     [label = "no"]
 		set_affix                                  [label = "affix"]
 		set_unusual                                [label = "unusual"]
 		set_preset                                 [label = "preset"]
@@ -129,6 +137,8 @@ digraph states {
 		pop_justification                          [label = "justification"]
 		pop_filling                                [label = "filling"]
 		pop_interaction                            [label = "interaction"]
+		pop_yes                                    [label = "yes"]
+		pop_no                                     [label = "no"]
 		pop_affix                                  [label = "affix"]
 		pop_unusual                                [label = "unusual"]
 		get_location                               [label = "location"]
@@ -139,6 +149,8 @@ digraph states {
 		get_justification                          [label = "justification"]
 		get_filling                                [label = "filling"]
 		get_interaction                            [label = "interaction"]
+		get_yes                                    [label = "yes"]
+		get_no                                     [label = "no"]
 		get_affix                                  [label = "affix"]
 		get_unusual                                [label = "unusual"]
 	}
@@ -179,6 +191,7 @@ digraph states {
 		bind_destroy                               [label = "destroy"]
 		bind_help                                  [label = "help"]
 		bind_version                               [label = "version"]
+		bind_infer                                 [label = "infer"]
 		bind_bind                                  [label = "bind"]
 	}
 	subgraph _cluster_bound_parameter {
@@ -190,6 +203,7 @@ digraph states {
 		bind_update_entry_description              [label = "(description)"]
 		bind_lookup_entry                          [label = "(entry)"]
 		bind_find_string                           [label = "(string)"]
+		bind_infer_string                          [label = "(string)"]
 	}
 	subgraph _cluster_bound_key {
 		bind_set_location                          [label = "location"]
@@ -200,6 +214,8 @@ digraph states {
 		bind_set_justification                     [label = "justification"]
 		bind_set_filling                           [label = "filling"]
 		bind_set_interaction                       [label = "interaction"]
+		bind_set_yes                               [label = "yes"]
+		bind_set_no                                [label = "no"]
 		bind_set_affix                             [label = "affix"]
 		bind_set_unusual                           [label = "unusual"]
 		bind_set_preset                            [label = "preset"]
@@ -211,6 +227,8 @@ digraph states {
 		bind_pop_justification                     [label = "justification"]
 		bind_pop_filling                           [label = "filling"]
 		bind_pop_interaction                       [label = "interaction"]
+		bind_pop_yes                               [label = "yes"]
+		bind_pop_no                                [label = "no"]
 		bind_pop_affix                             [label = "affix"]
 		bind_pop_unusual                           [label = "unusual"]
 		bind_get_location                          [label = "location"]
@@ -221,6 +239,8 @@ digraph states {
 		bind_get_justification                     [label = "justification"]
 		bind_get_filling                           [label = "filling"]
 		bind_get_interaction                       [label = "interaction"]
+		bind_get_yes                               [label = "yes"]
+		bind_get_no                                [label = "no"]
 		bind_get_affix                             [label = "affix"]
 		bind_get_unusual                           [label = "unusual"]
 	}
@@ -253,6 +273,8 @@ digraph states {
 		flag_justification                         [label = "--justification\n-j"]
 		flag_filling                               [label = "--filling\n-f"]
 		flag_interaction                           [label = "--interaction\n-i"]
+		flag_yes                                   [label = "--yes\n-y"]
+		flag_no                                    [label = "--no\n-n"]
 		flag_affix                                 [label = "--affix\n-a"]
 		flag_unusual                               [label = "--unusual\n-u"]
 		flag_preset                                [label = "--preset\n-p"]
@@ -303,6 +325,7 @@ digraph states {
 	command_IN                                 -> destroy_IN
 	command_IN                                 -> help_IN
 	command_IN                                 -> version_IN
+	command_IN                                 -> infer_IN
 	command_IN                                 -> bind
 	command_OUT                                -> OUT
 	configure_IN                               -> configure
@@ -317,6 +340,8 @@ digraph states {
 	set                                        -> set_justification
 	set                                        -> set_filling
 	set                                        -> set_interaction
+	set                                        -> set_yes
+	set                                        -> set_no
 	set                                        -> set_affix
 	set                                        -> set_unusual
 	set                                        -> set_preset
@@ -328,6 +353,8 @@ digraph states {
 	set_justification                          -> set_justification_alignment
 	set_filling                                -> set_filling_padding
 	set_interaction                            -> set_interaction_answer
+	set_yes                                    -> set_OUT
+	set_no                                     -> set_OUT
 	set_affix                                  -> set_affix_string
 	set_unusual                                -> set_unusual_string
 	set_preset                                 -> set_preset_selection
@@ -359,6 +386,8 @@ digraph states {
 	pop                                        -> pop_justification
 	pop                                        -> pop_filling
 	pop                                        -> pop_interaction
+	pop                                        -> pop_yes
+	pop                                        -> pop_no
 	pop                                        -> pop_affix
 	pop                                        -> pop_unusual
 	pop_location                               -> pop_OUT
@@ -369,6 +398,8 @@ digraph states {
 	pop_justification                          -> pop_OUT
 	pop_filling                                -> pop_OUT
 	pop_interaction                            -> pop_OUT
+	pop_yes                                    -> pop_OUT
+	pop_no                                     -> pop_OUT
 	pop_affix                                  -> pop_OUT
 	pop_unusual                                -> pop_OUT
 	pop_OUT                                    -> command_OUT
@@ -382,6 +413,8 @@ digraph states {
 	get                                        -> get_justification
 	get                                        -> get_filling
 	get                                        -> get_interaction
+	get                                        -> get_yes
+	get                                        -> get_no
 	get                                        -> get_affix
 	get                                        -> get_unusual
 	get_location                               -> get_OUT
@@ -392,6 +425,8 @@ digraph states {
 	get_justification                          -> get_OUT
 	get_filling                                -> get_OUT
 	get_interaction                            -> get_OUT
+	get_yes                                    -> get_OUT
+	get_no                                     -> get_OUT
 	get_affix                                  -> get_OUT
 	get_unusual                                -> get_OUT
 	obliterate_IN                              -> obliterate
@@ -438,6 +473,10 @@ digraph states {
 	version_IN                                 -> version
 	version                                    -> version_OUT
 	version_OUT                                -> command_OUT
+	infer_IN                                   -> infer
+	infer                                      -> infer_string
+	infer_string                               -> infer_OUT
+	infer_OUT                                  -> command_OUT
 	bind                                       -> bind_IN
 	bind_IN                                    -> bind_configure
 	bind_IN                                    -> bind_set
@@ -455,6 +494,7 @@ digraph states {
 	bind_IN                                    -> bind_destroy
 	bind_IN                                    -> bind_help
 	bind_IN                                    -> bind_version
+	bind_IN                                    -> bind_infer
 	bind_IN                                    -> bind_bind
 	bind_configure                             -> bind_configure_IN
 	bind_configure_IN                          -> bind_configure_OUT
@@ -469,6 +509,8 @@ digraph states {
 	bind_set_IN                                -> bind_set_justification
 	bind_set_IN                                -> bind_set_filling
 	bind_set_IN                                -> bind_set_interaction
+	bind_set_IN                                -> bind_set_yes
+	bind_set_IN                                -> bind_set_no
 	bind_set_IN                                -> bind_set_affix
 	bind_set_IN                                -> bind_set_unusual
 	bind_set_IN                                -> bind_set_preset
@@ -480,6 +522,8 @@ digraph states {
 	bind_set_justification                     -> bind_set_justification_alignment
 	bind_set_filling                           -> bind_set_filling_padding
 	bind_set_interaction                       -> bind_set_interaction_answer
+	bind_set_yes                               -> bind_set_OUT
+	bind_set_no                                -> bind_set_OUT
 	bind_set_affix                             -> bind_set_affix_string
 	bind_set_unusual                           -> bind_set_unusual_string
 	bind_set_preset                            -> bind_set_preset_selection
@@ -512,6 +556,8 @@ digraph states {
 	bind_pop_IN                                -> bind_pop_justification
 	bind_pop_IN                                -> bind_pop_filling
 	bind_pop_IN                                -> bind_pop_interaction
+	bind_pop_IN                                -> bind_pop_yes
+	bind_pop_IN                                -> bind_pop_no
 	bind_pop_IN                                -> bind_pop_affix
 	bind_pop_IN                                -> bind_pop_unusual
 	bind_pop_location                          -> bind_pop_OUT
@@ -522,6 +568,8 @@ digraph states {
 	bind_pop_justification                     -> bind_pop_OUT
 	bind_pop_filling                           -> bind_pop_OUT
 	bind_pop_interaction                       -> bind_pop_OUT
+	bind_pop_yes                               -> bind_pop_OUT
+	bind_pop_no                                -> bind_pop_OUT
 	bind_pop_affix                             -> bind_pop_OUT
 	bind_pop_unusual                           -> bind_pop_OUT
 	bind_pop_OUT                               -> bind_pop_IN
@@ -535,6 +583,8 @@ digraph states {
 	bind_get_IN                                -> bind_get_justification
 	bind_get_IN                                -> bind_get_filling
 	bind_get_IN                                -> bind_get_interaction
+	bind_get_IN                                -> bind_get_yes
+	bind_get_IN                                -> bind_get_no
 	bind_get_IN                                -> bind_get_affix
 	bind_get_IN                                -> bind_get_unusual
 	bind_get_location                          -> bind_get_OUT
@@ -545,6 +595,8 @@ digraph states {
 	bind_get_justification                     -> bind_get_OUT
 	bind_get_filling                           -> bind_get_OUT
 	bind_get_interaction                       -> bind_get_OUT
+	bind_get_yes                               -> bind_get_OUT
+	bind_get_no                                -> bind_get_OUT
 	bind_get_affix                             -> bind_get_OUT
 	bind_get_unusual                           -> bind_get_OUT
 	bind_get_OUT                               -> bind_get_IN
@@ -605,6 +657,11 @@ digraph states {
 	bind_version_IN                            -> bind_version_OUT
 	bind_version_OUT                           -> bind_version_IN
 	bind_version_OUT                           -> bind_OUT
+	bind_infer                                 -> bind_infer_IN
+	bind_infer_IN                              -> bind_infer_string
+	bind_infer_string                          -> bind_infer_OUT
+	bind_infer_OUT                             -> bind_infer_IN
+	bind_infer_OUT                             -> bind_OUT
 	bind_bind                                  -> bind_IN
 	bind_OUT                                   -> TERMINATION
 	flag_IN                                    -> flag_location
@@ -615,6 +672,8 @@ digraph states {
 	flag_IN                                    -> flag_justification
 	flag_IN                                    -> flag_filling
 	flag_IN                                    -> flag_interaction
+	flag_IN                                    -> flag_yes
+	flag_IN                                    -> flag_no
 	flag_IN                                    -> flag_affix
 	flag_IN                                    -> flag_unusual
 	flag_IN                                    -> flag_preset
@@ -629,6 +688,8 @@ digraph states {
 	flag_justification                         -> flag_justification_alignment
 	flag_filling                               -> flag_filling_padding
 	flag_interaction                           -> flag_interaction_answer
+	flag_yes                                   -> flag_OUT
+	flag_no                                    -> flag_OUT
 	flag_affix                                 -> flag_affix_string
 	flag_unusual                               -> flag_unusual_string
 	flag_preset                                -> flag_preset_selection
