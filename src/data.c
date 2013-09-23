@@ -6,9 +6,9 @@
 #include "data.h"
 
 #include "syntax.h" // of ()
-#include "array.h" // array_destroy(), array_create(), array_add()
+#include "array.h" // array_destroy(), array_create(), array_add_last()
 
-static const struct action actions[] = {{
+static struct action actions[] = {{
 		.name = "configure",
 		.command = COMMAND_CONFIGURE,
 		.arity = ARITY_NILADIC
@@ -82,34 +82,29 @@ static const struct action actions[] = {{
 		.arity = ARITY_MONADIC
 		}};
 
-int actions_destroy
-(struct array* of (const struct action*) actions) {
-	return array_destroy(actions);
-}
-
 int actions_create
-(struct array** of (const struct action*) result) {
-	int status = 0;
-	struct array* of (const struct action*) array;
-	if (array_create(&array) == -1) {
-		status = -1;
-		goto array;
+(struct array** of (struct action*) result) {
+	struct array* of (struct action*) array;
+	if (array_create(&array, KEY_COUNT, sizeof (struct action*)) == -1) {
+		return -1;
 	}
 	for (size_t action = 0; action < COMMAND_COUNT; ++action) {
 		if (array_add_last(array, &actions[action]) == -1) {
-			status = -1;
-			goto all;
+			if (array_destroy(array) == -1)
+				return -1;
+			return -1;
 		}
 	}
 	*result = array;
-all:
-	if (array_destroy(array))
-		status = -1;
-array:
-	return status;
+	return 0;
 }
 
-static const struct property properties[] = {{
+int actions_destroy
+(struct array* const of (struct action*) array) {
+	return array_destroy(array);
+}
+
+static struct property properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
 		.key = KEY_LOCATION,
@@ -176,29 +171,24 @@ static const struct property properties[] = {{
 		.arity = ARITY_MONADIC
 		}};
 
-int properties_destroy
-(struct array* of (const struct property*) properties) {
-	return array_destroy(properties);
-}
-
 int properties_create
-(struct array** of (const struct property*) result) {
-	int status = 0;
-	struct array* of (const struct property*) array;
-	if (array_create(&array) == -1) {
-		status = -1;
-		goto array;
+(struct array** of (struct property*) result) {
+	struct array* of (struct property*) array;
+	if (array_create(&array, KEY_COUNT, sizeof (struct property*)) == -1) {
+		return -1;
 	}
 	for (size_t property = 0; property < KEY_COUNT; ++property) {
 		if (array_add_last(array, &properties[property]) == -1) {
-			status = -1;
-			goto all;
+			if (array_destroy(array) == -1)
+				return -1;
+			return -1;
 		}
 	}
 	*result = array;
-all:
-	if (array_destroy(array))
-		status = -1;
-array:
-	return status;
+	return 0;
+}
+
+int properties_destroy
+(struct array* const of (struct property*) array) {
+	return array_destroy(array);
 }

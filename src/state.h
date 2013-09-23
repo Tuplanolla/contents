@@ -13,9 +13,10 @@
 #include "gnu.h" // __attribute__ (())
 #include "syntax.h" // of ()
 #include "array.h" // struct array
+#include "data.h" // struct action, struct property
 
 struct invocation {
-	enum command action;
+	void (* action)(); // ?
 	struct array* of (const void*) arguments;
 };
 
@@ -32,16 +33,16 @@ size_t state_automatic_completion_length
 (struct state* state)
 __attribute__ ((nonnull));
 
-int state_destroy
-(struct state* state)
-__attribute__ ((nonnull));
-
 int state_create
 (struct state** result, struct array* of (const struct action*) actions, struct array* of (const struct property*) properties)
 __attribute__ ((nonnull));
 
+int state_destroy
+(struct state* state)
+__attribute__ ((nonnull));
+
 int state_parse
-(struct state* state, const char* const* arguments)
+(struct state* state, struct array* of (const char*) arguments)
 __attribute__ ((nonnull));
 
 int state_execute

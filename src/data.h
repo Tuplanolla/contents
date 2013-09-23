@@ -80,20 +80,20 @@ struct property {
 	enum key key;
 };
 
-int actions_destroy
-(const struct array* of (const struct action*) actions)
-__attribute__ ((nonnull));
-
 int actions_create
-(const struct array** of (const struct action*) result)
+(struct array** of (struct action*) result)
 __attribute__ ((nonnull));
 
-int properties_destroy
-(const struct array* of (const struct property*) properties)
+int actions_destroy
+(struct array* of (struct action*) actions)
 __attribute__ ((nonnull));
 
 int properties_create
-(const struct array** of (const struct property*) result)
+(struct array** of (struct property*) result)
+__attribute__ ((nonnull));
+
+int properties_destroy
+(struct array* of (struct property*) properties)
 __attribute__ ((nonnull));
 
 #endif
