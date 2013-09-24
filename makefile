@@ -12,7 +12,7 @@ RELEASE = -s\
 		-O3\
 		-Wall -Wextra
 # CHEAT needs the project root to be in the include path.
-TEST = -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600\
+TEST = -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700\
 		-I .
 FLAGS = -std=c11\
 		$(DEBUG)\
@@ -34,7 +34,7 @@ NAME = indefinix
 MAIN_SOURCES = $(SRC)/main.c
 TEST_SOURCES = $(SRC)/cheat.c
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/action.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/data.c $(SRC)/indefinix.c $(SRC)/property.c $(SRC)/resolver.c $(SRC)/state.c
+SOURCES = $(SRC)/action.c $(SRC)/actions.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/indefinix.c $(SRC)/properties.c $(SRC)/property.c $(SRC)/resolver.c $(SRC)/state.c $(SRC)/suggestion.c $(SRC)/truncation.c
 MAIN_OBJECTS = $(MAIN_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 TEST_OBJECTS = $(TEST_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)

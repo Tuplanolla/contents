@@ -3,20 +3,21 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "resolver.h"
+#include "resolver.h" // struct suggestion
 
 #include <stddef.h> // size_t, NULL
+#include <string.h> // strlen()
 #include <stdlib.h> // malloc(), free()
-#include <string.h> // strlen(), memmove()
 
+#include "syntax.h" // of ()
 #include "array.h" // struct array
 
-void* resolve
-(struct array* const array, char const* (* accessor)(void const*), char const* const argument, size_t const limit) {
+void* resolver_match
+(struct array const* const array, char const* (* accessor)(void const*), char const* const argument, size_t const limit) {
+	void* match = NULL;
 	struct array* candidates;
 	if (array_create_copy(&candidates, array) == -1)
-		return NULL;
-	void* resolution = NULL;
+		goto all;
 	size_t const argument_length = strlen(argument);
 	for (size_t character = 0;
 			character < argument_length;
@@ -24,21 +25,33 @@ void* resolve
 		for (size_t position = 0;
 				position < array_count(candidates);
 				) {
-			void* candidate;
-			array_read(&candidate, candidates, position);
+			const void* candidate;
+			if (array_read(&candidate, candidates, position) == -1) {
+				match = NULL;
+				goto array;
+			}
 			if (accessor(candidate)[character] == argument[character])
 				++position;
 			else
-				array_remove(NULL, candidates, position);
+				if (array_remove(NULL, candidates, position) == 1) {
+					match = NULL;
+					goto array;
+				}
 		}
 		if (array_count(candidates) == 0) {
-			resolution = NULL;
+			match = NULL;
 			break;
-		} else if (array_count(candidates) == 1
-				&& ((limit == 0 && character == argument_length - 1)
-				|| (limit != 0 && character >= limit - 1)))
-			array_read(&resolution, candidates, 0);
+		} else if (array_count(candidates) == 1)
+			if ((limit == 0 && character == argument_length - 1)
+					|| (limit != 0 && character >= limit - 1))
+				if (array_read(&match, candidates, 0) == -1) {
+					match = NULL;
+					goto array;
+				}
 	}
-	array_destroy(candidates);
-	return resolution;
+array:
+	if (array_destroy(candidates) == -1)
+		match = NULL;
+all:
+	return match;
 }

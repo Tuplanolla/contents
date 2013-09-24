@@ -15,7 +15,7 @@
 #include "action.h" // procedure, struct action
 #include "property.h" // variable, struct property
 
-struct invocation {
+struct invocation { // TODO invocation.h
 	procedure procedure;
 	struct array* of (void*) arguments;
 };
@@ -24,9 +24,9 @@ struct state {
 	struct array* of (struct action*) actions;
 	struct array* of (struct property*) properties;
 	struct array* of (struct invocation*) invocations;
-	size_t automatic_completion_length;
+	size_t automatic_completion_limit;
 	size_t suggestion_count;
-	size_t maximum_suggestion_distance;
+	size_t suggestion_edit_distance;
 	FILE* output_stream;
 };
 

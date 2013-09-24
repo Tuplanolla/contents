@@ -8,7 +8,7 @@
 #include "indefinix.h" // indefinix_run()
 
 int main
-(int const count, char* const* const arguments) {
+(int const count, char const** const arguments) {
 	size_t const argument_count = (size_t )count;
 	int status = 0;
 	struct array* of (char*) array;

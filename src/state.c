@@ -9,9 +9,9 @@
 #include <stddef.h> // NULL
 
 #include "syntax.h" // of ()
-#include "array.h" // struct array
+#include "array.h" // struct array, array_create(), array_destroy()
 #include "action.h" // struct action, action_name()
-#include "resolver.h" // resolve()
+#include "resolver.h" // resolver_match()
 #include "arity.h" // arity_to_integral()
 
 int state_create
@@ -29,9 +29,9 @@ int state_create
 	state->actions = actions;
 	state->properties = properties;
 	state->invocations = invocations;
-	state->automatic_completion_length = 1; // TODO configuration
+	state->automatic_completion_limit = 1; // TODO configuration
 	state->suggestion_count = 3;
-	state->maximum_suggestion_distance = 2;
+	state->suggestion_edit_distance = 2;
 	*result = state;
 	return 0;
 }
@@ -56,7 +56,8 @@ int state_parse
 		if (array_read(&argument, arguments, position) == -1)
 			return -1;
 		REPORT("\"%s\" @ %zu\n", argument, position);
-		struct action const* const action = resolve(state->actions, (char const* (*)(void const*) )&action_name, argument, state->automatic_completion_length);
+		char const* (* accessor)(void const*) = (char const* (*)(void const*) )&action_name;
+		struct action const* const action = resolver_match(state->actions, accessor, argument, state->automatic_completion_limit);
 		if (action == NULL) {
 			// TODO schedule &infer
 			return -1;
@@ -78,6 +79,13 @@ int state_parse
 	if (position == 0)
 		(void )0; // TODO schedule &help
 	return 0;
+}
+
+int state_schedule
+(struct state* const state, struct invocation* const invocation) {
+	(void )state;
+	(void )invocation;
+	return -1;
 }
 
 int state_execute

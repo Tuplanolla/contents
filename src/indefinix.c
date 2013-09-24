@@ -9,11 +9,12 @@
 #include "array.h" // struct array
 #include "action.h" // struct action
 #include "property.h" // struct property
-#include "data.h" // actions_create(), properties_create(), properties_destroy(), actions_destroy()
+#include "actions.h" // actions_create(), actions_destroy()
+#include "properties.h" // properties_create(), properties_destroy()
 #include "state.h" // struct state, state_create(), state_parse(), state_execute(), state_destroy()
 
 int indefinix_run
-(struct array* of (char*) arguments) {
+(struct array* of (char*) const arguments) {
 	int status = 0;
 	struct array* of (struct action*) actions;
 	if (actions_create(&actions) == -1) {
