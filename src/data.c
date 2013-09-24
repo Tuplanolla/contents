@@ -5,10 +5,11 @@
 
 #include "data.h"
 
+#include "arity.h" // enum arity
 #include "syntax.h" // of ()
 #include "array.h" // array_destroy(), array_create(), array_add_last()
 
-static struct action actions[] = {{
+static struct action const actions[] = {{
 		.name = "configure",
 		.arity = ARITY_NILADIC,
 		.command = COMMAND_CONFIGURE
@@ -85,11 +86,12 @@ static struct action actions[] = {{
 int actions_create
 (struct array** of (struct action*) result) {
 	struct array* of (struct action*) array;
-	if (array_create(&array, KEY_COUNT, sizeof (struct action*)) == -1) {
+	if (array_create(&array, COMMAND_COUNT, sizeof (struct action*)) == -1) {
 		return -1;
 	}
-	for (size_t action = 0; action < COMMAND_COUNT; ++action) {
-		if (array_add_last(array, &actions[action]) == -1) {
+	for (size_t position = 0; position < COMMAND_COUNT; ++position) {
+		void const* action = &actions[position];
+		if (array_add_last(array, &action) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;
 			return -1;
@@ -104,7 +106,7 @@ int actions_destroy
 	return array_destroy(array);
 }
 
-static struct property properties[] = {{
+static struct property const properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
 		.arity = ARITY_MONADIC,
@@ -177,8 +179,9 @@ int properties_create
 	if (array_create(&array, KEY_COUNT, sizeof (struct property*)) == -1) {
 		return -1;
 	}
-	for (size_t property = 0; property < KEY_COUNT; ++property) {
-		if (array_add_last(array, &properties[property]) == -1) {
+	for (size_t position = 0; position < KEY_COUNT; ++position) {
+		void const* property = &properties[position];
+		if (array_add_last(array, &property) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;
 			return -1;

@@ -29,7 +29,7 @@ int state_create
 	state->actions = actions;
 	state->properties = properties;
 	state->invocations = invocations;
-	state->automatic_completion_length = 0; // TODO configuration
+	state->automatic_completion_length = 1; // TODO configuration
 	state->suggestion_count = 3;
 	state->maximum_suggestion_distance = 2;
 	*result = state;
@@ -45,28 +45,34 @@ int state_destroy
 	return status;
 }
 
+#include <stdio.h>
+#define REPORT printf
+
 int state_parse
 (struct state* const state, struct array* const of (char*) arguments) {
 	size_t position;
-	for (position = 0; position < arguments->count; ++position) {
+	for (position = 0; position < array_count(arguments); ++position) {
 		char const* argument;
 		if (array_read(&argument, arguments, position) == -1)
 			return -1;
+		REPORT("\"%s\" @ %zu\n", argument, position);
 		struct action const* const action = resolve(state->actions, (char const* (*)(void const*) )&action_name, argument, state->automatic_completion_length);
 		if (action == NULL) {
 			// TODO schedule &infer
 			return -1;
 		}
-		// TODO schedule action->instance
-		if (action->arity == ARITY_VARIADIC) {
+		REPORT("\"%s\" = %s\n", argument, action_name(action));
+		// TODO schedule action_instance(action)
+		if (action_arity(action) == ARITY_VARIADIC) {
+			REPORT("everything -> %s\n", action_name(action));
 			// TODO consume everything
 			break;
 		} else {
 			size_t integral;
-			if (arity_to_integral(&integral, action->arity) == -1)
+			if (arity_to_integral(&integral, action_arity(action)) == -1)
 				return -1;
 			position += integral;
-			continue;
+			REPORT("%zu arguments -> %s\n", integral, action_name(action));
 		}
 	}
 	if (position == 0)

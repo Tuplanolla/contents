@@ -47,6 +47,28 @@ int array_create
 	return 0;
 }
 
+int array_create_copy
+(struct array** const result, struct array const* const array) {
+	struct array* const copy = malloc(sizeof *array);
+	if (copy == NULL)
+		return -1;
+	size_t const capacity = array->capacity;
+	size_t const unit = array->unit;
+	void* const elements = malloc(capacity * unit);
+	if (elements == NULL) {
+		free(copy);
+		return -1;
+	}
+	size_t const count = array->count;
+	memcpy(elements, array->elements, count * unit);
+	copy->capacity = capacity;
+	copy->unit = unit;
+	copy->count = count;
+	copy->elements = elements;
+	*result = copy;
+	return 0;
+}
+
 int array_destroy
 (struct array* const array) {
 	free(array->elements);
@@ -84,6 +106,11 @@ int array_add
 	return 0;
 }
 
+int array_add_last
+(struct array* const array, void* const element) {
+	return array_add(array, element, array->count);
+}
+
 int array_remove
 (void* const result, struct array* const array, size_t const position) {
 	size_t const count = array->count;
@@ -107,11 +134,6 @@ int array_remove
 	if (displaced > 0)
 		memmove(split, split + unit, displaced * unit);
 	return 0;
-}
-
-int array_add_last
-(struct array* const array, void* const element) {
-	return array_add(array, element, array->count);
 }
 
 int array_remove_last
