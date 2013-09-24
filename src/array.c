@@ -130,7 +130,7 @@ int array_remove
 	byte* const split = (byte* )array->elements + position * unit;
 	if (result != NULL)
 		memcpy(result, split, unit);
-	size_t const displaced = count - position;
+	size_t const displaced = array->count - position;
 	if (displaced > 0)
 		memmove(split, split + unit, displaced * unit);
 	return 0;
