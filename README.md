@@ -13,8 +13,9 @@ This project should be done by 2015.
 Finding out what certain files or directories are for requires looking inside them, reading about them somewhere or asking someone.
 Sometimes even that's not sufficient.
 Using an index solves that problem.
+Indefinix manages that index.
 
-Writing a perfect nontrivial C program, where every character has its place, is also intriguing.
+Indefinix is also an experiment on a beautiful C program architecture and implementation, where everything has its place.
 
 ## Installation
 
@@ -185,10 +186,6 @@ The command `destroy` deletes the index file.
 
 #### General
 
-The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
-
-The special command `version`, also available as a flag and abbreviated as `v`, prints a short summary, including version information.
-
 The command `infer (string)` looks for a command that's similar to the given `(string)`, which is also invoked when an invalid command is given.
 
 #### Special Cases
@@ -208,6 +205,10 @@ The two following commands are identical for example.
 
 	[user@arch ~]$ indefinix bind lookup pictures videos --unusual "minor error" "major error"
 	[user@arch ~]$ indefinix lookup pictures lookup videos lookup --unusual lookup "minor error" lookup "major error"
+
+The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
+
+The special command `version`, also available as a flag and abbreviated as `v`, prints a short summary, including version information.
 
 #### Example
 
@@ -251,7 +252,7 @@ Let's see how it looks.
 It looks like a mess, so it's best to reset the configuration.
 We also have to rebuild the index to avoid confusing the parser later.
 
-	[user@arch /tmp]$ indefinix touch configure preset default
+	[user@arch /tmp]$ indefinix touch set preset default
 
 The configuration could also be removed instead.
 
