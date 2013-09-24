@@ -12,28 +12,28 @@
 #include "calculator.h" // maximum
 
 size_t array_capacity
-(const struct array* const array) {
+(struct array const* const array) {
 	return array->capacity;
 }
 
 size_t array_unit
-(const struct array* const array) {
+(struct array const* const array) {
 	return array->unit;
 }
 
 size_t array_count
-(const struct array* const array) {
+(struct array const* const array) {
 	return array->count;
 }
 
 int array_create
-(struct array** const result, const size_t capacity, const size_t unit) {
+(struct array** const result, size_t const capacity, size_t const unit) {
 	if (unit < 1)
 		return -1;
 	struct array* const array = malloc(sizeof *array);
 	if (array == NULL)
 		return -1;
-	const size_t actual_capacity = maximum(1, capacity);
+	size_t const actual_capacity = maximum(1, capacity);
 	void* const elements = malloc(actual_capacity * unit);
 	if (elements == NULL) {
 		free(array);
@@ -59,16 +59,16 @@ int array_destroy
 typedef unsigned char byte;
 
 int array_add
-(struct array* const array, void* const element, const size_t position) {
-	const size_t count = array->count;
+(struct array* const array, void* const element, size_t const position) {
+	size_t const count = array->count;
 	if (position > count)
 		return -1;
-	const size_t capacity = array->capacity;
-	const size_t unit = array->unit;
+	size_t const capacity = array->capacity;
+	size_t const unit = array->unit;
 	if (count >= capacity) {
 		if (capacity > SIZE_MAX / 2)
 			return -1;
-		const size_t higher_capacity = maximum(1, 2 * capacity);
+		size_t const higher_capacity = maximum(1, 2 * capacity);
 		void* const elements = realloc(array->elements, higher_capacity * unit);
 		if (elements == NULL)
 			return -1;
@@ -76,7 +76,7 @@ int array_add
 		array->elements = elements;
 	}
 	byte* const split = (byte* )array->elements + position * unit;
-	const size_t displaced = count - position;
+	size_t const displaced = count - position;
 	if (displaced > 0)
 		memmove(split + unit, split, displaced * unit);
 	memcpy(split, element, unit);
@@ -85,14 +85,14 @@ int array_add
 }
 
 int array_remove
-(void* const result, struct array* const array, const size_t position) {
-	const size_t count = array->count;
+(void* const result, struct array* const array, size_t const position) {
+	size_t const count = array->count;
 	if (count < 1 || position >= count)
 		return -1;
-	const size_t capacity = array->capacity;
-	const size_t unit = array->unit;
+	size_t const capacity = array->capacity;
+	size_t const unit = array->unit;
 	if (count <= capacity / 4) {
-		const size_t lower_capacity = maximum(1, capacity / 2);
+		size_t const lower_capacity = maximum(1, capacity / 2);
 		void* const elements = realloc(array->elements, lower_capacity * unit);
 		if (elements != NULL) {
 			array->capacity = lower_capacity;
@@ -103,7 +103,7 @@ int array_remove
 	byte* const split = (byte* )array->elements + position * unit;
 	if (result != NULL)
 		memcpy(result, split, unit);
-	const size_t displaced = count - position;
+	size_t const displaced = count - position;
 	if (displaced > 0)
 		memmove(split, split + unit, displaced * unit);
 	return 0;
@@ -120,11 +120,11 @@ int array_remove_last
 }
 
 int array_read
-(void* const result, struct array* const array, const size_t position) {
-	const size_t count = array->count;
+(void* const result, struct array* const array, size_t const position) {
+	size_t const count = array->count;
 	if (count < 1 || position >= count)
 		return -1;
-	const size_t unit = array->unit;
+	size_t const unit = array->unit;
 	byte* const split = (byte* )array->elements + position * unit;
 	if (result != NULL)
 		memcpy(result, split, unit);
@@ -132,11 +132,11 @@ int array_read
 }
 
 int array_write
-(struct array* const array, void* const element, const size_t position) {
-	const size_t count = array->count;
+(struct array* const array, void* const element, size_t const position) {
+	size_t const count = array->count;
 	if (count < 1 || position >= count)
 		return -1;
-	const size_t unit = array->unit;
+	size_t const unit = array->unit;
 	byte* const split = (byte* )array->elements + position * unit;
 	memcpy(split, element, unit);
 	return 0;

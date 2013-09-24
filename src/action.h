@@ -36,26 +36,26 @@ enum command {
 typedef int (* procedure)();
 
 struct action {
-	const char* name;
+	char const* name;
 	enum arity arity;
 	procedure instance;
 	enum command command; // ?
 };
 
-const char* action_name
-(const struct action* action)
+char const* action_name
+(struct action const* action)
 __attribute__ ((nonnull));
 
 enum arity action_arity
-(const struct action* action)
+(struct action const* action)
 __attribute__ ((nonnull));
 
 procedure action_instance
-(const struct action* action)
+(struct action const* action)
 __attribute__ ((nonnull));
 
 int action_create
-(struct action** result, const char* name, enum arity arity, procedure procedure)
+(struct action** result, char const* name, enum arity arity, procedure procedure)
 __attribute__ ((nonnull));
 
 int action_destroy

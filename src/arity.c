@@ -8,7 +8,7 @@
 #include <stddef.h> // size_t
 
 int arity_to_integral
-(size_t* const result, const enum arity arity) {
+(size_t* const result, enum arity const arity) {
 	switch (arity) {
 	case ARITY_NILADIC:
 		*result = 0;
@@ -48,7 +48,7 @@ int arity_to_integral
 }
 
 int arity_from_integral
-(enum arity* const result, const size_t integral) {
+(enum arity* const result, size_t const integral) {
 	switch (integral) {
 	case 0:
 		*result = ARITY_NILADIC;

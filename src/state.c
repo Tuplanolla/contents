@@ -49,10 +49,10 @@ int state_parse
 (struct state* const state, struct array* const of (char*) arguments) {
 	size_t position;
 	for (position = 0; position < arguments->count; ++position) {
-		const char* argument;
+		char const* argument;
 		if (array_read(&argument, arguments, position) == -1)
 			return -1;
-		const struct action* const action = resolve(state->actions, (const char* (*)(const void*) )&action_name, argument, state->automatic_completion_length);
+		struct action const* const action = resolve(state->actions, (char const* (*)(void const*) )&action_name, argument, state->automatic_completion_length);
 		if (action == NULL) {
 			// TODO schedule &infer
 			return -1;

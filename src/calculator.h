@@ -19,7 +19,7 @@ size_t maximum
 __attribute__ ((const));
 
 int edit_distance
-(size_t* result, const char* x, const char* y)
+(size_t* result, char const* x, char const* y)
 __attribute__ ((nonnull));
 
 #endif

@@ -9,7 +9,7 @@
 
 #include "array.h" // struct array
 
-const void* resolve
-(struct array* const array, const char* (* accessor)(const void*), const char* const argument, const size_t limit) {
+void const* resolve
+(struct array* const array, char const* (* accessor)(void const*), char const* const argument, size_t const limit) {
 	return NULL; // TODO this
 }

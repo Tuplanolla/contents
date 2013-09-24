@@ -18,15 +18,15 @@ struct array {
 };
 
 size_t array_capacity
-(const struct array* array)
+(struct array const* array)
 __attribute__ ((nonnull));
 
 size_t array_unit
-(const struct array* array)
+(struct array const* array)
 __attribute__ ((nonnull));
 
 size_t array_count
-(const struct array* array)
+(struct array const* array)
 __attribute__ ((nonnull));
 
 int array_create

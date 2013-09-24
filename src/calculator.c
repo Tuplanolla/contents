@@ -10,23 +10,23 @@
 #include <stdlib.h> // malloc(), free()
 
 size_t minimum
-(const size_t x, const size_t y) {
+(size_t const x, size_t const y) {
 	if (x < y)
 		return x;
 	return y;
 }
 
 size_t maximum
-(const size_t x, const size_t y) {
+(size_t const x, size_t const y) {
 	if (x > y)
 		return x;
 	return y;
 }
 
 int edit_distance
-(size_t* result, const char* const x, const char* const y) {
-	const size_t x_length = strlen(x);
-	const size_t y_length = strlen(y);
+(size_t* const result, char const* const x, char const* const y) {
+	size_t const x_length = strlen(x);
+	size_t const y_length = strlen(y);
 #define AT(x, y) ((x) * y_length + (y))
 	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
 	if (distances == NULL)
