@@ -15,7 +15,7 @@
 #include "arity.h" // arity_to_integral()
 
 int state_create
-(struct state** const result, struct array* const of (struct action*) actions, struct array* const of (struct property*) properties) {
+(struct state** const result, struct array* of (struct action*) const actions, struct array* of (struct property*) const properties) {
 	struct array* of (struct invocation*) invocations;
 	if (array_create(&invocations, 1, sizeof (struct invocation*)) == -1) {
 		return -1;
@@ -49,7 +49,7 @@ int state_destroy
 #define REPORT printf
 
 int state_parse
-(struct state* const state, struct array* const of (char*) arguments) {
+(struct state* const state, struct array* of (char*) const arguments) {
 	size_t position;
 	for (position = 0; position < array_count(arguments); ++position) {
 		char const* argument;

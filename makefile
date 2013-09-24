@@ -12,10 +12,11 @@ RELEASE = -s\
 		-O3\
 		-Wall -Wextra
 # CHEAT needs the project root to be in the include path.
-FLAGS = -std=c11\
-		-D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600\
-		$(DEBUG)\
+TEST = -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=600\
 		-I .
+FLAGS = -std=c11\
+		$(DEBUG)\
+		$(TEST)
 CC = /usr/bin/gcc $(FLAGS)
 MKDIR = /bin/mkdir -p
 RM = /bin/rm -f

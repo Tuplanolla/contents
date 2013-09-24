@@ -102,7 +102,7 @@ int actions_create
 }
 
 int actions_destroy
-(struct array* const of (struct action*) array) {
+(struct array* of (struct action*) const array) {
 	return array_destroy(array);
 }
 
@@ -192,6 +192,6 @@ int properties_create
 }
 
 int properties_destroy
-(struct array* const of (struct property*) array) {
+(struct array* of (struct property*) const array) {
 	return array_destroy(array);
 }
