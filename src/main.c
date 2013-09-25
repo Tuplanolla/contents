@@ -14,21 +14,21 @@ int main
 	struct array* of (char*) array;
 	if (array_create(&array, argument_count, sizeof (char*)) == -1) {
 		status = -1;
-		goto array;
+		goto nothing;
 	}
 	for (size_t argument = 1; argument < argument_count; ++argument) {
 		if (array_add_last(array, &arguments[argument]) == -1) {
 			status = -1;
-			goto all;
+			goto array;
 		}
 	}
 	if (indefinix_run(array) == -1) {
 		status = -1;
-		goto all;
+		goto array;
 	}
-all:
+array:
 	if (array_destroy(array) == -1)
 		status = -1;
-array:
+nothing:
 	return -status;
 }

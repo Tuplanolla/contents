@@ -65,4 +65,12 @@ int array_write
 (struct array* array, void* element, size_t position)
 __attribute__ ((nonnull));
 
+int array_truncate
+(struct array* array, size_t count)
+__attribute__ ((nonnull));
+
+int array_sort
+(struct array* array, int (* comparator)(const void*, const void*))
+__attribute__ ((nonnull));
+
 #endif

@@ -13,11 +13,11 @@
 #include "array.h" // struct array
 
 void* resolver_match
-(struct array const* const array, char const* (* accessor)(void const*), char const* const argument, size_t const limit) {
+(struct array const* const array, char const* (* const accessor)(void const*), char const* const argument, size_t const limit) {
 	void* match = NULL;
 	struct array* candidates;
 	if (array_create_copy(&candidates, array) == -1)
-		goto all;
+		goto nothing;
 	size_t const argument_length = strlen(argument);
 	for (size_t character = 0;
 			character < argument_length;
@@ -52,6 +52,6 @@ void* resolver_match
 array:
 	if (array_destroy(candidates) == -1)
 		match = NULL;
-all:
+nothing:
 	return match;
 }

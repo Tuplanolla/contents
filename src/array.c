@@ -6,7 +6,7 @@
 #include "array.h" // struct array
 
 #include <stddef.h> // size_t, NULL
-#include <stdlib.h> // malloc(), free(), realloc()
+#include <stdlib.h> // malloc(), free(), realloc(), qsort()
 #include <string.h> // memcpy(), memmove()
 
 #include "calculator.h" // maximum
@@ -78,16 +78,10 @@ int array_destroy
 
 #define SIZE_MAX ((size_t )-1)
 
-typedef unsigned char byte;
-
-int array_add
-(struct array* const array, void* const element, size_t const position) {
-	size_t const count = array->count;
-	if (position > count)
-		return -1;
-	size_t const capacity = array->capacity;
+static int array_resize(struct array* const array, size_t const count) {
 	size_t const unit = array->unit;
-	if (count >= capacity) {
+	size_t capacity;
+	while (count >= (capacity = array->capacity)) {
 		if (capacity > SIZE_MAX / 2)
 			return -1;
 		size_t const higher_capacity = maximum(1, 2 * capacity);
@@ -97,6 +91,27 @@ int array_add
 		array->capacity = higher_capacity;
 		array->elements = elements;
 	}
+	while (count <= (capacity = array->capacity) / 4) {
+		size_t const lower_capacity = maximum(1, capacity / 2);
+		void* const elements = realloc(array->elements, lower_capacity * unit);
+		if (elements != NULL) {
+			array->capacity = lower_capacity;
+			array->elements = elements;
+		}
+	}
+	return 0;
+}
+
+typedef unsigned char byte;
+
+int array_add
+(struct array* const array, void* const element, size_t const position) {
+	size_t const count = array->count;
+	if (position > count)
+		return -1;
+	if (array_resize(array, count + 1) == -1)
+		return -1;
+	size_t const unit = array->unit;
 	byte* const split = (byte* )array->elements + position * unit;
 	size_t const displaced = count - position;
 	if (displaced > 0)
@@ -116,23 +131,16 @@ int array_remove
 	size_t const count = array->count;
 	if (count < 1 || position >= count)
 		return -1;
-	size_t const capacity = array->capacity;
+	if (array_resize(array, count - 1) == -1)
+		return -1;
 	size_t const unit = array->unit;
-	if (count <= capacity / 4) {
-		size_t const lower_capacity = maximum(1, capacity / 2);
-		void* const elements = realloc(array->elements, lower_capacity * unit);
-		if (elements != NULL) {
-			array->capacity = lower_capacity;
-			array->elements = elements;
-		}
-	}
-	--array->count;
 	byte* const split = (byte* )array->elements + position * unit;
 	if (result != NULL)
 		memcpy(result, split, unit);
-	size_t const displaced = array->count - position;
+	size_t const displaced = count - position - 1;
 	if (displaced > 0)
 		memmove(split, split + unit, displaced * unit);
+	--array->count;
 	return 0;
 }
 
@@ -161,5 +169,21 @@ int array_write
 	size_t const unit = array->unit;
 	byte* const split = (byte* )array->elements + position * unit;
 	memcpy(split, element, unit);
+	return 0;
+}
+
+int array_truncate
+(struct array* const array, size_t const count) {
+	if (count > array->count)
+		return -1;
+	if (array_resize(array, count) == -1)
+		return -1;
+	array->count = count;
+	return 0;
+}
+
+int array_sort
+(struct array* const array, int (* const comparator)(const void*, const void*)) {
+	qsort(array, array->count, array->unit, comparator);
 	return 0;
 }

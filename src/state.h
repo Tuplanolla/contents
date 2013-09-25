@@ -46,6 +46,10 @@ int state_parse
 (struct state* state, struct array* of (char*) arguments)
 __attribute__ ((nonnull));
 
+int state_schedule
+(struct state* state, struct invocation* invocation)
+__attribute__ ((nonnull));
+
 int state_execute
 (struct state* state)
 __attribute__ ((nonnull));

@@ -19,35 +19,35 @@ int indefinix_run
 	struct array* of (struct action*) actions;
 	if (actions_create(&actions) == -1) {
 		status = -1;
-		goto actions;
+		goto nothing;
 	}
 	struct array* of (struct property*) properties;
 	if (properties_create(&properties) == -1) {
 		status = -1;
-		goto properties;
+		goto actions;
 	}
 	struct state* state;
 	if (state_create(&state, actions, properties) == -1) {
 		status = -1;
-		goto state;
+		goto properties;
 	}
 	if (state_parse(state, arguments) == -1) {
 		status = -1;
-		goto all;
+		goto state;
 	}
 	if (state_execute(state) == -1) {
 		status = -1;
-		goto all;
+		goto state;
 	}
-all:
+state:
 	if (state_destroy(state) == -1)
 		status = -1;
-state:
+properties:
 	if (properties_destroy(properties) == -1)
 		status = -1;
-properties:
+actions:
 	if (actions_destroy(actions) == -1)
 		status = -1;
-actions:
+nothing:
 	return status;
 }
