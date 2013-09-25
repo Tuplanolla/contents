@@ -45,9 +45,6 @@ int state_destroy
 	return status;
 }
 
-#include <stdio.h>
-#define REPORT printf
-
 int state_parse
 (struct state* const state, struct array* of (char*) const arguments) {
 	size_t position;
@@ -55,17 +52,14 @@ int state_parse
 		char const* argument;
 		if (array_read(&argument, arguments, position) == -1)
 			return -1;
-		REPORT("\"%s\" @ %zu\n", argument, position);
 		char const* (* accessor)(void const*) = (char const* (*)(void const*) )&action_name;
 		struct action const* const action = resolver_match(state->actions, accessor, argument, state->automatic_completion_limit);
 		if (action == NULL) {
 			// TODO schedule &infer
 			return -1;
 		}
-		REPORT("\"%s\" = %s\n", argument, action_name(action));
 		// TODO schedule action_instance(action)
 		if (action_arity(action) == ARITY_VARIADIC) {
-			REPORT("everything -> %s\n", action_name(action));
 			// TODO consume everything
 			break;
 		} else {
@@ -73,7 +67,6 @@ int state_parse
 			if (arity_to_integral(&integral, action_arity(action)) == -1)
 				return -1;
 			position += integral;
-			REPORT("%zu arguments -> %s\n", integral, action_name(action));
 		}
 	}
 	if (position == 0)

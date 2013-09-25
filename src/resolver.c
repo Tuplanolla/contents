@@ -7,7 +7,6 @@
 
 #include <stddef.h> // size_t, NULL
 #include <string.h> // strlen()
-#include <stdlib.h> // malloc(), free()
 
 #include "syntax.h" // of ()
 #include "array.h" // struct array

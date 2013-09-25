@@ -26,11 +26,11 @@ static int distance_comparator(void const* const x, void const* const y) {
 }
 
 int suggestions_create
-(struct array** of (struct suggestion*) const result, struct array* const array, char const* (* const accessor)(void const*), char const* const argument, size_t const completion_limit, size_t const count_limit, size_t const distance_limit) {
+(struct array** of (struct suggestion) const result, struct array* const array, char const* (* const accessor)(void const*), char const* const argument, size_t const completion_limit, size_t const count_limit, size_t const distance_limit) {
 	int status = 0;
 	size_t const count = array->count;
-	struct array* of (struct suggestion*) suggestions;
-	if (array_create(&suggestions, count, sizeof (struct suggestion*)) == -1) {
+	struct array* of (struct suggestion) suggestions;
+	if (array_create(&suggestions, count, sizeof (struct suggestion)) == -1) {
 		status = -1;
 		goto nothing;
 	}
@@ -65,12 +65,11 @@ int suggestions_create
 				status = -1;
 				goto array;
 			}
-		struct suggestion* suggestion; // TODO do away with pointers
-		if (suggestion_create(&suggestion, distance, instance) == -1) {
-			status = -1;
-			goto array;
-		}
-		if (array_add_last(suggestions, suggestion) == -1) {
+		struct suggestion suggestion = {
+			.edit_distance = distance,
+			.instance = instance
+		};
+		if (array_add_last(suggestions, &suggestion) == -1) {
 			status = -1;
 			goto array;
 		}
@@ -109,13 +108,6 @@ nothing:
 }
 
 int suggestions_destroy
-(struct array* of (struct suggestion*) const array) {
-	for (size_t position = 0; position < array->count; ++position) {
-		struct suggestion* suggestion; // TODO do away with pointers
-		if (array_read(&suggestion, array, position) == -1)
-			return -1;
-		if (suggestion_destroy(suggestion) == -1)
-			return -1;
-	}
-	return array_destroy(array);
+(struct array* of (struct suggestion) const suggestions) {
+	return array_destroy(suggestions);
 }

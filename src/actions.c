@@ -87,9 +87,8 @@ static struct action const actions[] = {{
 int actions_create
 (struct array** of (struct action*) const result) {
 	struct array* of (struct action*) array;
-	if (array_create(&array, COMMAND_COUNT, sizeof (struct action*)) == -1) {
+	if (array_create(&array, COMMAND_COUNT, sizeof (struct action*)) == -1)
 		return -1;
-	}
 	for (size_t position = 0; position < COMMAND_COUNT; ++position) {
 		void const* action = &actions[position];
 		if (array_add_last(array, &action) == -1) {

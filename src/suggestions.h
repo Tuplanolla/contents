@@ -14,11 +14,11 @@
 #include "suggestion.h" // struct suggestion
 
 int suggestions_create
-(struct array** of (struct suggestion*) result, struct array* array, char const* (* accessor)(void const*), char const* argument, size_t completion, size_t count, size_t distance)
+(struct array** of (struct suggestion) result, struct array* array, char const* (* accessor)(void const*), char const* argument, size_t completion, size_t count, size_t distance)
 __attribute__ ((nonnull));
 
 int suggestions_destroy
-(struct array* of (struct suggestion*) suggestion)
+(struct array* of (struct suggestion) suggestions)
 __attribute__ ((nonnull));
 
 #endif

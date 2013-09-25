@@ -80,9 +80,8 @@ static struct property const properties[] = {{
 int properties_create
 (struct array** of (struct property*) const result) {
 	struct array* of (struct property*) array;
-	if (array_create(&array, KEY_COUNT, sizeof (struct property*)) == -1) {
+	if (array_create(&array, KEY_COUNT, sizeof (struct property*)) == -1)
 		return -1;
-	}
 	for (size_t position = 0; position < KEY_COUNT; ++position) {
 		void const* property = &properties[position];
 		if (array_add_last(array, &property) == -1) {
