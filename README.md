@@ -184,10 +184,6 @@ The command `touch` rebuilds the index file if it's mangled.
 
 The command `destroy` deletes the index file.
 
-#### General
-
-The command `infer (string)` looks for a command that's similar to the given `(string)`, which is also invoked when an invalid command is given.
-
 #### Special Cases
 
 In addition to configuration keys and index entries, there are a handful of special cases.
@@ -200,15 +196,17 @@ Only `default` is a valid `(selection)`.
 The special value `%` is equivalent to an empty (essentially `NULL`) value and different from `""`.
 The string `%%` works as a literal `%` since `%` alone is reserved.
 
+The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
+
+The special command `version`, also available as a flag and abbreviated as `v`, prints a short summary, including version information.
+
+The special command `infer (string)` looks for a command that's similar to the given `(string)`, which also happens when an invalid command is given.
+
 The special command `bind (command) (arguments)` gives all the subsequent arguments to the next command, flags included.
 The two following commands are identical for example.
 
 	[user@arch ~]$ indefinix bind lookup pictures videos --unusual "minor error" "major error"
 	[user@arch ~]$ indefinix lookup pictures lookup videos lookup --unusual lookup "minor error" lookup "major error"
-
-The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
-
-The special command `version`, also available as a flag and abbreviated as `v`, prints a short summary, including version information.
 
 #### Example
 
