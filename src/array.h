@@ -37,7 +37,7 @@ int array_create_copy
 (struct array** result, struct array const* array)
 __attribute__ ((nonnull));
 
-int array_destroy
+void array_destroy
 (struct array* array)
 __attribute__ ((nonnull));
 

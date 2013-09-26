@@ -40,14 +40,11 @@ int indefinix_run
 		goto state;
 	}
 state:
-	if (state_destroy(state) == -1)
-		status = -1;
+	state_destroy(state);
 properties:
-	if (properties_destroy(properties) == -1)
-		status = -1;
+	properties_destroy(properties);
 actions:
-	if (actions_destroy(actions) == -1)
-		status = -1;
+	actions_destroy(actions);
 nothing:
 	return status;
 }

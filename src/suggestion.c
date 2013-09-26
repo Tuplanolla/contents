@@ -29,8 +29,7 @@ int suggestion_create
 	return 0;
 }
 
-int suggestion_destroy
+void suggestion_destroy
 (struct suggestion* const suggestion) {
 	free(suggestion);
-	return 0;
 }

@@ -27,7 +27,7 @@ int suggestion_create
 (struct suggestion** result, size_t edit_distance, void* instance)
 __attribute__ ((nonnull));
 
-int suggestion_destroy
+void suggestion_destroy
 (struct suggestion* suggestion)
 __attribute__ ((nonnull));
 

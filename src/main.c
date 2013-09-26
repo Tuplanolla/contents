@@ -8,7 +8,7 @@
 #include "syntax.h" // of ()
 
 int main
-(int const count, char const** const arguments) {
+(int const count, char const* const* const arguments) {
 	size_t const argument_count = (size_t )count;
 	int status = 0;
 	struct array* of (char*) array;
@@ -27,8 +27,7 @@ int main
 		goto array;
 	}
 array:
-	if (array_destroy(array) == -1)
-		status = -1;
+	array_destroy(array);
 nothing:
 	return -status;
 }

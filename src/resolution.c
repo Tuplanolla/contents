@@ -14,15 +14,15 @@
 int resolution_create
 (void** const result, struct array const* const array, char const* (* const accessor)(void const*), char const* const argument, size_t const limit) {
 	int status = 0;
+	struct array* candidates;
+	if (array_create_copy(&candidates, array) == -1)
+		goto nothing;
 	void* candidate = malloc(array_unit(array));
 	if (candidate == NULL)
-		goto nothing;
+		goto array;
 	void* match = malloc(array_unit(array));
 	if (match == NULL)
 		goto candidate;
-	struct array* candidates;
-	if (array_create_copy(&candidates, array) == -1)
-		goto match;
 	size_t const argument_length = strlen(argument);
 	for (size_t character = argument_length;
 			character > 0;
@@ -33,47 +33,40 @@ int resolution_create
 				) {
 			if (array_read(candidate, candidates, position) == -1) {
 				status = -1;
-				goto array;
+				goto match;
 			}
 			if (accessor(candidate)[character] == argument[character])
 				++position;
 			else
 				if (array_remove(NULL, candidates, position) == 1) {
 					status = -1;
-					goto array;
+					goto match;
 				}
 		}
 		if (array_count(candidates) == 0) {
 			status = -1;
-			goto array;
+			goto match;
 		} else if (array_count(candidates) == 1)
 			if ((limit == 0 && character == argument_length - 1)
 					|| (limit != 0 && character >= limit - 1))
 				if (array_read(match, candidates, 0) == -1) {
 					status = -1;
-					goto array;
+					goto match;
 				}
 	}
-	if (array_destroy(candidates) == -1) {
-		status = -1;
-		goto match;
-	}
-	free(candidate);
 	*result = match;
-	goto nothing;
-array:
-	if (array_destroy(candidates) == -1)
-		status = -1;
+	goto candidate;
 match:
 	free(match);
 candidate:
 	free(candidate);
+array:
+	array_destroy(candidates);
 nothing:
 	return status;
 }
 
-int resolution_destroy
+void resolution_destroy
 (void* const resolution) {
 	free(resolution);
-	return 0;
 }

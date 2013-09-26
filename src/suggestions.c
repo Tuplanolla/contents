@@ -57,10 +57,7 @@ int suggestions_create
 				status = -1;
 				goto truncation;
 			}
-			if (truncation_destroy(truncation) == -1) {
-				status = -1;
-				goto array;
-			}
+			truncation_destroy(truncation);
 		} else
 			if (edit_distance(&distance, argument, accessor(instance)) == -1) {
 				status = -1;
@@ -99,16 +96,14 @@ int suggestions_create
 	*result = suggestions;
 	goto nothing;
 truncation:
-	if (truncation_destroy(truncation) == -1)
-		status = -1;
+	truncation_destroy(truncation);
 array:
-	if (array_destroy(suggestions) == -1)
-		status = -1;
+	array_destroy(suggestions);
 nothing:
 	return status;
 }
 
-int suggestions_destroy
+void suggestions_destroy
 (struct array* of (struct suggestion) const suggestions) {
-	return array_destroy(suggestions);
+	array_destroy(suggestions);
 }

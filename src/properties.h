@@ -15,7 +15,7 @@ int properties_create
 (struct array** of (struct property) result)
 __attribute__ ((nonnull));
 
-int properties_destroy
+void properties_destroy
 (struct array* of (struct property) properties)
 __attribute__ ((nonnull));
 

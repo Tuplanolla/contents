@@ -15,7 +15,7 @@ int actions_create
 (struct array** of (struct action) result)
 __attribute__ ((nonnull));
 
-int actions_destroy
+void actions_destroy
 (struct array* of (struct action) actions)
 __attribute__ ((nonnull));
 

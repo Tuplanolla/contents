@@ -38,8 +38,7 @@ int action_create
 	return 0;
 }
 
-int action_destroy
+void action_destroy
 (struct action* const action) {
 	free(action);
-	return 0;
 }

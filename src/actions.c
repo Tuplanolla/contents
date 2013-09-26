@@ -74,15 +74,14 @@ int actions_create
 		return -1;
 	for (size_t position = 0; position < count; ++position)
 		if (array_add_last(array, &actions[position]) == -1) {
-			if (array_destroy(array) == -1)
-				return -1;
+			array_destroy(array);
 			return -1;
 		}
 	*result = array;
 	return 0;
 }
 
-int actions_destroy
+void actions_destroy
 (struct array* of (struct action) const array) {
-	return array_destroy(array);
+	array_destroy(array);
 }

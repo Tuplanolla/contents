@@ -9,7 +9,7 @@
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
-struct state;
+struct state; // TODO rethink
 
 typedef int (* procedure)(struct state* state, ...);
 
@@ -40,7 +40,7 @@ int state_create
 (struct state** result, struct array* of (struct action*) actions, struct array* of (struct property*) properties)
 __attribute__ ((nonnull));
 
-int state_destroy
+void state_destroy
 (struct state* state)
 __attribute__ ((nonnull));
 

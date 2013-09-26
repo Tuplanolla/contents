@@ -23,8 +23,7 @@ int truncation_create
 	return 0;
 }
 
-int truncation_destroy
+void truncation_destroy
 (char* const string) {
 	free(string);
-	return 0;
 }

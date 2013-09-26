@@ -69,11 +69,10 @@ int array_create_copy
 	return 0;
 }
 
-int array_destroy
+void array_destroy
 (struct array* const array) {
 	free(array->elements);
 	free(array);
-	return 0;
 }
 
 static int array_expand

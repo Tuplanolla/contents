@@ -14,7 +14,7 @@ int truncation_create
 (char** result, char const* string, size_t limit)
 __attribute__ ((nonnull));
 
-int truncation_destroy
+void truncation_destroy
 (char* string)
 __attribute__ ((nonnull));
 

@@ -23,8 +23,7 @@ int state_create
 	}
 	struct state* const state = malloc(sizeof *state);
 	if (state == NULL) {
-		if (array_destroy(invocations) == -1)
-			return -1;
+		array_destroy(invocations);
 		return -1;
 	}
 	state->actions = actions;
@@ -37,13 +36,10 @@ int state_create
 	return 0;
 }
 
-int state_destroy
+void state_destroy
 (struct state* const state) {
-	int status = 0;
-	if (array_destroy(state->invocations) == -1)
-		status = -1;
+	array_destroy(state->invocations);
 	free(state);
-	return status;
 }
 
 static int converter_convert // TODO move and implement
@@ -113,8 +109,7 @@ int state_execute
 			status = -1;
 			continue;
 		}
-		if (array_destroy(invocation.arguments) == -1)
-			status = -1;
+		array_destroy(invocation.arguments);
 	}
 	return status;
 }

@@ -16,7 +16,7 @@ int resolution_create
 (void** result, struct array const* array, char const* (* accessor)(void const*), char const* argument, size_t limit)
 __attribute__ ((nonnull));
 
-int resolution_destroy
+void resolution_destroy
 (void* resolution)
 __attribute__ ((nonnull));
 

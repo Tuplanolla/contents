@@ -37,7 +37,7 @@ int property_create
 (struct property** result, char const* name, char const* abbreviation, enum arity arity)
 __attribute__ ((nonnull));
 
-int property_destroy
+void property_destroy
 (struct property* property)
 __attribute__ ((nonnull));
 

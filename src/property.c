@@ -43,8 +43,7 @@ int property_create
 	return 0;
 }
 
-int property_destroy
+void property_destroy
 (struct property* const property) {
 	free(property);
-	return 0;
 }

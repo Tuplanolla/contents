@@ -32,7 +32,7 @@ int action_create
 (struct action** result, char const* name, enum arity arity, procedure procedure)
 __attribute__ ((nonnull));
 
-int action_destroy
+void action_destroy
 (struct action* action)
 __attribute__ ((nonnull));
 
