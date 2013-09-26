@@ -5,11 +5,11 @@
 
 #include "project.h"
 
-char const* const name = "Indefinix";
+static char const* const name = "Indefinix";
 
-char const* const version = "0.0.0";
+static char const* const version = "0.0.0";
 
-#define TARGET char const* const target
+#define TARGET static char const* const target
 #if defined __linux__
 TARGET = "Linux";
 #elif defined _WIN32

@@ -5,12 +5,14 @@
 
 #include "state.h" // procedure, struct state
 
+#include <stddef.h> // NULL, size_t
+#include <stdio.h> // stdout
 #include <stdlib.h> // free(), malloc()
-#include <stddef.h> // NULL
 
 #include "action.h" // procedure, struct action, action_arity(), action_instance(), action_name()
 #include "arity.h" // arity_to_integral()
 #include "array.h" // struct array, array_count(), array_create(), array_destroy(), array_read()
+#include "implementations.h" // execute_help(), execute_version()
 #include "invocation.h" // struct invocation
 #include "resolution.h" // resolution_create()
 #include "syntax.h" // of ()
@@ -32,6 +34,7 @@ int state_create
 	state->automatic_completion_limit = 1; // TODO configuration
 	state->suggestion_count = 3;
 	state->suggestion_edit_distance = 2;
+	state->output_stream = stdout;
 	*result = state;
 	return 0;
 }
@@ -109,6 +112,11 @@ int state_execute
 			status = -1;
 			continue;
 		}
+		procedure instance = invocation.instance;
+		if (instance == &execute_help)
+			invocation.instance(state);
+		else if (instance == &execute_version)
+			invocation.instance(state);
 		array_destroy(invocation.arguments);
 	}
 	return status;

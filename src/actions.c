@@ -8,6 +8,7 @@
 #include "action.h" // struct action
 #include "arity.h" // enum arity
 #include "array.h" // struct array, array_add_last(), array_create(), array_destroy()
+#include "implementations.h" // help(), version()
 #include "syntax.h" // of ()
 
 static struct action const actions[] = {{
@@ -54,10 +55,12 @@ static struct action const actions[] = {{
 		.arity = ARITY_NILADIC
 		}, {
 		.name = "help",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_help
 		}, {
 		.name = "version",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_version
 		}, {
 		.name = "infer",
 		.arity = ARITY_MONADIC
