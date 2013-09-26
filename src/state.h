@@ -9,6 +9,12 @@
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
+struct state;
+
+typedef int (* procedure)(struct state* state, ...);
+
+typedef char const* variable;
+
 #include "action.h" // struct action
 #include "array.h" // struct array
 #include "gnu.h" // __attribute__ (())
@@ -40,10 +46,6 @@ __attribute__ ((nonnull));
 
 int state_parse
 (struct state* state, struct array* of (char*) arguments)
-__attribute__ ((nonnull));
-
-int state_schedule
-(struct state* state, struct invocation* invocation)
 __attribute__ ((nonnull));
 
 int state_execute

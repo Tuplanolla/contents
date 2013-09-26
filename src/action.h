@@ -8,38 +8,12 @@
 
 #include "arity.h" // enum arity
 #include "gnu.h" // __attribute__ (())
-#include "state.h" // struct state
-
-enum command {
-	COMMAND_CONFIGURE,
-	COMMAND_SET,
-	COMMAND_POP,
-	COMMAND_GET,
-	COMMAND_OBLITERATE,
-	COMMAND_MAKE,
-	COMMAND_EDIT,
-	COMMAND_ADD,
-	COMMAND_REMOVE,
-	COMMAND_UPDATE,
-	COMMAND_LOOKUP,
-	COMMAND_FIND,
-	COMMAND_TOUCH,
-	COMMAND_DESTROY,
-	COMMAND_HELP,
-	COMMAND_VERSION,
-	COMMAND_BIND,
-	COMMAND_INFER,
-
-	COMMAND_COUNT
-};
-
-typedef int (* procedure)(struct state* state, ...);
+#include "state.h" // procedure
 
 struct action {
 	char const* name;
 	enum arity arity;
 	procedure instance;
-	enum command command; // ?
 };
 
 char const* action_name

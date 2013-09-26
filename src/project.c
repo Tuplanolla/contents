@@ -19,14 +19,14 @@ TARGET = "Unknown";
 #endif
 #undef TARGET
 
-char const* const project_name(void) {
+char const* project_name(void) {
 	return name;
 }
 
-char const* const project_version(void) {
+char const* project_version(void) {
 	return version;
 }
 
-char const* const project_target(void) {
+char const* project_target(void) {
 	return target;
 }

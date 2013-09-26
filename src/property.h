@@ -7,35 +7,14 @@
 #define PROPERTY_H
 
 #include "arity.h" // enum arity
-
 #include "gnu.h" // __attribute__ (())
-
-enum key {
-	KEY_LOCATION,
-	KEY_EDITOR,
-	KEY_COMPLETION,
-	KEY_ORDER,
-	KEY_WRAPPING,
-	KEY_JUSTIFICATION,
-	KEY_FILLING,
-	KEY_INTERACTION,
-	KEY_AFFIX,
-	KEY_HEADAFFIX,
-	KEY_TAILAFFIX,
-	KEY_UNUSUAL,
-	KEY_PRESET,
-
-	KEY_COUNT
-};
-
-typedef char const* variable;
+#include "state.h" // variable
 
 struct property {
 	char const* name;
 	char const* abbreviation;
 	enum arity arity;
 	variable instance;
-	enum key key; // ?
 };
 
 char const* property_name

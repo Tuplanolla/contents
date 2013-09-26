@@ -6,13 +6,13 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-char const* const project_name
+char const* project_name
 (void);
 
-char const* const project_version
+char const* project_version
 (void);
 
-char const* const project_target
+char const* project_target
 (void);
 
 #endif

@@ -41,12 +41,20 @@ int array_destroy
 (struct array* array)
 __attribute__ ((nonnull));
 
+int array_read
+(void* result, struct array* array, size_t position)
+__attribute__ ((nonnull (2)));
+
+int array_write
+(struct array* array, const void* element, size_t position)
+__attribute__ ((nonnull));
+
 int array_add
-(struct array* array, void* element, size_t position)
+(struct array* array, const void* element, size_t position)
 __attribute__ ((nonnull));
 
 int array_add_last
-(struct array* array, void* element)
+(struct array* array, const void* element)
 __attribute__ ((nonnull));
 
 int array_remove
@@ -56,14 +64,6 @@ __attribute__ ((nonnull (2)));
 int array_remove_last
 (void* result, struct array* array)
 __attribute__ ((nonnull (2)));
-
-int array_read
-(void* result, struct array* array, size_t position)
-__attribute__ ((nonnull (2)));
-
-int array_write
-(struct array* array, void* element, size_t position)
-__attribute__ ((nonnull));
 
 int array_truncate
 (struct array* array, size_t count)

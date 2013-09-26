@@ -3,11 +3,13 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "arity.h" // enum arity
-#include "property.h" // struct property, variable
+#include "property.h" // struct property
 
 #include <stddef.h> // NULL
 #include <stdlib.h> // free(), malloc()
+
+#include "arity.h" // enum arity
+#include "state.h" // variable
 
 char const* property_name
 (struct property const* const property) {

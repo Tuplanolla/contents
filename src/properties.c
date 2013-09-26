@@ -13,76 +13,64 @@
 static struct property const properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
-		.arity = ARITY_MONADIC,
-		.key = KEY_LOCATION
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "editor",
 		.abbreviation = "e",
-		.arity = ARITY_MONADIC,
-		.key = KEY_EDITOR
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "completion",
 		.abbreviation = "c",
-		.arity = ARITY_MONADIC,
-		.key = KEY_COMPLETION
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "order",
 		.abbreviation = "o",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_ORDER
+		.arity = ARITY_TRIADIC
 		}, {
 		.name = "wrapping",
 		.abbreviation = "w",
-		.arity = ARITY_MONADIC,
-		.key = KEY_WRAPPING
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "justification",
 		.abbreviation = "j",
-		.arity = ARITY_DYADIC,
-		.key = KEY_JUSTIFICATION
+		.arity = ARITY_DYADIC
 		}, {
 		.name = "filling",
 		.abbreviation = "f",
-		.arity = ARITY_DYADIC,
-		.key = KEY_FILLING
+		.arity = ARITY_DYADIC
 		}, {
 		.name = "interaction",
 		.abbreviation = "i",
-		.arity = ARITY_MONADIC,
-		.key = KEY_INTERACTION
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "affix",
 		.abbreviation = "a",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_AFFIX
+		.arity = ARITY_TRIADIC
 		}, {
 		.name = "headaffix",
 		.abbreviation = "ha",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_HEADAFFIX
+		.arity = ARITY_TRIADIC
 		}, {
 		.name = "tailaffix",
 		.abbreviation = "ta",
-		.arity = ARITY_TRIADIC,
-		.key = KEY_TAILAFFIX
+		.arity = ARITY_TRIADIC
 		}, {
 		.name = "unusual",
 		.abbreviation = "u",
-		.arity = ARITY_DYADIC,
-		.key = KEY_UNUSUAL
+		.arity = ARITY_DYADIC
 		}, {
 		.name = "preset",
 		.abbreviation = "p",
-		.arity = ARITY_MONADIC,
-		.key = KEY_PRESET
+		.arity = ARITY_MONADIC
 		}};
 
 int properties_create
 (struct array** of (struct property) const result) {
 	struct array* of (struct property) array;
-	if (array_create(&array, KEY_COUNT, sizeof (struct property)) == -1)
+	size_t const count = sizeof properties / sizeof *properties;
+	if (array_create(&array, count, sizeof (struct property)) == -1)
 		return -1;
-	for (size_t position = 0; position < KEY_COUNT; ++position)
+	for (size_t position = 0; position < count; ++position)
 		if (array_add_last(array, &properties[position]) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;

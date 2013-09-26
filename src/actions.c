@@ -12,84 +12,67 @@
 
 static struct action const actions[] = {{
 		.name = "configure",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_CONFIGURE
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "set",
-		.arity = ARITY_VARIADIC,
-		.command = COMMAND_SET
+		.arity = ARITY_VARIADIC
 		}, {
 		.name = "pop",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_POP
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "get",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_GET
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "obliterate",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_OBLITERATE
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "make",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_MAKE
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "edit",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_EDIT
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "add",
-		.arity = ARITY_DYADIC,
-		.command = COMMAND_ADD
+		.arity = ARITY_DYADIC
 		}, {
 		.name = "remove",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_REMOVE
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "update",
-		.arity = ARITY_DYADIC,
-		.command = COMMAND_UPDATE
+		.arity = ARITY_DYADIC
 		}, {
 		.name = "lookup",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_LOOKUP
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "find",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_FIND
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "touch",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_TOUCH
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "destroy",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_DESTROY
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "help",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_HELP
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "version",
-		.arity = ARITY_NILADIC,
-		.command = COMMAND_VERSION
+		.arity = ARITY_NILADIC
 		}, {
 		.name = "infer",
-		.arity = ARITY_MONADIC,
-		.command = COMMAND_INFER
+		.arity = ARITY_MONADIC
 		}, {
 		.name = "bind",
-		.arity = ARITY_VARIADIC,
-		.command = COMMAND_BIND
+		.arity = ARITY_VARIADIC
 		}};
 
 int actions_create
 (struct array** of (struct action) const result) {
 	struct array* of (struct action) array;
-	if (array_create(&array, COMMAND_COUNT, sizeof (struct action)) == -1)
+	size_t const count = sizeof actions / sizeof *actions;
+	if (array_create(&array, count, sizeof (struct action)) == -1)
 		return -1;
-	for (size_t position = 0; position < COMMAND_COUNT; ++position)
+	for (size_t position = 0; position < count; ++position)
 		if (array_add_last(array, &actions[position]) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;

@@ -6,9 +6,9 @@
 #ifndef INVOCATION_H
 #define INVOCATION_H
 
-#include "action.h" // procedure
 #include "array.h" // struct array
 #include "gnu.h" // __attribute__ (())
+#include "state.h" // procedure
 #include "syntax.h" // of ()
 
 struct invocation {
