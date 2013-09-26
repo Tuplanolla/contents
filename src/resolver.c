@@ -5,11 +5,11 @@
 
 #include "resolver.h" // struct suggestion
 
-#include <stddef.h> // size_t, NULL
+#include <stddef.h> // NULL, size_t
+#include <stdlib.h> // free(), malloc()
 #include <string.h> // strlen()
 
-#include "syntax.h" // of ()
-#include "array.h" // struct array
+#include "array.h" // struct array, array_count(), array_create_copy(), array_destroy(), array_read(), array_remove()
 
 void* resolver_match
 (struct array const* const array, char const* (* const accessor)(void const*), char const* const argument, size_t const limit) {
@@ -17,6 +17,9 @@ void* resolver_match
 	struct array* candidates;
 	if (array_create_copy(&candidates, array) == -1)
 		goto nothing;
+	void const* candidate = malloc(array_unit(candidates));
+	if (candidate == NULL)
+		goto array;
 	size_t const argument_length = strlen(argument);
 	for (size_t character = 0;
 			character < argument_length;
@@ -24,10 +27,9 @@ void* resolver_match
 		for (size_t position = 0;
 				position < array_count(candidates);
 				) {
-			const void* candidate;
 			if (array_read(&candidate, candidates, position) == -1) {
 				match = NULL;
-				goto array;
+				goto candidate;
 			}
 			if (accessor(candidate)[character] == argument[character])
 				++position;
@@ -48,6 +50,8 @@ void* resolver_match
 					goto array;
 				}
 	}
+candidate:
+	free(candidate);
 array:
 	if (array_destroy(candidates) == -1)
 		match = NULL;

@@ -9,21 +9,17 @@
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
-#include "gnu.h" // __attribute__ (())
-#include "syntax.h" // of ()
+#include "action.h" // struct action
 #include "array.h" // struct array
-#include "action.h" // procedure, struct action
-#include "property.h" // variable, struct property
-
-struct invocation { // TODO invocation.h
-	procedure procedure;
-	struct array* of (void*) arguments;
-};
+#include "gnu.h" // __attribute__ (())
+#include "invocation.h" // struct invocation
+#include "property.h" // struct property, variable
+#include "syntax.h" // of ()
 
 struct state {
 	struct array* of (struct action*) actions;
 	struct array* of (struct property*) properties;
-	struct array* of (struct invocation*) invocations;
+	struct array* of (struct invocation) invocations;
 	size_t automatic_completion_limit;
 	size_t suggestion_count;
 	size_t suggestion_edit_distance;

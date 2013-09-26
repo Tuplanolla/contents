@@ -5,8 +5,8 @@
 
 #include "suggestion.h" // struct suggestion
 
-#include <stdlib.h> // malloc(), free()
-#include <stddef.h> // NULL
+#include <stddef.h> // NULL, size_t
+#include <stdlib.h> // free(), malloc()
 
 size_t suggestion_edit_distance
 (struct suggestion const* const suggestion) {

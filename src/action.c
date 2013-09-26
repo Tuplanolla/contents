@@ -3,11 +3,12 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "action.h" // struct action, procedure
-#include "arity.h" // enum arity
+#include "action.h" // procedure, struct action
 
-#include <stdlib.h> // malloc(), free()
 #include <stddef.h> // NULL
+#include <stdlib.h> // free(), malloc()
+
+#include "arity.h" // enum arity
 
 char const* action_name
 (struct action const* const action) {

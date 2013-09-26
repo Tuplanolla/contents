@@ -5,12 +5,13 @@
 
 #include "helper.h"
 
-#include <stdio.h> // FILE, fprintf()
 #include <stddef.h> // NULL
+#include <stdio.h> // FILE, fprintf()
 
-#include "syntax.h" // of ()
 #include "array.h" // struct array, array_count(), array_read()
+#include "project.h" // project_name(), project_target(), project_version()
 #include "suggestion.h" // struct suggestion
+#include "syntax.h" // of ()
 
 static char const usage[] = "\
 Usage: indefinix (flags) (command) (arguments) (...) (flags)\n\
@@ -59,7 +60,7 @@ int helper_summary
 (FILE* const stream) {
 	if (stream == NULL)
 		return -1;
-	if (fprintf(stream, "%s version %s for %s\n", "Indefinix", "0.0.0", "Linux") < 0)
+	if (fprintf(stream, "%s version %s for %s\n", project_name(), project_version(), project_target()) < 0)
 		return -1;
 	return 0;
 }

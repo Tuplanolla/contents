@@ -5,11 +5,11 @@
 
 #include "array.h" // struct array
 
-#include <stddef.h> // size_t, NULL
-#include <stdlib.h> // malloc(), free(), realloc(), qsort()
+#include <stddef.h> // NULL, size_t
+#include <stdlib.h> // free(), malloc(), realloc(), qsort()
 #include <string.h> // memcpy(), memmove()
 
-#include "calculator.h" // maximum
+#include "calculator.h" // maximum()
 
 size_t array_capacity
 (struct array const* const array) {
@@ -78,7 +78,8 @@ int array_destroy
 
 #define SIZE_MAX ((size_t )-1)
 
-static int array_resize(struct array* const array, size_t const count) {
+static int array_resize
+(struct array* const array, size_t const count) {
 	size_t const unit = array->unit;
 	size_t capacity;
 	while (count >= (capacity = array->capacity)) {

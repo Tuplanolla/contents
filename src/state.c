@@ -3,21 +3,22 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "state.h" // struct state, struct invocation
+#include "state.h" // struct state
 
-#include <stdlib.h> // malloc(), free()
+#include <stdlib.h> // free(), malloc()
 #include <stddef.h> // NULL
 
-#include "syntax.h" // of ()
-#include "array.h" // struct array, array_create(), array_destroy()
-#include "action.h" // struct action, action_name()
-#include "resolver.h" // resolver_match()
+#include "action.h" // struct action, action_arity(), action_instance(), action_name()
 #include "arity.h" // arity_to_integral()
+#include "array.h" // struct array, array_count(), array_create(), array_destroy(), array_read()
+#include "invocation.h" // struct invocation
+#include "resolver.h" // resolver_match()
+#include "syntax.h" // of ()
 
 int state_create
 (struct state** const result, struct array* of (struct action*) const actions, struct array* of (struct property*) const properties) {
-	struct array* of (struct invocation*) invocations;
-	if (array_create(&invocations, 1, sizeof (struct invocation*)) == -1) {
+	struct array* of (struct invocation) invocations;
+	if (array_create(&invocations, 1, sizeof (struct invocation)) == -1) {
 		return -1;
 	}
 	struct state* const state = malloc(sizeof *state);
@@ -52,7 +53,7 @@ int state_parse
 		char const* argument;
 		if (array_read(&argument, arguments, position) == -1)
 			return -1;
-		char const* (* accessor)(void const*) = (char const* (*)(void const*) )&action_name;
+		char const* (* const accessor)(void const*) = (char const* (*)(void const*) )&action_name;
 		struct action const* const action = resolver_match(state->actions, accessor, argument, state->automatic_completion_limit);
 		if (action == NULL) {
 			// TODO schedule &infer

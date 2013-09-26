@@ -5,13 +5,13 @@
 
 #include "indefinix.h"
 
-#include "syntax.h" // of ()
-#include "array.h" // struct array
 #include "action.h" // struct action
-#include "property.h" // struct property
 #include "actions.h" // actions_create(), actions_destroy()
+#include "array.h" // struct array
 #include "properties.h" // properties_create(), properties_destroy()
-#include "state.h" // struct state, state_create(), state_parse(), state_execute(), state_destroy()
+#include "property.h" // struct property
+#include "state.h" // struct state, state_create(), state_destroy(), state_execute(), state_parse()
+#include "syntax.h" // of ()
 
 int indefinix_run
 (struct array* of (char*) const arguments) {

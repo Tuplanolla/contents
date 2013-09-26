@@ -7,8 +7,8 @@
 #define ACTION_H
 
 #include "arity.h" // enum arity
-
 #include "gnu.h" // __attribute__ (())
+#include "state.h" // struct state
 
 enum command {
 	COMMAND_CONFIGURE,
@@ -33,7 +33,7 @@ enum command {
 	COMMAND_COUNT
 };
 
-typedef int (* procedure)();
+typedef int (* procedure)(struct state* state, ...);
 
 struct action {
 	char const* name;

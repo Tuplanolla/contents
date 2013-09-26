@@ -8,10 +8,10 @@
 
 #include <stddef.h> // size_t
 
-#include "gnu.h" // __attribute__ (())
-#include "syntax.h" // of ()
 #include "array.h" // struct array
+#include "gnu.h" // __attribute__ (())
 #include "suggestion.h" // struct suggestion
+#include "syntax.h" // of ()
 
 int suggestions_create
 (struct array** of (struct suggestion) result, struct array* array, char const* (* accessor)(void const*), char const* argument, size_t completion, size_t count, size_t distance)

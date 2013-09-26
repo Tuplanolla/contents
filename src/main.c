@@ -3,9 +3,9 @@
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "syntax.h" // of ()
-#include "array.h" // struct array, array_create(), array_destroy(), array_add_last()
+#include "array.h" // struct array, array_add_last(), array_create(), array_destroy()
 #include "indefinix.h" // indefinix_run()
+#include "syntax.h" // of ()
 
 int main
 (int const count, char const** const arguments) {

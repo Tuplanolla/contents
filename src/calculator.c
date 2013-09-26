@@ -5,9 +5,9 @@
 
 #include "calculator.h"
 
-#include <stddef.h> // size_t, NULL
+#include <stddef.h> // NULL, size_t
+#include <stdlib.h> // free(), malloc()
 #include <string.h> // strlen()
-#include <stdlib.h> // malloc(), free()
 
 size_t minimum
 (size_t const x, size_t const y) {

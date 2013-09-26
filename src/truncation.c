@@ -5,9 +5,9 @@
 
 #include "truncation.h"
 
-#include <stddef.h> // size_t, NULL
-#include <string.h> // strlen(), memcpy()
-#include <stdlib.h> // malloc(), free()
+#include <stddef.h> // NULL, size_t
+#include <stdlib.h> // free(), malloc()
+#include <string.h> // memcpy(), strlen()
 
 #include "calculator.h" // minimum()
 

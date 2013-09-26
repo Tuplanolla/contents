@@ -5,17 +5,18 @@
 
 #include "suggestions.h"
 
-#include <stddef.h> // size_t, NULL
+#include <stddef.h> // NULL, size_t
 #include <string.h> // strlen()
 
-#include "array.h" // struct array, array_create(), array_destroy()
-#include "calculator.h" // maximum(), edit_distance()
+#include "array.h" // struct array, array_add_last(), array_count(), array_create(), array_destroy(), array_read(), array_sort() array_truncate()
+#include "calculator.h" // edit_distance(), maximum()
+#include "suggestion.h" // struct suggestion, suggestion_edit_distance()
 #include "truncation.h" // truncation_create(), truncation_destroy()
-#include "suggestion.h" // suggestion_edit_distance()
 
 #define SIZE_MAX ((size_t )-1)
 
-static int distance_comparator(void const* const x, void const* const y) {
+static int distance_comparator
+(void const* const x, void const* const y) {
 	size_t const x_distance = ((struct suggestion const* )x)->edit_distance;
 	size_t const y_distance = ((struct suggestion const* )y)->edit_distance;
 	if (x_distance < y_distance)

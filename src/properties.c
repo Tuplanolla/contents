@@ -5,10 +5,10 @@
 
 #include "properties.h"
 
-#include "property.h" // struct property
 #include "arity.h" // enum arity
+#include "array.h" // array_add_last(), array_create(), array_destroy()
+#include "property.h" // struct property
 #include "syntax.h" // of ()
-#include "array.h" // array_create(), array_add_last(), array_destroy()
 
 static struct property const properties[] = {{
 		.name = "location",
@@ -78,23 +78,21 @@ static struct property const properties[] = {{
 		}};
 
 int properties_create
-(struct array** of (struct property*) const result) {
-	struct array* of (struct property*) array;
-	if (array_create(&array, KEY_COUNT, sizeof (struct property*)) == -1)
+(struct array** of (struct property) const result) {
+	struct array* of (struct property) array;
+	if (array_create(&array, KEY_COUNT, sizeof (struct property)) == -1)
 		return -1;
-	for (size_t position = 0; position < KEY_COUNT; ++position) {
-		void const* property = &properties[position];
-		if (array_add_last(array, &property) == -1) {
+	for (size_t position = 0; position < KEY_COUNT; ++position)
+		if (array_add_last(array, &properties[position]) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;
 			return -1;
 		}
-	}
 	*result = array;
 	return 0;
 }
 
 int properties_destroy
-(struct array* of (struct property*) const array) {
+(struct array* of (struct property) const array) {
 	return array_destroy(array);
 }

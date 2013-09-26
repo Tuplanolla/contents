@@ -8,9 +8,10 @@
 
 #include <stdio.h> // FILE
 
-#include "gnu.h" // __attribute__ (())
-#include "syntax.h" // of ()
 #include "array.h" // struct array
+#include "gnu.h" // __attribute__ (())
+#include "suggestion.h" // struct suggestion
+#include "syntax.h" // of ()
 
 int helper_usage
 (FILE* stream);

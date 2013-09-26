@@ -5,10 +5,10 @@
 
 #include "actions.h"
 
-#include "arity.h" // enum arity
-#include "syntax.h" // of ()
-#include "array.h" // array_create(), array_add_last(), array_destroy()
 #include "action.h" // struct action
+#include "arity.h" // enum arity
+#include "array.h" // struct array, array_add_last(), array_create(), array_destroy()
+#include "syntax.h" // of ()
 
 static struct action const actions[] = {{
 		.name = "configure",
@@ -75,33 +75,31 @@ static struct action const actions[] = {{
 		.arity = ARITY_NILADIC,
 		.command = COMMAND_VERSION
 		}, {
-		.name = "bind",
-		.arity = ARITY_VARIADIC,
-		.command = COMMAND_BIND
-		}, {
 		.name = "infer",
 		.arity = ARITY_MONADIC,
 		.command = COMMAND_INFER
+		}, {
+		.name = "bind",
+		.arity = ARITY_VARIADIC,
+		.command = COMMAND_BIND
 		}};
 
 int actions_create
-(struct array** of (struct action*) const result) {
-	struct array* of (struct action*) array;
-	if (array_create(&array, COMMAND_COUNT, sizeof (struct action*)) == -1)
+(struct array** of (struct action) const result) {
+	struct array* of (struct action) array;
+	if (array_create(&array, COMMAND_COUNT, sizeof (struct action)) == -1)
 		return -1;
-	for (size_t position = 0; position < COMMAND_COUNT; ++position) {
-		void const* action = &actions[position];
-		if (array_add_last(array, &action) == -1) {
+	for (size_t position = 0; position < COMMAND_COUNT; ++position)
+		if (array_add_last(array, &actions[position]) == -1) {
 			if (array_destroy(array) == -1)
 				return -1;
 			return -1;
 		}
-	}
 	*result = array;
 	return 0;
 }
 
 int actions_destroy
-(struct array* of (struct action*) const array) {
+(struct array* of (struct action) const array) {
 	return array_destroy(array);
 }
