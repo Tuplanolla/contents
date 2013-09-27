@@ -9,17 +9,11 @@
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
-struct state; // TODO rethink
-
-typedef int (* procedure)(struct state* state, ...);
-
-typedef char const* variable;
-
 #include "action.h" // struct action
 #include "array.h" // struct array
 #include "gnu.h" // __attribute__ (())
 #include "invocation.h" // struct invocation
-#include "property.h" // struct property, variable
+#include "property.h" // struct property
 #include "syntax.h" // of ()
 
 struct state {

@@ -8,7 +8,7 @@
 
 #include "arity.h" // enum arity
 #include "gnu.h" // __attribute__ (())
-#include "state.h" // procedure
+#include "types.h" // procedure
 
 struct action {
 	char const* name;

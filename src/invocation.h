@@ -8,8 +8,8 @@
 
 #include "array.h" // struct array
 #include "gnu.h" // __attribute__ (())
-#include "state.h" // procedure
 #include "syntax.h" // of ()
+#include "types.h" // procedure
 
 struct invocation {
 	procedure instance;

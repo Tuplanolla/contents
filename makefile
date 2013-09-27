@@ -17,7 +17,8 @@ TEST = -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700\
 FLAGS = -std=c11\
 		$(DEBUG)\
 		$(TEST)
-CC = /usr/bin/gcc $(FLAGS)
+# Compiler invocations are long.
+CC = @ /usr/bin/gcc $(FLAGS)
 MKDIR = /bin/mkdir -p
 RM = /bin/rm -f
 CP = /bin/cp -u
@@ -34,7 +35,7 @@ NAME = indefinix
 MAIN_SOURCES = $(SRC)/main.c
 TEST_SOURCES = $(SRC)/cheat.c
 # find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/action.c $(SRC)/actions.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/helper.c $(SRC)/indefinix.c $(SRC)/implementations.c $(SRC)/invocation.c $(SRC)/project.c $(SRC)/properties.c $(SRC)/property.c $(SRC)/resolution.c $(SRC)/state.c $(SRC)/suggestion.c $(SRC)/suggestions.c $(SRC)/truncation.c
+SOURCES = $(SRC)/action.c $(SRC)/actions.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/indefinix.c $(SRC)/invocation.c $(SRC)/project.c $(SRC)/properties.c $(SRC)/property.c $(SRC)/resolution.c $(SRC)/state.c $(SRC)/suggestion.c $(SRC)/suggestions.c $(SRC)/truncation.c
 MAIN_OBJECTS = $(MAIN_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 TEST_OBJECTS = $(TEST_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)

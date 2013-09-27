@@ -8,60 +8,74 @@
 #include "arity.h" // enum arity
 #include "array.h" // array_add_last(), array_create(), array_destroy()
 #include "property.h" // struct property
+#include "representer.h" // represent_nothing
 #include "syntax.h" // of ()
 
 static struct property const properties[] = {{
 		.name = "location",
 		.abbreviation = "l",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "editor",
 		.abbreviation = "e",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "completion",
 		.abbreviation = "c",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "order",
 		.abbreviation = "o",
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "wrapping",
 		.abbreviation = "w",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "justification",
 		.abbreviation = "j",
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "filling",
 		.abbreviation = "f",
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "interaction",
 		.abbreviation = "i",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "affix",
 		.abbreviation = "a",
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "headaffix",
 		.abbreviation = "ha",
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "tailaffix",
 		.abbreviation = "ta",
-		.arity = ARITY_TRIADIC
+		.arity = ARITY_TRIADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "unusual",
 		.abbreviation = "u",
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.instance = &represent_nothing
 		}, {
 		.name = "preset",
 		.abbreviation = "p",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &represent_nothing
 		}};
 
 int properties_create

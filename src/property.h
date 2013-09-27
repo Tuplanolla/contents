@@ -8,7 +8,7 @@
 
 #include "arity.h" // enum arity
 #include "gnu.h" // __attribute__ (())
-#include "state.h" // variable
+#include "types.h" // variable
 
 struct property {
 	char const* name;

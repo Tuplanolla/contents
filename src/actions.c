@@ -8,51 +8,65 @@
 #include "action.h" // struct action
 #include "arity.h" // enum arity
 #include "array.h" // struct array, array_add_last(), array_create(), array_destroy()
-#include "implementations.h" // help(), version()
+#include "executor.h" // execute_help(), execute_nothing(), execute_version()
 #include "syntax.h" // of ()
 
 static struct action const actions[] = {{
 		.name = "configure",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "set",
-		.arity = ARITY_VARIADIC
+		.arity = ARITY_VARIADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "pop",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "get",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "obliterate",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "make",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "edit",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "add",
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "remove",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "update",
-		.arity = ARITY_DYADIC
+		.arity = ARITY_DYADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "lookup",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "find",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "touch",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "destroy",
-		.arity = ARITY_NILADIC
+		.arity = ARITY_NILADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "help",
 		.arity = ARITY_NILADIC,
@@ -63,10 +77,12 @@ static struct action const actions[] = {{
 		.instance = &execute_version
 		}, {
 		.name = "infer",
-		.arity = ARITY_MONADIC
+		.arity = ARITY_MONADIC,
+		.instance = &execute_nothing
 		}, {
 		.name = "bind",
-		.arity = ARITY_VARIADIC
+		.arity = ARITY_VARIADIC,
+		.instance = &execute_nothing
 		}};
 
 int actions_create

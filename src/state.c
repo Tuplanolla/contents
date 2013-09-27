@@ -12,10 +12,11 @@
 #include "action.h" // procedure, struct action, action_arity(), action_instance(), action_name()
 #include "arity.h" // arity_to_integral()
 #include "array.h" // struct array, array_count(), array_create(), array_destroy(), array_read()
-#include "implementations.h" // execute_help(), execute_version()
+#include "executor.h" // execute_help(), execute_version()
 #include "invocation.h" // struct invocation
 #include "resolution.h" // resolution_create()
 #include "syntax.h" // of ()
+#include "types.h" // procedure, variable
 
 int state_create
 (struct state** const result, struct array* of (struct action*) const actions, struct array* of (struct property*) const properties) {
@@ -104,20 +105,13 @@ int state_parse
 
 int state_execute
 (struct state* const state) {
-	int status = 0;
 	struct array* of (struct invocation) invocations = state->invocations;
 	for (size_t position = 0; position < array_count(invocations); ++position) {
 		struct invocation invocation;
-		if (array_read(&invocation, invocations, position) == -1) {
-			status = -1;
-			continue;
-		}
-		procedure instance = invocation.instance;
-		if (instance == &execute_help)
-			invocation.instance(state);
-		else if (instance == &execute_version)
-			invocation.instance(state);
+		if (array_read(&invocation, invocations, position) == -1)
+			return -1; // unavoidable leak
+		invocation.instance(state, invocation.arguments);
 		array_destroy(invocation.arguments);
 	}
-	return status;
+	return 0;
 }
