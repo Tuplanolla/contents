@@ -84,7 +84,9 @@ int properties_create
 	size_t const count = sizeof properties / sizeof *properties;
 	if (array_create(&array, count, sizeof (struct property)) == -1)
 		return -1;
-	for (size_t position = 0; position < count; ++position)
+	for (size_t position = 0;
+			position < count;
+			++position)
 		if (array_add_last(array, &properties[position]) == -1) {
 			array_destroy(array);
 			return -1;

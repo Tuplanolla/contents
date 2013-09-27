@@ -11,7 +11,7 @@
 
 struct state;
 
-typedef int (* procedure)(struct state*, struct array* of (void*));
+typedef int (* procedure)(struct state*, struct array* of (char const*));
 
 typedef void* variable;
 

@@ -91,7 +91,9 @@ int actions_create
 	size_t const count = sizeof actions / sizeof *actions;
 	if (array_create(&array, count, sizeof (struct action)) == -1)
 		return -1;
-	for (size_t position = 0; position < count; ++position)
+	for (size_t position = 0;
+			position < count;
+			++position)
 		if (array_add_last(array, &actions[position]) == -1) {
 			array_destroy(array);
 			return -1;

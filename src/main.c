@@ -16,7 +16,9 @@ int main
 		status = -1;
 		goto nothing;
 	}
-	for (size_t argument = 1; argument < argument_count; ++argument) {
+	for (size_t argument = 1;
+			argument < argument_count;
+			++argument) {
 		if (array_add_last(array, &arguments[argument]) == -1) {
 			status = -1;
 			goto array;

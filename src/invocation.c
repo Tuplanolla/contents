@@ -5,16 +5,16 @@
 
 #include "invocation.h" // struct invocation
 
-#include "action.h" // procedure
 #include "array.h" // struct array
 #include "syntax.h" // of ()
+#include "types.h" // procedure
 
 procedure invocation_instance
 (struct invocation const* invocation) {
 	return invocation->instance;
 }
 
-struct array* of (void*) invocation_arguments
+struct array* of (char const*) invocation_arguments
 (struct invocation const* invocation) {
 	return invocation->arguments;
 }

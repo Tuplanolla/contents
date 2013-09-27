@@ -13,7 +13,7 @@
 
 struct invocation {
 	procedure instance;
-	struct array* of (void*) arguments;
+	struct array* of (char const*) arguments;
 };
 
 procedure invocation_instance

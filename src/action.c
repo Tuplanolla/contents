@@ -9,7 +9,7 @@
 #include <stdlib.h> // free(), malloc()
 
 #include "arity.h" // enum arity
-#include "state.h" // procedure
+#include "types.h" // procedure
 
 char const* action_name
 (struct action const* const action) {
