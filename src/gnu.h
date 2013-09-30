@@ -8,7 +8,7 @@
 
 #ifndef __GNUC__
 
-#define __attribute__(...) // __attribute__ ((...))
+#define __attribute__(...)
 
 #endif
 

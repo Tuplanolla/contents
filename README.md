@@ -97,14 +97,14 @@ Indefinix can be configured persistently with the command `indefinix set (key) (
 Persistent configurations are saved to `~/.indefinix` if needed while temporary configurations are lost when the program exits.
 
 The key `location (name)`, abbreviated as `l`, contains the expected name of the index files.
-The default value is `INDEX`.
+The default value is `./INDEX`.
 Any file name is a valid `(name)`.
 
 The key `editor (path)`, abbreviated as `e`, contains the default text editor used for editing the index files with `indefinix edit` or the configuration file with `indefinix configure`.
 The default value is `%n` unless a simple text editor is detected automatically.
 Any path to an executable is a valid `(path)`.
 
-The key `completion (number)`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
+The key `completion (number) (number) (number)`, abbreviated as `c`, contains the shortest command length that can be automatically completed.
 The default value is `1`.
 Any unsigned integer is a valid `(number)`.
 Automatic completion can be disabled with `0`, but `1` is recommended since every command has a unique initial and destructive actions require verification.
@@ -132,7 +132,7 @@ Any of `yes` or `no` is a valid `(answer)`.
 The special keys `yes`, abbreviated as `y`, and `no`, abbreviated as `n`, are equivalent to `interaction yes` and `interaction no` respectively.
 
 The key `affix (string) (string) (string)`, abbreviated as `a`, contains the text that comes before, between and after the columns of the index files.
-The default value is `"   " "" ""` (the first part having three spaces).
+The default value is `"" "   " ""` (the second argument being three spaces).
 
 Furthermore the keys `headaffix (string) (string) (string)`, abbreviated as `ha`, and `tailaffix (string) (string) (string)`, abbreviated as `ta`, work like affix, but only apply to the first and last lines respectively.
 The default values are `%n " - " %n` and `%n %n %n`.
@@ -193,8 +193,8 @@ The default value is, rather self referentially, `default`.
 The key doesn't have a persistent value, so it can only be written.
 Only `default` is a valid `(selection)`.
 
-The special value `%` is equivalent to an empty (essentially `NULL`) value and different from `""`.
-The string `%%` works as a literal `%` since `%` alone is reserved.
+The special values `%n` and `%u` are equivalent to an empty (essentially `NULL`) value and the current (essentially unchanged) value respectively.
+The string `%%` works as a literal `%` since `%` is sometimes reserved.
 
 The special command `help`, also available as a flag and abbreviated as `h`, prints a short usage reference, which also appears when Indefinix is invoked without any arguments.
 
@@ -216,8 +216,8 @@ Let's begin by configuring Indefinix for a Lisp fanatic.
 	[user@arch ~]$ indefinix set alignment left left
 	[user@arch ~]$ indefinix set filling none none
 	[user@arch ~]$ indefinix set affix " " " (" ""
-	[user@arch ~]$ indefinix set headaffix "(" % %
-	[user@arch ~]$ indefinix set tailaffix % % "))"
+	[user@arch ~]$ indefinix set headaffix "(" %n %n
+	[user@arch ~]$ indefinix set tailaffix %n %n "))"
 
 We'll then move to the directory we want to index
 

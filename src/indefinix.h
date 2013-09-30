@@ -6,12 +6,12 @@
 #ifndef INDEFINIX_H
 #define INDEFINIX_H
 
-#include "array.h" // struct array
-#include "gnu.h" // __attribute__ (())
-#include "syntax.h" // of ()
+#include <stddef.h> // size_t
 
-int indefinix_run
-(struct array* of (char*) arguments)
-__attribute__ ((nonnull));
+#include "gnu.h" // __attribute__ (())
+
+int indefinix_invoke
+(char const* const* arguments, size_t count)
+__attribute__ ((__nonnull__));
 
 #endif

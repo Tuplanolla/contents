@@ -18,7 +18,8 @@ FLAGS = -std=c11\
 		$(DEBUG)\
 		$(TEST)
 # Compiler invocations are long.
-CC = @ /usr/bin/gcc $(FLAGS)
+CC = /usr/bin/gcc $(FLAGS)
+ECHO = /bin/echo
 MKDIR = /bin/mkdir -p
 RM = /bin/rm -f
 CP = /bin/cp -u
@@ -32,63 +33,96 @@ BIN = bin
 PKG = pkg
 DOX = dox
 NAME = indefinix
+# pwd | xargs basename
+DIRECTORY = indefinix
 MAIN_SOURCES = $(SRC)/main.c
 TEST_SOURCES = $(SRC)/cheat.c
-# find src -name "*.c" -type f | sort | sed -e "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/action.c $(SRC)/actions.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/indefinix.c $(SRC)/invocation.c $(SRC)/project.c $(SRC)/properties.c $(SRC)/property.c $(SRC)/resolution.c $(SRC)/state.c $(SRC)/suggestion.c $(SRC)/suggestions.c $(SRC)/truncation.c
+# find src -name "*.c" -type f | sort | sed "s/src\//\$(SRC)\//" | xargs echo
+SOURCES = $(SRC)/indefinix.c
 MAIN_OBJECTS = $(MAIN_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 TEST_OBJECTS = $(TEST_SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 BINARY = $(BIN)/$(NAME)
 SUITE = $(BIN)/test-$(NAME)
+README = README.md
 
 all: build
 
-run: build
-	$(BINARY) $(ARGUMENTS)
+run: .run build
+	@ $(BINARY) $(ARGUMENTS)
+	@ $(ECHO) "...done!"
 
-test: harness
-	$(SUITE) $(ARGUMENTS)
+.run:
+	@ $(ECHO) "Running the executable..."
+
+test: .test harness
+	@ $(SUITE) $(ARGUMENTS)
+	@ $(ECHO) "...done!"
+
+.test:
+	@ $(ECHO) "Running tests..."
 
 package: build
-	$(TAR) -f $(PKG)/$(NAME).tar.gz -C .. $(NAME)/$(BINARY)
+	@ $(ECHO) "Packaging everything..."
+	@ $(TAR) -f $(PKG)/$(NAME).tar.gz -C .. $(DIRECTORY)/$(BINARY) $(DIRECTORY)/$(README)
+	@ $(ECHO) "...done!"
 
 document: $(SOURCES)
-	$(DOXYGEN)
+	@ $(ECHO) "Generating documentation..."
+	@ $(DOXYGEN)
+	@ $(ECHO) "...done!"
 
 install: build
-	$(CP) $(BINARY) $(PRIMARY)/$(NAME) || $(CP) $(BINARY) $(SECONDARY)/$(NAME)
+	@ $(ECHO) "Copying executables..."
+	@ $(CP) $(BINARY) $(PRIMARY)/$(NAME) || $(CP) $(BINARY) $(SECONDARY)/$(NAME)
+	@ $(ECHO) "...done!"
 
 uninstall:
-	$(RM) $(PRIMARY)/$(BINARY) && $(RM) $(SECONDARY)/$(NAME)
+	@ $(ECHO) "Removing executables..."
+	@ $(RM) $(PRIMARY)/$(BINARY) && $(RM) $(SECONDARY)/$(NAME)
+	@ $(ECHO) "...done!"
 
 wipe:
-	$(RM) $(HOME)/.$(NAME)
+	@ $(ECHO) "Removing configurations..."
+	@ $(RM) $(HOME)/.$(NAME)
+	@ $(ECHO) "...done!"
 
-build: $(SOURCES) $(MAIN_SOURCES) prepare $(BINARY)
+build: $(SOURCES) $(MAIN_SOURCES) prepare .build $(BINARY)
+	@ $(ECHO) "...done!"
 
-harness: $(SOURCES) $(TEST_SOURCES) prepare $(SUITE)
+.build:
+	@ $(ECHO) "Building the executable..."
+
+harness: $(SOURCES) $(TEST_SOURCES) prepare .harness $(SUITE)
+	@ $(ECHO) "...done!"
+
+.harness:
+	@ $(ECHO) "Building tests..."
 
 prepare:
-	$(MKDIR) $(OBJ)
-	$(MKDIR) $(BIN)
-	$(MKDIR) $(PKG)
-	$(MKDIR) $(DOX)
+	@ $(ECHO) "Making target directories..."
+	@ $(MKDIR) $(OBJ)
+	@ $(MKDIR) $(BIN)
+	@ $(MKDIR) $(PKG)
+	@ $(MKDIR) $(DOX)
+	@ $(ECHO) "...done!"
 
 clean:
-	$(RM) -r $(OBJ)
-	$(RM) -r $(BIN)
-	$(RM) -r $(PKG)
-	$(RM) -r $(DOX)
+	@ $(ECHO) "Removing target directories..."
+	@ $(RM) -r $(OBJ)
+	@ $(RM) -r $(BIN)
+	@ $(RM) -r $(PKG)
+	@ $(RM) -r $(DOX)
+	@ $(ECHO) "...done!"
 
 $(BINARY): $(MAIN_OBJECTS) $(OBJECTS)
-	$(CC) -o $@ $^
+	@ $(CC) -o $@ $^
 
 $(SUITE): $(TEST_OBJECTS) $(OBJECTS)
-	$(CC) -o $@ $^
+	@ $(CC) -o $@ $^
 
 $(OBJ)/%.o: $(SRC)/%.c
-	$(CC) -c -o $@ $<
+	@ $(CC) -c -o $@ $<
 
 # Abstract build targets aren't files.
 .PHONY: all run test package document install uninstall wipe build harness prepare clean
