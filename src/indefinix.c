@@ -22,11 +22,12 @@ int indefinix_invoke
 }
 
 	struct state state = {
+		.status = 0,
 		.invocation = EMPTY,
 		.configuration = {
 			.developer = {
 				.place = EMPTY,
-				.policy = POLICY_ABORT,
+				.behavior = BEHAVIOR_ABORT,
 				.verbosity = VERBOSITY_MAXIMAL,
 				.suggestion = {
 					.amount = 3,
@@ -92,7 +93,7 @@ int indefinix_invoke
 } while (0)
 
 	CREATE(state.configuration.developer.place, "~/.indefinix");
-	CREATE(state.configuration.user.location, "/INDEX");
+	CREATE(state.configuration.user.location, "./INDEX");
 	CREATE(state.configuration.user.affix.prefix, "");
 	CREATE(state.configuration.user.affix.infix, "   ");
 	CREATE(state.configuration.user.affix.suffix, "");
@@ -101,6 +102,23 @@ int indefinix_invoke
 	CREATE(state.configuration.user.unusual.present, "not present");
 
 #undef CREATE
+
+#define MODIFY(name, array) do {\
+	if (sizeof array > name.capacity) {\
+		name.elements = malloc(sizeof array);\
+		if (name.elements == NULL) {\
+			status = -1;\
+			goto destroy;\
+		}\
+		name.capacity = sizeof array;\
+	}\
+	memcpy(name.elements, array, sizeof array);\
+	name.count = sizeof array;\
+} while (0)
+
+	MODIFY(state.configuration.user.affix.suffix, "!");
+
+#undef MODIFY
 
 destroy:
 

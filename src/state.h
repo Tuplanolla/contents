@@ -9,11 +9,11 @@
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
-enum policy {
-	POLICY_ABORT,
-	POLICY_CONTINUE,
+enum behavior {
+	BEHAVIOR_ABORT,
+	BEHAVIOR_CONTINUE,
 
-	POLICY_COUNT
+	BEHAVIOR_COUNT
 };
 
 enum verbosity {
@@ -137,11 +137,12 @@ struct call {
 };
 
 struct state {
+	int status;
 	ARRAY(struct call, invocation);
 	struct {
 		struct {
 			ARRAY(char, place);
-			enum policy policy;
+			enum behavior behavior;
 			enum verbosity verbosity;
 			struct {
 				size_t amount;
