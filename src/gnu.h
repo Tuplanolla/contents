@@ -8,7 +8,10 @@
 
 #ifndef __GNUC__
 
-#define __attribute__(...)
+/**
+Disables unsupported extensions.
+**/
+#define __attribute__(...) // __attribute__ ((...))
 
 #endif
 

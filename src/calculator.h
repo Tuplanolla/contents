@@ -10,7 +10,7 @@ Carries out common calculations.
 
 #include <stddef.h> // size_t
 
-#include "gnu.h" // __const__, __nonnull__, __attribute__ (())
+#include "gnu.h" // __*__, __attribute__ (())
 
 /**
 Returns the smaller of the given sizes.

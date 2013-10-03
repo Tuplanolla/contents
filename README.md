@@ -69,7 +69,7 @@ and Indefinix can be built.
 The binaries go in the `bin` directory and temporary objects in the `obj` directory.
 After automatically moving the binaries to `/usr/local/bin` or `/usr/bin`
 
-	[user@arch indefinix]$ make install
+	[user@arch indefinix]$ sudo make install
 
 or manually to a suitable `$LOCATION`,
 
@@ -83,7 +83,7 @@ the byproducts of the compilation can be removed.
 
 Binaries that have been automatically installed can also be automatically uninstalled.
 
-	[user@arch indefinix]$ make uninstall
+	[user@arch indefinix]$ sudo make uninstall
 
 Uninstallation leaves the configuration untouched, but it can be removed separately.
 

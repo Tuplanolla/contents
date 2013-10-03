@@ -11,10 +11,6 @@
 
 #include "calculator.h" // maximum()
 
-/*
-The following definitions are for mutable arrays.
-*/
-
 size_t array_capacity
 (struct array const* const array) {
 	return array->capacity;
@@ -160,7 +156,7 @@ int array_move_out
 int array_move_in
 (struct array* const array, size_t const position, size_t const size) {
 	size_t const count = array->count;
-	if (position > count
+	if (size > count
 			|| size > count - position)
 		return -1;
 	if (array_contract(array, count - size) == -1)
@@ -220,10 +216,6 @@ int array_sort
 	return 0;
 }
 
-/*
-The following definitions are for constant arrays.
-*/
-
 size_t array_const_capacity
 (struct array_const const* const array) {
 	return array_capacity((struct array* )array);
@@ -237,6 +229,11 @@ size_t array_const_unit
 size_t array_const_count
 (struct array_const const* const array) {
 	return array_count((struct array* )array);
+}
+
+size_t array_const_size
+(struct array_const const* const array) {
+	return array_size((struct array* )array);
 }
 
 int array_const_create

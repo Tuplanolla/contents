@@ -27,10 +27,10 @@ int edit_distance
 (size_t* const result, char const* const x, char const* const y) {
 	size_t const x_length = strlen(x);
 	size_t const y_length = strlen(y);
-#define AT(x, y) ((x) * y_length + (y))
 	size_t* const distances = malloc((x_length + 1) * (y_length + 1) * sizeof *distances);
 	if (distances == NULL)
 		return -1;
+#define AT(x, y) ((x) * y_length + (y))
 	for (size_t character = 0;
 			character <= x_length;
 			++character)

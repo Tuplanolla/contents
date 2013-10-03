@@ -18,7 +18,7 @@ without declaring them explicitly.
 
 #include <stddef.h> // size_t
 
-#include "gnu.h" // __nonnull__, __attribute__ (())
+#include "gnu.h" // __*__, __attribute__ (())
 
 #ifndef ARRAY_NO_KEYWORDS
 
@@ -62,10 +62,6 @@ struct array_const {
 	size_t count;
 	void const* elements;
 };
-
-/*
-The following declarations are for mutable arrays.
-*/
 
 /**
 Calculates the current capacity of the given array in constant time.
@@ -180,16 +176,16 @@ For example
 array_create(&array, 4, 1);
 array_add_last(array, 'A');
 array_add_last(array, 'B');
-array_add_last(array, 'C');
-array_add_last(array, 'D');
+array_add_last(array, 'F');
+array_add_last(array, 'G');
 array_move_left(array, 2, 3);
 </pre>
 results in
 <pre>
 array_read(&element, array, 0), element == 'A';
-array_read(&element, array, 1), element == 'E';
+array_read(&element, array, 1), element == 'B';
 array_read(&element, array, 5), element == 'F';
-array_read(&element, array, 6), element == 'D';
+array_read(&element, array, 6), element == 'G';
 </pre>
 where three elements are undefined.
 
@@ -203,28 +199,29 @@ int array_move_out
 __attribute__ ((__nonnull__));
 
 /**
-Splits the given array at the given position and
+Splits the given array at the given position plus the given size and
  moves the second part towards the beginning by the given size in linear time.
 
 For example
 <pre>
-array_create(&array, 6, 1);
+array_create(&array, 7, 1);
 array_add_last(array, 'A');
 array_add_last(array, 'B');
 array_add_last(array, 'C');
 array_add_last(array, 'D');
 array_add_last(array, 'E');
 array_add_last(array, 'F');
-array_move_left(array, 4, 3);
+array_add_last(array, 'G');
+array_move_left(array, 2, 3);
 </pre>
 results in
 <pre>
 array_read(&element, array, 0), element == 'A';
-array_read(&element, array, 1), element == 'E';
+array_read(&element, array, 1), element == 'B';
 array_read(&element, array, 2), element == 'F';
-array_read(&element, array, 3), element == 'D';
+array_read(&element, array, 3), element == 'G';
 </pre>
-where two elements are removed.
+where three elements are removed.
 
 @param array The array.
 @param position The position.
@@ -313,70 +310,121 @@ int array_sort
 (struct array* array, int (* comparator)(void const*, void const*))
 __attribute__ ((__nonnull__));
 
-/*
-The following declarations are for constant arrays.
-*/
-
+/**
+@copydoc array_capacity()
+**/
 size_t array_const_capacity
 (struct array_const const* array)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_unit()
+**/
 size_t array_const_unit
 (struct array_const const* array)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_count()
+**/
 size_t array_const_count
 (struct array_const const* array)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_size()
+**/
+size_t array_const_size
+(struct array_const const* array)
+__attribute__ ((__nonnull__));
+
+/**
+@copydoc array_create()
+**/
 int array_const_create
 (struct array_const** result, size_t capacity, size_t unit)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_create_copy()
+**/
 int array_const_create_copy
 (struct array_const** result, struct array_const const* array)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_destroy()
+**/
 void array_const_destroy
 (struct array_const* array)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_read()
+**/
 int array_const_read
 (void const* result, struct array_const const* array, size_t position)
 __attribute__ ((__nonnull__ (2)));
 
+/**
+@copydoc array_write()
+**/
 int array_const_write
 (struct array_const* array, void const* element, size_t position)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_move_out()
+**/
 int array_const_move_out
 (struct array_const* array, size_t position, size_t size)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_move_in()
+**/
 int array_const_move_in
 (struct array_const* array, size_t position, size_t size)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_add()
+**/
 int array_const_add
 (struct array_const* array, void const* element, size_t position)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_add_last()
+**/
 int array_const_add_last
 (struct array_const* array, void const* element)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_remove()
+**/
 int array_const_remove
 (void const* result, struct array_const* array, size_t position)
 __attribute__ ((__nonnull__ (2)));
 
+/**
+@copydoc array_remove_last()
+**/
 int array_const_remove_last
 (void const* result, struct array_const* array)
 __attribute__ ((__nonnull__ (2)));
 
+/**
+@copydoc array_truncate()
+**/
 int array_const_truncate
 (struct array_const* array, size_t count)
 __attribute__ ((__nonnull__));
 
+/**
+@copydoc array_sort()
+**/
 int array_const_sort
 (struct array_const* array, int (* comparator)(void const*, void const*))
 __attribute__ ((__nonnull__));
