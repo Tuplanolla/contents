@@ -1,16 +1,15 @@
 /**
+Disables unsupported compiler extensions.
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#ifndef GNU_H
-#define GNU_H
+#ifndef EXTENSIONS_H
+#define EXTENSIONS_H
 
 #ifndef __GNUC__
 
-/**
-Disables unsupported extensions.
-**/
 #define __attribute__(...) // __attribute__ ((...))
 
 #endif

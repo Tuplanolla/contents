@@ -37,9 +37,9 @@ DOX = dox
 # pwd | xargs basename
 NAME = indefinix
 MAIN_SOURCES = $(SRC)/indefinix.c
-TEST_SOURCES = $(SRC)/test-array.c $(SRC)/test-cheat.c
+TEST_SOURCES = $(SRC)/test-cheat.c
 # find src -name "*.c" -type f | sort | sed "s/src\//\$(SRC)\//" | xargs echo
-SOURCES = $(SRC)/bindefinix.c $(SRC)/action.c $(SRC)/actions.c $(SRC)/arity.c $(SRC)/array.c $(SRC)/calculator.c $(SRC)/executor.c $(SRC)/helper.c $(SRC)/invocation.c $(SRC)/project.c $(SRC)/properties.c $(SRC)/property.c $(SRC)/resolution.c $(SRC)/state.c $(SRC)/suggestion.c $(SRC)/suggestions.c $(SRC)/tracer.c $(SRC)/truncation.c
+SOURCES = $(SRC)/array.c $(SRC)/calculator.c $(SRC)/interpreter.c $(SRC)/project.c $(SRC)/state.c $(SRC)/tracer.c
 OBJECTS = $(SOURCES:$(SRC)/%.c=$(OBJ)/%.o)
 MAIN_BINARIES = $(MAIN_SOURCES:$(SRC)/%.c=$(BIN)/%)
 TEST_BINARIES = $(TEST_SOURCES:$(SRC)/%.c=$(BIN)/%)

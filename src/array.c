@@ -112,27 +112,35 @@ static int array_contract
 
 typedef unsigned char byte;
 
-int array_read
-(void* const result, struct array const* const array, size_t const position) {
-	size_t const count = array->count;
-	if (position >= count)
+int array_read_all
+(void* const result, struct array const* const array, size_t const position, size_t const size) {
+	if (position + size > array->count)
 		return -1;
 	size_t const unit = array->unit;
 	byte* const split = (byte* )array->elements + position * unit;
 	if (result != NULL)
-		memcpy(result, split, unit);
+		memcpy(result, split, size * unit);
+	return 0;
+}
+
+int array_read
+(void* const result, struct array const* const array, size_t const position) {
+	return array_read_all(result, array, position, 1);
+}
+
+int array_write_all
+(struct array* const array, const void* const elements, size_t const position, size_t const size) {
+	if (position + size > array->count)
+		return -1;
+	size_t const unit = array->unit;
+	byte* const split = (byte* )array->elements + position * unit;
+	memcpy(split, elements, size * unit);
 	return 0;
 }
 
 int array_write
 (struct array* const array, const void* const element, size_t const position) {
-	size_t const count = array->count;
-	if (position >= count)
-		return -1;
-	size_t const unit = array->unit;
-	byte* const split = (byte* )array->elements + position * unit;
-	memcpy(split, element, unit);
-	return 0;
+	return array_write_all(array, element, position, 1);
 }
 
 int array_move_out
@@ -174,6 +182,8 @@ int array_move_in
 
 int array_add
 (struct array* const array, const void* const element, size_t const position) {
+	if (position > array->count)
+		return -1;
 	if (array_move_out(array, position, 1) == -1)
 		return -1;
 	return array_write(array, element, position);
@@ -186,8 +196,7 @@ int array_add_last
 
 int array_remove
 (void* const result, struct array* const array, size_t const position) {
-	size_t const count = array->count;
-	if (position >= count)
+	if (position >= array->count)
 		return -1;
 	if (result != NULL)
 		if (array_read(result, array, position) == -1)
@@ -251,9 +260,19 @@ void array_const_destroy
 	array_destroy((struct array* )array);
 }
 
+int array_const_read_all
+(void const* const result, struct array_const const* const array, size_t const position, size_t const size) {
+	return array_read_all((void* )result, (struct array* )array, position, size);
+}
+
 int array_const_read
 (void const* const result, struct array_const const* const array, size_t const position) {
 	return array_read((void* )result, (struct array* )array, position);
+}
+
+int array_const_write_all
+(struct array_const* const array, void const* const element, size_t const position, size_t const size) {
+	return array_write_all((struct array* )array, element, position, size);
 }
 
 int array_const_write

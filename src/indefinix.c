@@ -1,153 +1,44 @@
 /**
+Contains the main entry point.
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
 
-#include "indefinix.h"
+#include <stdlib.h> // EXIT_FAILURE, EXIT_SUCCESS
 
-#include <stddef.h> // NULL, size_t
-#include <stdio.h> // stderr, stdout
-#include <stdlib.h> // free(), malloc()
-#include <string.h> // strcpy()
+#include "array.h" // struct array*, array_*(), of ()
+#include "interpreter.h" // interpret()
 
-#include "state.h" // struct state
+/**
+Manages the state.
 
-int indefinix_invoke
-(char const* const* const arguments, size_t const count) {
-
-#define EMPTY {\
-	.capacity = 0,\
-	.count = 0,\
-	.elements = NULL\
-}
-
-	struct state state = {
-		.status = 0,
-		.invocation = EMPTY,
-		.configuration = {
-			.developer = {
-				.place = EMPTY,
-				.behavior = BEHAVIOR_ABORT,
-				.verbosity = VERBOSITY_MAXIMAL,
-				.suggestion = {
-					.amount = 3,
-					.distance = 2
-				},
-				.output = stdout
-			},
-			.user = {
-				.location = EMPTY,
-				.editor = EMPTY,
-				.completion = 1,
-				.order = {
-					.sorting = SORTING_NORMAL,
-					.grouping = GROUPING_DIRECTORIES,
-					.hiding = HIDING_HIDDEN
-				},
-				.wrapping = CONTINUATION_WRAP,
-				.justification = {
-					.first = ALIGNMENT_LEFT,
-					.second = ALIGNMENT_LEFT
-				},
-				.filling = {
-					.first = PADDING_FILL,
-					.second = PADDING_FILL
-				},
-				.interaction = ANSWER_NONE,
-				.affix = {
-					.prefix = EMPTY,
-					.infix = EMPTY,
-					.suffix = EMPTY
-				},
-				.headaffix = {
-					.prefix = EMPTY,
-					.infix = EMPTY,
-					.suffix = EMPTY
-				},
-				.tailaffix = {
-					.prefix = EMPTY,
-					.infix = EMPTY,
-					.suffix = EMPTY
-				},
-				.unusual = {
-					.indexed = EMPTY,
-					.present = EMPTY
-				}
-			}
+@param count The amount of command line arguments plus one.
+@param arguments The location of the executable and its command line arguments.
+@return The value <code>EXIT_SUCCESS</code> if successful or
+ <code>EXIT_FAILURE</code> otherwise.
+**/
+int main
+(int const count, char const* const* const arguments) {
+	size_t const argument_count = (size_t )count - 1;
+	struct array_const* of (char const*) array;
+	if (array_const_create(&array, argument_count, sizeof (char*)) == -1)
+		return EXIT_FAILURE;
+	for (size_t argument = 0;
+			argument < argument_count;
+			++argument) {
+		if (array_const_add_last(array, &arguments[argument + 1]) == -1) {
+			array_const_destroy(array);
+			return EXIT_FAILURE;
 		}
-	};
-
-#undef EMPTY
-
-	int status = 0;
-
-#define CREATE(name, array) do {\
-	name.elements = malloc(sizeof array);\
-	if (name.elements == NULL) {\
-		status = -1;\
-		goto destroy;\
-	}\
-	name.capacity = sizeof array;\
-	memcpy(name.elements, array, sizeof array);\
-	name.count = sizeof array;\
-} while (0)
-
-	CREATE(state.configuration.developer.place, "~/.indefinix");
-	CREATE(state.configuration.user.location, "./INDEX");
-	CREATE(state.configuration.user.affix.prefix, "");
-	CREATE(state.configuration.user.affix.infix, "   ");
-	CREATE(state.configuration.user.affix.suffix, "");
-	CREATE(state.configuration.user.headaffix.infix, " - ");
-	CREATE(state.configuration.user.unusual.indexed, "not indexed");
-	CREATE(state.configuration.user.unusual.present, "not present");
-
-#undef CREATE
-
-#define MODIFY(name, array) do {\
-	if (sizeof array > name.capacity) {\
-		name.elements = malloc(sizeof array);\
-		if (name.elements == NULL) {\
-			status = -1;\
-			goto destroy;\
-		}\
-		name.capacity = sizeof array;\
-	}\
-	memcpy(name.elements, array, sizeof array);\
-	name.count = sizeof array;\
-} while (0)
-
-	MODIFY(state.configuration.user.affix.suffix, "!");
-
-#undef MODIFY
-
-destroy:
-
-#define DESTROY(name) do {\
-	if (name.elements != NULL) {\
-		free(name.elements);\
-		name.capacity = 0;\
-		name.elements = NULL;\
-		name.count = 0;\
-	}\
-} while (0)
-
-	DESTROY(state.configuration.user.unusual.present);
-	DESTROY(state.configuration.user.unusual.indexed);
-	DESTROY(state.configuration.user.tailaffix.suffix);
-	DESTROY(state.configuration.user.tailaffix.infix);
-	DESTROY(state.configuration.user.tailaffix.prefix);
-	DESTROY(state.configuration.user.headaffix.suffix);
-	DESTROY(state.configuration.user.headaffix.infix);
-	DESTROY(state.configuration.user.headaffix.prefix);
-	DESTROY(state.configuration.user.affix.suffix);
-	DESTROY(state.configuration.user.affix.infix);
-	DESTROY(state.configuration.user.affix.prefix);
-	DESTROY(state.configuration.user.editor);
-	DESTROY(state.configuration.user.location);
-	DESTROY(state.configuration.developer.place);
-	DESTROY(state.invocation);
-
-#undef DESTROY
-
-	return status;
+	}
+	if (array_const_count(array) < 1)
+		if (array_const_add_last(array, "help") == -1)
+			return EXIT_FAILURE;
+	if (interpret(array) == -1) {
+		array_const_destroy(array);
+		return EXIT_FAILURE;
+	}
+	array_const_destroy(array);
+	return EXIT_SUCCESS;
 }

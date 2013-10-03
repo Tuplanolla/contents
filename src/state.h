@@ -1,4 +1,6 @@
 /**
+Manages mutable state.
+
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
 **/
@@ -8,6 +10,9 @@
 
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
+
+#include "array.h" // struct array*, of ()
+#include "extensions.h" // __*__, __attribute__ (())
 
 enum behavior {
 	BEHAVIOR_ABORT,
@@ -125,73 +130,87 @@ enum selection {
 	SELECTION_COUNT
 };
 
-#define ARRAY(type, name) struct {\
-	size_t capacity;\
-	size_t count;\
-	type* elements;\
-} name;
-
 struct call {
 	enum command command;
-	ARRAY(void*, arguments);
+	struct array* arguments;
+};
+
+struct execution {
+	int status;
+	struct array* of (struct call) calls;
+};
+
+struct configuration {
+	struct {
+		struct array* of (char) place;
+		struct {
+			size_t amount;
+			size_t distance;
+		} suggestion;
+		enum behavior behavior;
+		enum verbosity verbosity;
+		FILE* output;
+	} invisible;
+	struct {
+		struct array* of (char) location;
+		struct array* of (char) editor;
+		size_t completion;
+		struct {
+			enum sorting sorting;
+			enum grouping grouping;
+			enum hiding hiding;
+		} order;
+		enum continuation wrapping;
+		struct {
+			enum alignment first;
+			enum alignment second;
+		} justification;
+		struct {
+			enum padding first;
+			enum padding second;
+		} filling;
+		enum answer interaction;
+		struct {
+			struct array* of (char) prefix;
+			struct array* of (char) infix;
+			struct array* of (char) suffix;
+		} affix;
+		struct {
+			struct array* of (char) prefix;
+			struct array* of (char) infix;
+			struct array* of (char) suffix;
+		} headaffix;
+		struct {
+			struct array* of (char) prefix;
+			struct array* of (char) infix;
+			struct array* of (char) suffix;
+		} tailaffix;
+		struct {
+			struct array* of (char) indexed;
+			struct array* of (char) present;
+		} unusual;
+	} visible;
 };
 
 struct state {
-	int status;
-	ARRAY(struct call, invocation);
-	struct {
-		struct {
-			ARRAY(char, place);
-			enum behavior behavior;
-			enum verbosity verbosity;
-			struct {
-				size_t amount;
-				size_t distance;
-			} suggestion;
-			FILE* output;
-		} developer;
-		struct {
-			ARRAY(char, location);
-			ARRAY(char, editor);
-			size_t completion;
-			struct {
-				enum sorting sorting;
-				enum grouping grouping;
-				enum hiding hiding;
-			} order;
-			enum continuation wrapping;
-			struct {
-				enum alignment first;
-				enum alignment second;
-			} justification;
-			struct {
-				enum padding first;
-				enum padding second;
-			} filling;
-			enum answer interaction;
-			struct {
-				ARRAY(char, prefix);
-				ARRAY(char, infix);
-				ARRAY(char, suffix);
-			} affix;
-			struct {
-				ARRAY(char, prefix);
-				ARRAY(char, infix);
-				ARRAY(char, suffix);
-			} headaffix;
-			struct {
-				ARRAY(char, prefix);
-				ARRAY(char, infix);
-				ARRAY(char, suffix);
-			} tailaffix;
-			struct {
-				ARRAY(char, indexed);
-				ARRAY(char, present);
-			} unusual;
-		} user;
-	} configuration;
+	struct execution execution;
+	struct configuration configuration;
 };
 
-#undef ARRAY
+int state_create
+(struct state** result)
+__attribute__ ((__nonnull__));
+
+void state_destroy
+(struct state* state)
+__attribute__ ((__nonnull__));
+
+int state_parse
+(struct state* state, struct array_const* of (char const*) arguments)
+__attribute__ ((__nonnull__));
+
+int state_execute
+(struct state* state)
+__attribute__ ((__nonnull__));
 
 #endif

@@ -2,12 +2,8 @@
 Provides an interface for
  a safe and automatically resizing array of mutable or constant values.
 
-Examples may use the variables
-<pre>
-int element;
-struct array* array;
-</pre>
-without declaring them explicitly.
+Fails silently if the size of the array exceeds <code>SIZE_MAX</code>
+ which is equal to <code>(size_t )-1</code>.
 
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
@@ -18,7 +14,7 @@ without declaring them explicitly.
 
 #include <stddef.h> // size_t
 
-#include "gnu.h" // __*__, __attribute__ (())
+#include "extensions.h" // __*__, __attribute__ (())
 
 #ifndef ARRAY_NO_KEYWORDS
 
@@ -143,6 +139,20 @@ void array_destroy
 __attribute__ ((__nonnull__));
 
 /**
+Reads the given amount of elements from
+ the given position of the given array in constant time.
+
+@param result A pointer to the destination of the elements or <code>NULL</code>.
+@param array The array.
+@param position The position.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_read_all
+(void* result, struct array const* array, size_t position, size_t count)
+__attribute__ ((__nonnull__ (2)));
+
+/**
 Reads an element from the given position of the given array in constant time.
 
 @param result A pointer to the destination of the element or <code>NULL</code>.
@@ -153,6 +163,20 @@ Reads an element from the given position of the given array in constant time.
 int array_read
 (void* result, struct array const* array, size_t position)
 __attribute__ ((__nonnull__ (2)));
+
+/**
+Writes the given amount of elements to
+ the given position of the given array in constant time.
+
+@param array The array.
+@param element The element.
+@param position The position.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_write_all
+(struct array* array, void const* element, size_t position, size_t count)
+__attribute__ ((__nonnull__));
 
 /**
 Writes the given element to the given position of the given array
@@ -173,19 +197,21 @@ Splits the given array at the given position and
 
 For example
 <pre>
+char element;
+struct array* array;
 array_create(&array, 4, 1);
-array_add_last(array, 'A');
-array_add_last(array, 'B');
-array_add_last(array, 'F');
-array_add_last(array, 'G');
+(element = 'A', array_add(array, &element, 0));
+(element = 'B', array_add(array, &element, 1));
+(element = 'F', array_add(array, &element, 2));
+(element = 'G', array_add(array, &element, 3));
 array_move_left(array, 2, 3);
 </pre>
 results in
 <pre>
-array_read(&element, array, 0), element == 'A';
-array_read(&element, array, 1), element == 'B';
-array_read(&element, array, 5), element == 'F';
-array_read(&element, array, 6), element == 'G';
+(array_read(&element, array, 0), element == 'A');
+(array_read(&element, array, 1), element == 'B');
+(array_read(&element, array, 5), element == 'F');
+(array_read(&element, array, 6), element == 'G');
 </pre>
 where three elements are undefined.
 
@@ -204,22 +230,24 @@ Splits the given array at the given position plus the given size and
 
 For example
 <pre>
+char element;
+struct array* array;
 array_create(&array, 7, 1);
-array_add_last(array, 'A');
-array_add_last(array, 'B');
-array_add_last(array, 'C');
-array_add_last(array, 'D');
-array_add_last(array, 'E');
-array_add_last(array, 'F');
-array_add_last(array, 'G');
+(element = 'A', array_add(array, &element, 0));
+(element = 'B', array_add(array, &element, 1));
+(element = 'C', array_add(array, &element, 2));
+(element = 'D', array_add(array, &element, 3));
+(element = 'E', array_add(array, &element, 4));
+(element = 'F', array_add(array, &element, 5));
+(element = 'G', array_add(array, &element, 6));
 array_move_left(array, 2, 3);
 </pre>
 results in
 <pre>
-array_read(&element, array, 0), element == 'A';
-array_read(&element, array, 1), element == 'B';
-array_read(&element, array, 2), element == 'F';
-array_read(&element, array, 3), element == 'G';
+(array_read(&element, array, 0), element == 'A');
+(array_read(&element, array, 1), element == 'B');
+(array_read(&element, array, 2), element == 'F');
+(array_read(&element, array, 3), element == 'G');
 </pre>
 where three elements are removed.
 
@@ -253,7 +281,6 @@ If the array's capacity is reached, it'll be doubled.
 
 @param array The array.
 @param element The element.
-@param position The position.
 @return The number <code>0</code> if successful or <code>-1</code> otherwise.
 **/
 int array_add_last
@@ -360,11 +387,25 @@ void array_const_destroy
 __attribute__ ((__nonnull__));
 
 /**
+@copydoc array_read_all()
+**/
+int array_const_read_all
+(void const* result, struct array_const const* array, size_t position, size_t count)
+__attribute__ ((__nonnull__ (2)));
+
+/**
 @copydoc array_read()
 **/
 int array_const_read
 (void const* result, struct array_const const* array, size_t position)
 __attribute__ ((__nonnull__ (2)));
+
+/**
+@copydoc array_write_all()
+**/
+int array_const_write_all
+(struct array_const* array, void const* element, size_t position, size_t count)
+__attribute__ ((__nonnull__));
 
 /**
 @copydoc array_write()
