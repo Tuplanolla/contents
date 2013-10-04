@@ -19,7 +19,9 @@ Manages the state.
  <code>EXIT_FAILURE</code> otherwise.
 **/
 int main
-(int const count, char const* const* const arguments) {
+(int const count, char** const arguments) {
+	if (count < 1)
+		return EXIT_FAILURE;
 	size_t const argument_count = (size_t )count - 1;
 	struct array_const* of (char const*) array;
 	if (array_const_create(&array, argument_count, sizeof (char*)) == -1)
@@ -32,9 +34,6 @@ int main
 			return EXIT_FAILURE;
 		}
 	}
-	if (array_const_count(array) < 1)
-		if (array_const_add_last(array, "help") == -1)
-			return EXIT_FAILURE;
 	if (interpret(array) == -1) {
 		array_const_destroy(array);
 		return EXIT_FAILURE;

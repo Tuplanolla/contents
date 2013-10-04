@@ -76,6 +76,8 @@ int array_create_copy
 
 void array_destroy
 (struct array* const array) {
+	if (array == NULL)
+		return;
 	free(array->elements);
 	free(array);
 }
@@ -180,33 +182,53 @@ int array_move_in
 	return 0;
 }
 
+int array_add_all
+(struct array* const array, const void* const elements, size_t const position, size_t const size) {
+	if (position + size - 1 > array->count)
+		return -1;
+	if (array_move_out(array, position, size) == -1)
+		return -1;
+	return array_write_all(array, elements, position, size);
+}
+
 int array_add
 (struct array* const array, const void* const element, size_t const position) {
-	if (position > array->count)
-		return -1;
-	if (array_move_out(array, position, 1) == -1)
-		return -1;
-	return array_write(array, element, position);
+	return array_add_all(array, element, position, 1);
+}
+
+int array_add_all_last
+(struct array* const array, const void* const element, size_t const size) {
+	return array_add_all(array, element, array->count, size);
 }
 
 int array_add_last
 (struct array* const array, const void* const element) {
-	return array_add(array, element, array->count);
+	return array_add_all(array, element, array->count, 1);
+}
+
+int array_remove_all
+(void* const result, struct array* const array, size_t const position, size_t const size) {
+	if (position + size > array->count)
+		return -1;
+	if (result != NULL)
+		if (array_read_all(result, array, position, size) == -1)
+			return -1;
+	return array_move_in(array, position, size);
 }
 
 int array_remove
 (void* const result, struct array* const array, size_t const position) {
-	if (position >= array->count)
-		return -1;
-	if (result != NULL)
-		if (array_read(result, array, position) == -1)
-			return -1;
-	return array_move_in(array, position, 1);
+	return array_remove_all(result, array, position, 1);
+}
+
+int array_remove_all_last
+(void* const result, struct array* const array, size_t const size) {
+	return array_remove_all(result, array, array->count - 1, size);
 }
 
 int array_remove_last
 (void* const result, struct array* const array) {
-	return array_remove(result, array, array->count - 1);
+	return array_remove_all(result, array, array->count - 1, 1);
 }
 
 int array_truncate
@@ -217,6 +239,11 @@ int array_truncate
 		return -1;
 	array->count = count;
 	return 0;
+}
+
+int array_truncate_whole
+(struct array* const array) {
+	return array_truncate(array, 0);
 }
 
 int array_sort
@@ -290,9 +317,19 @@ int array_const_move_in
 	return array_move_in((struct array* )array, position, size);
 }
 
+int array_const_add_all
+(struct array_const* const array, void const* const element, size_t const position, size_t const size) {
+	return array_add_all((struct array* )array, element, position, size);
+}
+
 int array_const_add
 (struct array_const* const array, void const* const element, size_t const position) {
 	return array_add((struct array* )array, element, position);
+}
+
+int array_const_add_all_last
+(struct array_const* const array, void const* const element, size_t const size) {
+	return array_add_all_last((struct array* )array, element, size);
 }
 
 int array_const_add_last
@@ -300,9 +337,19 @@ int array_const_add_last
 	return array_add_last((struct array* )array, element);
 }
 
+int array_const_remove_all
+(void const* const result, struct array_const* const array, size_t const position, size_t const size) {
+	return array_remove_all((void* )result, (struct array* )array, position, size);
+}
+
 int array_const_remove
 (void const* const result, struct array_const* const array, size_t const position) {
 	return array_remove((void* )result, (struct array* )array, position);
+}
+
+int array_const_remove_all_last
+(void const* const result, struct array_const* const array, size_t const size) {
+	return array_remove_all_last((void* )result, (struct array* )array, size);
 }
 
 int array_const_remove_last
@@ -313,6 +360,11 @@ int array_const_remove_last
 int array_const_truncate
 (struct array_const* const array, size_t const count) {
 	return array_truncate((struct array* )array, count);
+}
+
+int array_const_truncate_whole
+(struct array_const* const array) {
+	return array_truncate_whole((struct array* )array);
 }
 
 int array_const_sort

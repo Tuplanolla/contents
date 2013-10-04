@@ -1,5 +1,5 @@
 /**
-Manages mutable state.
+Provides an interface for a state.
 
 @file
 @author Sampsa "Tuplanolla" Kiiskinen
@@ -11,8 +11,16 @@ Manages mutable state.
 #include <stddef.h> // size_t
 #include <stdio.h> // FILE
 
+#include "action.h" // struct call
 #include "array.h" // struct array*, of ()
 #include "extensions.h" // __*__, __attribute__ (())
+
+enum status {
+	STATUS_NORMAL,
+	STATUS_ERROR,
+
+	STATUS_COUNT
+};
 
 enum behavior {
 	BEHAVIOR_ABORT,
@@ -22,33 +30,10 @@ enum behavior {
 };
 
 enum verbosity {
-	VERBOSITY_MINIMAL,
-	VERBOSITY_MAXIMAL,
+	VERBOSITY_DIAGNOSTIC,
+	VERBOSITY_NONE,
 
 	VERBOSITY_COUNT
-};
-
-enum command {
-	COMMAND_CONFIGURE,
-	COMMAND_SET,
-	COMMAND_POP,
-	COMMAND_GET,
-	COMMAND_OBLITERATE,
-	COMMAND_MAKE,
-	COMMAND_EDIT,
-	COMMAND_ADD,
-	COMMAND_REMOVE,
-	COMMAND_UPDATE,
-	COMMAND_LOOKUP,
-	COMMAND_FIND,
-	COMMAND_TOUCH,
-	COMMAND_DESTROY,
-	COMMAND_HELP,
-	COMMAND_VERSION,
-	COMMAND_INFER,
-	COMMAND_BIND,
-
-	COMMAND_COUNT
 };
 
 enum key {
@@ -130,14 +115,9 @@ enum selection {
 	SELECTION_COUNT
 };
 
-struct call {
-	enum command command;
-	struct array* arguments;
-};
-
 struct execution {
-	int status;
-	struct array* of (struct call) calls;
+	enum status status;
+	struct array_const* of (struct call const) calls;
 };
 
 struct configuration {
@@ -197,13 +177,16 @@ struct state {
 	struct configuration configuration;
 };
 
+enum status state_execution_status
+(struct state const* state)
+__attribute__ ((__nonnull__));
+
 int state_create
 (struct state** result)
 __attribute__ ((__nonnull__));
 
 void state_destroy
-(struct state* state)
-__attribute__ ((__nonnull__));
+(struct state* state);
 
 int state_parse
 (struct state* state, struct array_const* of (char const*) arguments)

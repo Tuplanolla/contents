@@ -22,15 +22,15 @@ Fails silently if the size of the array exceeds <code>SIZE_MAX</code>
 Annotates the type of array elements.
 
 This annotation can be disabled by defining
-<pre>
+@code
 #define ARRAY_NO_KEYWORDS
-</pre>
+@endcode
 before including this header.
 
 For example
-<pre>
+@code
 struct array* of (int*) array;
-</pre>
+@endcode
 declares an array that contains pointers to integers.
 **/
 #define of(...) // of (...)
@@ -132,11 +132,10 @@ __attribute__ ((__nonnull__));
 /**
 Destroys the given array in constant time.
 
-@param array The array.
+@param array The array or <code>NULL</code>.
 **/
 void array_destroy
-(struct array* array)
-__attribute__ ((__nonnull__));
+(struct array* array);
 
 /**
 Reads the given amount of elements from
@@ -169,13 +168,13 @@ Writes the given amount of elements to
  the given position of the given array in constant time.
 
 @param array The array.
-@param element The element.
+@param elements The elements.
 @param position The position.
 @param count The amount of elements.
 @return The number <code>0</code> if successful or <code>-1</code> otherwise.
 **/
 int array_write_all
-(struct array* array, void const* element, size_t position, size_t count)
+(struct array* array, void const* elements, size_t position, size_t count)
 __attribute__ ((__nonnull__));
 
 /**
@@ -196,23 +195,23 @@ Splits the given array at the given position and
  moves the second part towards the end by the given size in linear time.
 
 For example
-<pre>
+@code
 char element;
 struct array* array;
-array_create(&array, 4, 1);
+array_create(&array, 4, sizeof element);
 (element = 'A', array_add(array, &element, 0));
 (element = 'B', array_add(array, &element, 1));
 (element = 'F', array_add(array, &element, 2));
 (element = 'G', array_add(array, &element, 3));
 array_move_left(array, 2, 3);
-</pre>
+@endcode
 results in
-<pre>
+@code
 (array_read(&element, array, 0), element == 'A');
 (array_read(&element, array, 1), element == 'B');
 (array_read(&element, array, 5), element == 'F');
 (array_read(&element, array, 6), element == 'G');
-</pre>
+@endcode
 where three elements are undefined.
 
 @param array The array.
@@ -229,10 +228,10 @@ Splits the given array at the given position plus the given size and
  moves the second part towards the beginning by the given size in linear time.
 
 For example
-<pre>
+@code
 char element;
 struct array* array;
-array_create(&array, 7, 1);
+array_create(&array, 7, sizeof element);
 (element = 'A', array_add(array, &element, 0));
 (element = 'B', array_add(array, &element, 1));
 (element = 'C', array_add(array, &element, 2));
@@ -241,14 +240,14 @@ array_create(&array, 7, 1);
 (element = 'F', array_add(array, &element, 5));
 (element = 'G', array_add(array, &element, 6));
 array_move_left(array, 2, 3);
-</pre>
+@endcode
 results in
-<pre>
+@code
 (array_read(&element, array, 0), element == 'A');
 (array_read(&element, array, 1), element == 'B');
 (array_read(&element, array, 2), element == 'F');
 (array_read(&element, array, 3), element == 'G');
-</pre>
+@endcode
 where three elements are removed.
 
 @param array The array.
@@ -258,6 +257,22 @@ where three elements are removed.
 **/
 int array_move_in
 (struct array* array, size_t position, size_t size)
+__attribute__ ((__nonnull__));
+
+/**
+Adds the given amount of elements to
+ the given position of the given array in linear time.
+
+If the array's capacity is reached, it'll be doubled.
+
+@param array The array.
+@param elements The elements.
+@param position The position.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_add_all
+(struct array* array, void const* elements, size_t position, size_t count)
 __attribute__ ((__nonnull__));
 
 /**
@@ -275,6 +290,21 @@ int array_add
 __attribute__ ((__nonnull__));
 
 /**
+Adds the given amount of elements to
+ the end of the given array in constant time.
+
+If the array's capacity is reached, it'll be doubled.
+
+@param array The array.
+@param elements The elements.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_add_all_last
+(struct array* array, void const* elements, size_t count)
+__attribute__ ((__nonnull__));
+
+/**
 Adds the given element to the end of the given array in constant time.
 
 If the array's capacity is reached, it'll be doubled.
@@ -286,6 +316,22 @@ If the array's capacity is reached, it'll be doubled.
 int array_add_last
 (struct array* array, void const* element)
 __attribute__ ((__nonnull__));
+
+/**
+Removes the given amount of elements from
+ the given position of the given array in linear time.
+
+If the array's capacity is four times too much, it'll be halved.
+
+@param result A pointer to the destination of the element or <code>NULL</code>.
+@param array The array.
+@param position The position.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_remove_all
+(void* result, struct array* array, size_t position, size_t count)
+__attribute__ ((__nonnull__ (2)));
 
 /**
 Removes an element from the given position of the given array in linear time.
@@ -302,7 +348,22 @@ int array_remove
 __attribute__ ((__nonnull__ (2)));
 
 /**
-Removes the given element to the end of the given array in constant time.
+Removes the given amount of elements from
+ the end of the given array in constant time.
+
+If the array's capacity is four times too much, it'll be halved.
+
+@param result A pointer to the destination of the element or <code>NULL</code>.
+@param array The array.
+@param count The amount of elements.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_remove_all_last
+(void* result, struct array* array, size_t count)
+__attribute__ ((__nonnull__ (2)));
+
+/**
+Removes the given element from the end of the given array in constant time.
 
 If the array's capacity is four times too much, it'll be halved.
 
@@ -324,6 +385,17 @@ Removes elements from the end of the given array until
 **/
 int array_truncate
 (struct array* array, size_t count)
+__attribute__ ((__nonnull__));
+
+/**
+Removes elements from the end of the given array until
+ it has no elements in constant time.
+
+@param array The array.
+@return The number <code>0</code> if successful or <code>-1</code> otherwise.
+**/
+int array_truncate_whole
+(struct array* array)
 __attribute__ ((__nonnull__));
 
 /**
@@ -404,7 +476,7 @@ __attribute__ ((__nonnull__ (2)));
 @copydoc array_write_all()
 **/
 int array_const_write_all
-(struct array_const* array, void const* element, size_t position, size_t count)
+(struct array_const* array, void const* elements, size_t position, size_t count)
 __attribute__ ((__nonnull__));
 
 /**
@@ -429,10 +501,24 @@ int array_const_move_in
 __attribute__ ((__nonnull__));
 
 /**
+@copydoc array_add_all()
+**/
+int array_const_add_all
+(struct array_const* array, void const* elements, size_t position, size_t count)
+__attribute__ ((__nonnull__));
+
+/**
 @copydoc array_add()
 **/
 int array_const_add
 (struct array_const* array, void const* element, size_t position)
+__attribute__ ((__nonnull__));
+
+/**
+@copydoc array_add_all_last()
+**/
+int array_const_add_all_last
+(struct array_const* array, void const* elements, size_t count)
 __attribute__ ((__nonnull__));
 
 /**
@@ -443,10 +529,24 @@ int array_const_add_last
 __attribute__ ((__nonnull__));
 
 /**
+@copydoc array_remove_all()
+**/
+int array_const_remove_all
+(void const* result, struct array_const* array, size_t position, size_t count)
+__attribute__ ((__nonnull__ (2)));
+
+/**
 @copydoc array_remove()
 **/
 int array_const_remove
 (void const* result, struct array_const* array, size_t position)
+__attribute__ ((__nonnull__ (2)));
+
+/**
+@copydoc array_remove_all_last()
+**/
+int array_const_remove_all_last
+(void const* result, struct array_const* array, size_t count)
 __attribute__ ((__nonnull__ (2)));
 
 /**
@@ -461,6 +561,13 @@ __attribute__ ((__nonnull__ (2)));
 **/
 int array_const_truncate
 (struct array_const* array, size_t count)
+__attribute__ ((__nonnull__));
+
+/**
+@copydoc array_truncate_whole()
+**/
+int array_const_truncate_whole
+(struct array_const* array)
 __attribute__ ((__nonnull__));
 
 /**

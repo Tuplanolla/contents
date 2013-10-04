@@ -21,6 +21,7 @@ int interpret
 		state_destroy(state);
 		return -1;
 	}
+	int const status = state->execution.status == STATUS_NORMAL ? 0 : -1;
 	state_destroy(state);
-	return 0;
+	return status;
 }
