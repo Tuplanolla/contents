@@ -12,8 +12,8 @@ RELEASE_CFLAGS = -s\
 		-O3\
 		-Wall -Wextra
 # CHEAT needs the project root to be in the include path.
-TEST_CFLAGS = -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700\
-		-I .
+TEST_CFLAGS = -I .\
+		-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700
 CFLAGS = -std=c11\
 		$(DEBUG_CFLAGS)\
 		$(TEST_CFLAGS)

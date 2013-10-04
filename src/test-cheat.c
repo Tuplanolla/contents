@@ -1,3 +1,10 @@
+/**
+Tests the unit testing framework.
+
+@file
+@author Sampsa "Tuplanolla" Kiiskinen
+**/
+
 #ifndef __BASE_FILE__
 #define __BASE_FILE__ __FILE__
 #endif
