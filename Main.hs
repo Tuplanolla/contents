@@ -28,28 +28,28 @@ data Action =
   Destroy
   deriving Show
 
-data Nested =
-  O |
-  I Action |
-  N (String -> Nested)
-  deriving Show
-
 data Configuration = Configuration
   {name :: String}
   deriving Show
 
 type Contents = Map String String
 
-data PError =
-  Invalid String |
-  Ambiguous String [String]
+data Wrapper =
+  F (String -> Wrapper) |
+  A Action
   deriving Show
 
-liftN0 a = I a
-liftN1 f = N $ \ x -> I $ f x
-liftN2 f = N $ \ x -> N $ \ y -> I $ Add x y
+data CommandError =
+  Invalid {input :: String} |
+  Ambiguous {input :: String, candidates :: [String]} |
+  Incomplete {input :: String, expected :: Int, actual :: Int}
+  deriving Show
 
-commands :: [(String, Nested)]
+liftN0 a = A a
+liftN1 f = F $ \ x -> A $ f x
+liftN2 f = F $ \ x -> F $ \ y -> A $ f x y
+
+commands :: [(String, Wrapper)]
 commands =
   [("make", liftN0 Make),
    ("edit", liftN0 Edit),
@@ -61,17 +61,28 @@ commands =
    ("touch", liftN0 Touch),
    ("destroy", liftN0 Destroy)]
 
-parseWith :: (Nested, [Action]) -> String -> Either PError (Nested, [Action])
-parseWith (N f, as) x = Right (f x, as)
-parseWith (I a, as) x = Right (O, a : as)
-parseWith (O, as) x =
-  case filter (\ (y, _) -> x `isPrefixOf` y) commands of
+readCommand :: [(String, a)] -> String -> Either CommandError a
+readCommand as x =
+  case filter (isPrefixOf x . fst) as of
        ys @ (_ : _ : _) -> Left $ Ambiguous x $ fst <$> ys
-       ((_, f) : _) -> Right (f, as)
+       (y : _) -> Right $ snd y
        _ -> Left $ Invalid x
 
-parseArgs :: [String] -> Either PError [Action]
-parseArgs = fmap snd <$> foldM parseWith (O, [])
+parseWith :: Maybe (String, Wrapper) -> [String] -> Either CommandError [Action]
+parseWith (Just (x, F f)) (y : ys) =
+  case f y of
+       w @ (F _) -> parseWith (Just (x, w)) ys
+       A a -> (a :) <$> parseWith Nothing ys
+parseWith (Just (x, F _)) _ = Left $ Incomplete x 0 0
+parseWith (Just (x, A a)) ys = (a :) <$> parseWith Nothing ys
+parseWith _ (y : ys) =
+  case readCommand commands y of
+       Right w -> parseWith (Just (y, w)) ys
+       Left e -> Left e
+parseWith _ _ = Right []
+
+parseArgs :: [String] -> Either CommandError [Action]
+parseArgs = parseWith Nothing
 
 fromString :: String -> Contents
 fromString = fromList . fmap (partition (== ' ')) . lines
