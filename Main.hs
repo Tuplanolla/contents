@@ -28,10 +28,10 @@ data Action =
   Destroy
   deriving Show
 
-data FNAction =
-  F0 Action |
-  F1 (String -> Action) |
-  F2 (String -> String -> Action)
+data Nested =
+  O |
+  I Action |
+  N (String -> Nested)
   deriving Show
 
 data Configuration = Configuration
@@ -45,29 +45,33 @@ data PError =
   Ambiguous String [String]
   deriving Show
 
-commands :: [(String, FNAction)]
-commands =
-  [("make", F0 Make),
-   ("edit", F0 Edit),
-   ("add", F2 Add),
-   ("remove", F1 Remove),
-   ("update", F2 Update),
-   ("lookup", F1 Lookup),
-   ("find", F1 Find),
-   ("touch", F0 Touch),
-   ("destroy", F0 Destroy)]
+liftN0 a = I a
+liftN1 f = N $ \ x -> I $ f x
+liftN2 f = N $ \ x -> N $ \ y -> I $ Add x y
 
-parseWith :: (FNAction, [Action]) -> String -> Either PError (FNAction, [Action])
-parseWith (F2 f, as) x = Right ((F1 $ f x), as)
-parseWith (F1 f, as) x = Right ((F0 $ f x), as)
-parseWith (F0 a, as) x =
+commands :: [(String, Nested)]
+commands =
+  [("make", liftN0 Make),
+   ("edit", liftN0 Edit),
+   ("add", liftN2 Add),
+   ("remove", liftN1 Remove),
+   ("update", liftN2 Update),
+   ("lookup", liftN1 Lookup),
+   ("find", liftN1 Find),
+   ("touch", liftN0 Touch),
+   ("destroy", liftN0 Destroy)]
+
+parseWith :: (Nested, [Action]) -> String -> Either PError (Nested, [Action])
+parseWith (N f, as) x = Right (f x, as)
+parseWith (I a, as) x = Right (O, a : as)
+parseWith (O, as) x =
   case filter (\ (y, _) -> x `isPrefixOf` y) commands of
        ys @ (_ : _ : _) -> Left $ Ambiguous x $ fst <$> ys
-       ((_, f) : _) -> Right (f, as ++ pure a) -- !!
+       ((_, f) : _) -> Right (f, as)
        _ -> Left $ Invalid x
 
 parseArgs :: [String] -> Either PError [Action]
-parseArgs = fmap snd <$> foldM parseWith (F0 None, [])
+parseArgs = fmap snd <$> foldM parseWith (O, [])
 
 fromString :: String -> Contents
 fromString = fromList . fmap (partition (== ' ')) . lines
