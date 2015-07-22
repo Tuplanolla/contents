@@ -1,21 +1,24 @@
-{-# LANGUAGE DeriveDataTypeable, ScopedTypeVariables #-}
+{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
 
-import Control.Applicative as A
-import Control.Exception
+import Control.Applicative hiding (many, optional)
+import Control.Exception hiding (try)
 import Control.Monad
 import Data.Map hiding (filter, partition)
-import Data.List hiding (insert)
+import Data.List (isPrefixOf, partition)
+-- import Data.Text (Text)
+-- import qualified Data.Text as T
+-- import qualified Data.Text.IO as TIO
 import Data.Typeable
 import Prelude hiding (foldl, getContents)
 -- import System.Exit (exitFailure, exitSuccess)
 import System.IO hiding (getContents)
 import System.IO.Error
+import System.Exit
 import System.Environment
 import System.Process (rawSystem)
--- import Text.Parsec
--- import Text.Parsec.Text (Parser)
-
-type Contents = Map String String
+import Text.Parsec hiding ((<|>))
+import qualified Text.Parsec as P ((<|>))
+import Text.Parsec.String (Parser)
 
 data Wrapper =
   F (String -> Wrapper) |
@@ -24,13 +27,13 @@ data Wrapper =
 
 type Wrapped = (Wrapper, Int)
 
-data ParsingError =
+data CommandError =
   Invalid {invalidInput :: String} |
   Ambiguous {ambiguousInput :: String, candidates :: [String]} |
   Incomplete {incompleteInput :: String, expected :: Int, actual :: Int}
   deriving (Show, Typeable)
 
-instance Exception ParsingError
+instance Exception CommandError
 
 wrap0 :: Action -> Wrapped
 wrap0 a = (A a, 0)
@@ -55,14 +58,14 @@ commands =
    ("help", wrap0 Help),
    ("version", wrap0 Version)]
 
-parseCommand :: [(String, a)] -> String -> Either ParsingError a
+parseCommand :: [(String, a)] -> String -> Either CommandError a
 parseCommand as x =
   case filter (isPrefixOf x . fst) as of
        ys @ (_ : _ : _) -> Left $ Ambiguous x $ fst <$> ys
        (y : _) -> Right $ snd y
        _ -> Left $ Invalid x
 
-parseActionsWith :: Maybe ((String, Int), Wrapped) -> [String] -> Either ParsingError [Action]
+parseActionsWith :: Maybe ((String, Int), Wrapped) -> [String] -> Either CommandError [Action]
 parseActionsWith (Just ((x, k), (F f, n))) (y : ys) =
   case f y of
        w @ (F _) -> parseActionsWith (Just ((x, k + 1), (w, n))) ys
@@ -75,19 +78,21 @@ parseActionsWith _ (y : ys) =
        Left e -> Left e
 parseActionsWith _ _ = Right []
 
-parseActions :: [String] -> Either ParsingError [Action]
+parseActions :: [String] -> Either CommandError [Action]
 parseActions = parseActionsWith Nothing
 
-fromString :: String -> Contents
+fromString :: String -> Map String String
 fromString = fromList . fmap (partition (== ' ')) . lines
 -- Parsec here.
 
-toString :: Contents -> String
+toString :: Map String String -> String
 toString = unlines . fmap (\ (x, y) -> x ++ "  " ++ y) . toAscList
 
 data ExecutionError =
   AlreadyExists |
-  NoEditor
+  NoEditor |
+  EditorFailed Int |
+  Fuck
   deriving (Show, Typeable)
 
 instance Exception ExecutionError
@@ -106,6 +111,21 @@ data Action =
   Version
   deriving Show
 
+separatorParser :: Parser ()
+separatorParser = () <$ (space <* many1 space)
+
+continuationParser :: Parser ()
+continuationParser = () <$ many1 space
+
+fileParser :: Parser (Map String String)
+fileParser =
+  fromList <$> many ((,) <$>
+    (manyTill anyChar $ try $ separatorParser) <*>
+    (manyTill anyChar $ try $ eof P.<|> () <$ (newline <* notFollowedBy (try continuationParser))))
+
+parseContents :: String -> Either ParseError (Map String String)
+parseContents = runParser fileParser () []
+
 executeOne :: Configuration -> Action -> IO ()
 executeOne c Make =
   catchJust -- This contains a possible race condition.
@@ -114,17 +134,32 @@ executeOne c Make =
         throw AlreadyExists)
     (\ _ -> openFile (name c) WriteMode >>= hClose)
 executeOne c Edit =
-  do m <- (<|>) <$> return (editor c) <*> lookupEnv "EDITOR"
+  do m <- (<|>) <$> return (editor c) <*> lookupEnv "EDITOR" -- Check this.
      case m of
-          Just x -> do _ <- rawSystem x [name c]
-                       return ()
+          Just x -> do e <- rawSystem x [name c]
+                       case e of
+                            ExitFailure n -> throw $ EditorFailed n
+                            _ -> return ()
           _ -> throw NoEditor
 executeOne c (Add k v) =
   do x <- readFile $ name c
-     let y = toString $ insert k v $ fromString x
      _ <- evaluate $ length x
+     let y = toString $ insert k v $ fromString x
      writeFile (name c) y
      -- Write into swap file instead.
+executeOne c (Remove k) =
+  do x <- readFile $ name c
+     _ <- evaluate $ length x
+     let y = toString $ delete k $ fromString x
+     writeFile (name c) y
+-- Not implemented yet.
+executeOne c (Update k v) = (c, k, v) `seq` undefined
+executeOne c (Lookup k) = (c, k) `seq` undefined
+executeOne c (Find k) = (c, k) `seq` undefined
+executeOne c Touch = c `seq` undefined
+executeOne c Destroy = c `seq` undefined
+executeOne c Help = c `seq` undefined
+executeOne c Version = c `seq` undefined
 
 data Configuration =
   Configuration {name :: String, editor :: Maybe String, swap :: String -> String}
@@ -133,7 +168,7 @@ data Configuration =
 execute :: Configuration -> [Action] -> IO ()
 execute c = mapM_ $ executeOne c
 
-test :: Either ParsingError [Action]
+test :: Either CommandError [Action]
 test = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 
 defaultConfiguration :: Configuration
