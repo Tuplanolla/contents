@@ -4,6 +4,8 @@ Indefinix (In-def-i-nix) is a command line directory indexer.
 Its purpose is to maintain a plain table of contents found in a directory.
 The name is a distasteful mix of the words "index" and "definition", resulting in a word like "indefinite".
 
+Actually it is a table of contents, not an index.
+
 ## Schedule
 
 This project should be done by 2015.
