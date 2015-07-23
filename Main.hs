@@ -1,26 +1,42 @@
 {-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
 
--- import Control.Arrow (first, second)
+import Control.Arrow (second)
 import Control.Applicative hiding (many, optional)
 import Control.Exception hiding (try)
+import qualified Control.Exception as E
 import Control.Monad
 import Data.Map hiding (filter, partition)
+import qualified Data.Map as M
 import Data.List (isPrefixOf)
+import Data.Function ()
 -- import Data.Text (Text)
 import qualified Data.Text as T (justifyLeft, pack, unpack)
 -- import qualified Data.Text.IO as TIO
 import Data.Typeable
 import Prelude hiding (foldl, getContents)
 -- import System.Exit (exitFailure, exitSuccess)
-import System.IO hiding (getContents)
-import System.IO.Error
 import System.Directory
 import System.Exit
 import System.Environment
 import System.Process (rawSystem)
+import System.FilePath ((</>))
 import Text.Parsec hiding ((<|>))
 import qualified Text.Parsec as P ((<|>))
 import Text.Parsec.String (Parser)
+
+data Project =
+  Project
+    {projectName :: String,
+     projectIdentifier :: String,
+     projectVersion :: (Int, Int, Int)}
+  deriving Show
+
+defaultProject :: Project
+defaultProject =
+  Project
+    {projectName = "The Great Indefinix",
+     projectIdentifier = "indefinix",
+     projectVersion = (0, 0, 0)}
 
 data Wrapper =
   F (String -> Wrapper) |
@@ -132,6 +148,7 @@ data ExecutionError =
   EditorFailed {exitCode :: Int} |
   SyntaxError {row :: Int, column :: Int} |
   ContentError {commandError :: ParseError} |
+  ConfigurationError {configurationError :: ParseError} |
   SwapInUse |
   Fuck
   deriving (Show, Typeable)
@@ -139,33 +156,40 @@ data ExecutionError =
 instance Exception ExecutionError
 
 executeOne :: Configuration -> Action -> IO ()
-executeOne c Make =
-  catchJust -- This contains a possible race condition.
-    (\ e -> if isDoesNotExistError e then Just () else Nothing)
-    (do openFile (name c) ReadMode >>= hClose
-        throw AlreadyExists)
-    (\ _ -> openFile (name c) WriteMode >>= hClose)
-executeOne c Edit =
-  do m <- (<|>) <$> return (editor c) <*> lookupEnv "EDITOR" -- Check this.
+executeOne Configuration {name = file} Make =
+  do b <- doesFileExist file
+     -- If another process creates file here,
+     -- it will be overwritten by this process.
+     if b then
+        throw AlreadyExists else
+        writeFile file ""
+executeOne Configuration {name = file, editor = program} Edit =
+  do m <- (<|>) <$> return program <*> lookupEnv "EDITOR" -- Move elsewhere.
      case m of
           Just x ->
-            do e <- rawSystem x [name c]
+            do e <- rawSystem x [file]
                case e of
                     ExitFailure n -> throw $ EditorFailed n
                     _ -> return ()
           _ -> throw NoEditor
-executeOne c (Add k v) = changeContents c $ insert k v
+executeOne c (Add k v) = changeContents c $ return . insert k v -- Ensure does not exist.
 -- Not implemented yet.
-executeOne c (Remove k) = (c, k) `seq` undefined
-executeOne c (Update k v) = (c, k, v) `seq` undefined
-executeOne c (Lookup k) = (c, k) `seq` undefined
-executeOne c (Find k) = (c, k) `seq` undefined
-executeOne c Touch = c `seq` undefined
-executeOne c Destroy = c `seq` undefined
-executeOne c Help = c `seq` undefined
-executeOne c Version = c `seq` undefined
+executeOne c (Remove k) = changeContents c $ return . delete k
+executeOne c (Update k v) = changeContents c $ return . insert k v -- Ensure exists.
+executeOne c (Lookup k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
+executeOne c (Find k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
+executeOne c Touch = changeContents c $ return
+executeOne Configuration {name = file} Destroy = removeFile file
+executeOne _ Help = putStrLn $ projectName defaultProject
+executeOne _ Version = putStrLn $ show $ projectVersion defaultProject
+-- These write the file even when they should not.
+-- They also need additional access to the formatted result.
 
-changeContents :: Configuration -> (Map String String -> Map String String) -> IO ()
+-- Use these in the future.
+-- getHomeDirectory :: IO FilePath
+-- doesFileExist :: FilePath -> IO Bool
+
+changeContents :: Configuration -> (Map String String -> IO (Map String String)) -> IO ()
 changeContents c @ Configuration {name = file} f =
   do x <- readFile file
      _ <- evaluate $ length x
@@ -173,48 +197,27 @@ changeContents c @ Configuration {name = file} f =
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp
+               _ <- return fps
                -- Here goes something to merge reality with expectations.
                -- [FilePath] -> Map String String -> Map String (Maybe String, Bool)
                -- That Maybe says whether there is an entry and
                -- that Bool says whether a file exists.
-               let z = formatContents $ f y
+               q <- f y
+               let z = formatContents q
                case swap c of
                     Just g ->
-                      let swapFile = g file in
-                          catchJust -- This contains a possible race condition.
-                            (\ e ->
-                              if isDoesNotExistError e then
-                                 Just () else
-                                 Nothing)
-                            (do h <- openFile swapFile ReadMode
-                                hClose h
-                                throw SwapInUse)
-                            (\ _ ->
-                              do writeFile swapFile z
-                                 -- Assume the swap exists on the same volume.
-                                 renameFile swapFile file)
+                      do let swapFile = g file
+                         b <- doesFileExist swapFile
+                         -- If another process creates swapFile here,
+                         -- it will be overwritten by this process.
+                         if b then
+                            throw SwapInUse else
+                            do writeFile swapFile z
+                               -- This only works if swapFile
+                               -- is on the same volume as file.
+                               renameFile swapFile file
                     _ -> writeFile file z
           Left e -> throw $ ContentError e
-
--- This is deprecated.
-readContents :: Configuration -> IO (Map String String)
-readContents c =
-  do x <- readFile $ name c
-     _ <- evaluate $ length x
-     case parseContents x of
-          Right y -> return y
-          Left e -> throw $ ContentError e
-
--- This is deprecated.
-writeContents :: Configuration -> Map String String -> IO ()
-writeContents c y =
-  case swap c of
-       Just f ->
-         -- Check swap file existence.
-         do writeFile (f $ name c) $ formatContents y
-            -- Assume swap exists on the same volume.
-            renameFile (f $ name c) (name c)
-       _ -> writeFile (name c) $ formatContents y
 
 data Configuration =
   Configuration
@@ -253,15 +256,30 @@ testq =
           Right y -> putStr y
           Left e -> print e
 
-mainWith :: [String] -> IO ()
-mainWith xs =
+mainWith :: Configuration -> [String] -> IO ()
+mainWith c xs =
   case parseActions xs of
-       Right x ->
-         do c <- return defaultConfiguration -- Read here.
-            execute c x
+       Right x -> execute c x
        Left x -> print x
+
+readConfiguration :: IO Configuration
+readConfiguration =
+  do fp <- getHomeDirectory
+     c <- readFile $ fp </> "." ++ projectIdentifier defaultProject
+     case parseConfiguration c of
+          Right q -> return q
+          Left x -> throw $ ConfigurationError x
+
+parseConfiguration :: String -> Either ParseError Configuration
+parseConfiguration = Right . const defaultConfiguration
+                           . fromList
+                           . fmap (second tail . span (/= '='))
+                           . lines
 
 main :: IO ()
 main =
-  do xs <- getArgs
-     mainWith xs
+  do as <- getArgs
+     e <- E.try readConfiguration
+     case e of
+          Right c -> mainWith c as
+          Left (_ :: SomeException) -> mainWith defaultConfiguration as
