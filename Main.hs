@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
 
+module Main where
+
 import Control.Arrow (second)
 import Control.Applicative hiding (many, optional)
 import Control.Exception hiding (try)
@@ -83,7 +85,8 @@ parseCommand as x =
        (y : _) -> Right $ snd y
        _ -> Left $ Invalid x
 
-parseActionsWith :: Maybe ((String, Int), Wrapped) -> [String] -> Either CommandError [Action]
+parseActionsWith ::
+  Maybe ((String, Int), Wrapped) -> [String] -> Either CommandError [Action]
 parseActionsWith (Just ((x, k), (F f, n))) (y : ys) =
   case f y of
        w @ (F _) -> parseActionsWith (Just ((x, k + 1), (w, n))) ys
@@ -116,15 +119,31 @@ data Action =
 separatorParser :: Parser ()
 separatorParser = () <$ char ' ' <* many1 (char ' ')
 
+-- When encountering incorrect indentation:
+-- "This does not seem to be a table of contents file. Keep going?"
+
+-- Potential problems:
+-- start the file with "key···\n" or "··value\n"
+
+-- Not the best of fixes...
+many1Till ::
+  (Stream s m t, Show end) =>
+  ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+many1Till p end =
+  do notFollowedBy end
+     first <- p
+     rest <- manyTill p end
+     return $ first : rest
+
 fileParser :: Parser (Map String String)
 fileParser =
   fromList <$> many ((,) <$>
-    (manyTill anyChar $ try $ separatorParser) <*>
-    (manyTill anyChar $ try $ eof P.<|> () <$
+    (many1Till anyChar $ try $ separatorParser) <*>
+    (many1Till anyChar $ try $ eof P.<|> () <$
     (newline <* notFollowedBy (() <$ try newline <|> try separatorParser))))
 
 parseContents :: String -> Either ParseError (Map String String)
-parseContents = runParser fileParser () []
+parseContents = runParser (fileParser <* eof) () []
 
 -- This sucks.
 sanitizeContents :: Map String String -> Map String String
@@ -172,8 +191,9 @@ executeOne Configuration {name = file, editor = program} Edit =
                     ExitFailure n -> throw $ EditorFailed n
                     _ -> return ()
           _ -> throw NoEditor
+-- These write the file even when they should not.
+-- They also need additional access to the formatted result.
 executeOne c (Add k v) = changeContents c $ return . insert k v -- Ensure does not exist.
--- Not implemented yet.
 executeOne c (Remove k) = changeContents c $ return . delete k
 executeOne c (Update k v) = changeContents c $ return . insert k v -- Ensure exists.
 executeOne c (Lookup k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
@@ -182,14 +202,13 @@ executeOne c Touch = changeContents c $ return
 executeOne Configuration {name = file} Destroy = removeFile file
 executeOne _ Help = putStrLn $ projectName defaultProject
 executeOne _ Version = putStrLn $ show $ projectVersion defaultProject
--- These write the file even when they should not.
--- They also need additional access to the formatted result.
 
 -- Use these in the future.
 -- getHomeDirectory :: IO FilePath
 -- doesFileExist :: FilePath -> IO Bool
 
-changeContents :: Configuration -> (Map String String -> IO (Map String String)) -> IO ()
+changeContents ::
+  Configuration -> (Map String String -> IO (Map String String)) -> IO ()
 changeContents c @ Configuration {name = file} f =
   do x <- readFile file
      _ <- evaluate $ length x
