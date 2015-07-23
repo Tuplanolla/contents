@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
 module Error where
 
@@ -17,7 +17,7 @@ instance Exception CommandError
 data ExecutionError =
   AlreadyExists |
   NoEditor |
-  EditorFailed {exitCode :: Int} |
+  EditorFailed {editorName :: String, exitCode :: Int} |
   SyntaxError {row :: Int, column :: Int} |
   ContentError {commandError :: ParseError} |
   ConfigurationError {configurationError :: ParseError} |

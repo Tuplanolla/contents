@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
-
 module Command where
 
 import Control.Applicative ((<$>))

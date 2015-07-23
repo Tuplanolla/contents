@@ -1,18 +1,16 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
-
 module Content where
 
-import Control.Applicative ((<$), (<$>), Alternative((<|>)), Applicative((<*), (<*>)))
+import Control.Applicative ((<$>), (<*), (<*>))
 import Data.Map (Map, toAscList, fromList)
-import Text.Parsec hiding ((<|>))
-import qualified Text.Parsec as P ((<|>))
+import Text.Parsec
+import Text.Parsec.Prim
 import Text.Parsec.String (Parser)
 import qualified Data.Text as T (justifyLeft, pack, unpack)
 
 import Extra
 
-separatorParser :: Parser ()
-separatorParser = () <$ char ' ' <* many1 (char ' ')
+separator :: Parser String
+separator = manyN 2 $ char ' '
 
 -- When encountering incorrect indentation:
 -- "This does not seem to be a table of contents file. Keep going?"
@@ -22,15 +20,24 @@ separatorParser = () <$ char ' ' <* many1 (char ' ')
 
 -- Merge entries with the same key.
 
-fileParser :: Parser (Map String String)
-fileParser =
-  fromList <$> many ((,) <$>
-    (many1Till anyChar $ try $ separatorParser) <*>
-    (many1Till anyChar $ try $ eof P.<|> () <$
-    (newline <* notFollowedBy (() <$ try newline <|> try separatorParser))))
+line :: Parser (Int, String)
+line =
+  do n <- sourceColumn <$> getPosition
+     v <- many1Till anyChar $ try (lookAhead lineTerminator)
+     return (n, v)
 
-parseContents :: String -> Either ParseError (Map String String)
-parseContents = runParser (fileParser <* eof) () []
+entry :: Parser (String, [(Int, String)])
+entry =
+  do notFollowedBy $ char ' '
+     k <- many1Till anyChar $ try separator
+     vs <- many1Till line $ try $ lineTerminator <* notFollowedBy separator
+     return (k, vs)
+
+file :: Parser [(String, [(Int, String)])]
+file = many entry
+
+parseContents :: String -> Either ParseError [(String, [(Int, String)])]
+parseContents = runParser (file <* eof) () []
 
 -- This sucks.
 sanitizeContents :: Map String String -> Map String String

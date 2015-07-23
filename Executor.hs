@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
-
 module Executor where
 
 import Control.Applicative (Alternative((<|>)), Applicative((<*>)), (<$>))
@@ -15,22 +13,23 @@ import Configuration
 import Content
 import Command
 import Error
+import Extra
 
 executeOne :: Configuration -> Action -> IO ()
 executeOne Configuration {name = file} Make =
   do b <- doesFileExist file
-     -- If another process creates file here,
-     -- it will be overwritten by this process.
      if b then
         throw AlreadyExists else
+        -- If another process creates 'file' here,
+        -- it will be overwritten by this process.
         writeFile file ""
-executeOne Configuration {name = file, editor = program} Edit =
-  do m <- (<|>) <$> return program <*> lookupEnv "EDITOR" -- Move elsewhere.
-     case m of
+executeOne Configuration {name = file, editor = editor} Edit =
+  do m <- getEditor
+     case editor <|> m of
           Just x ->
             do e <- rawSystem x [file]
                case e of
-                    ExitFailure n -> throw $ EditorFailed n
+                    ExitFailure n -> throw $ EditorFailed x n
                     _ -> return ()
           _ -> throw NoEditor
 -- These write the file even when they should not.
@@ -57,7 +56,7 @@ changeContents ::
 changeContents c @ Configuration {name = file} f =
   do x <- readFile file
      _ <- evaluate $ length x
-     case parseContents x of
+     case undefined {- parseContents x -} of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp
@@ -81,4 +80,12 @@ changeContents c @ Configuration {name = file} f =
                                -- is on the same volume as file.
                                renameFile swapFile file
                     _ -> writeFile file z
+          Left e -> throw $ ContentError e
+
+readContents :: Configuration -> IO (Map String String)
+readContents c @ Configuration {name = file} =
+  do x <- readFile file
+     _ <- evaluate $ length x
+     case undefined {- parseContents x -} of
+          Right y -> return y
           Left e -> throw $ ContentError e

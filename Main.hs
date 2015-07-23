@@ -1,12 +1,11 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
-import Control.Applicative ((<$>))
-import Control.Exception (SomeException)
+import Control.Applicative
+import Control.Exception
 import Data.Map (Map)
-import qualified Control.Exception as E (try)
-import System.Environment (getArgs)
+import System.Environment
 import Text.Parsec (ParseError)
 
 import Command
@@ -24,7 +23,7 @@ mainWith c xs =
 main :: IO ()
 main =
   do as <- getArgs
-     e <- E.try readConfiguration
+     e <- try readConfiguration
      case e of
           Right c -> mainWith c as
           Left (_ :: SomeException) -> mainWith defaultConfiguration as

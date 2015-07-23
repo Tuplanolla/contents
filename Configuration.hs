@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, ScopedTypeVariables #-}
-
 module Configuration where
 
 import Control.Arrow (second)
