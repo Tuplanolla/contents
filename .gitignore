@@ -1,3 +1,4 @@
-obj/
-bin/
-dox/
+*.hi
+*.o
+*.swp
+/dist
