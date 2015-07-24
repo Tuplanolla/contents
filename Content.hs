@@ -14,45 +14,43 @@ import Extra
 
 -- Merge entries with the same key.
 
-b :: Parser [(String, [(Int, String)])]
-b = [] <$ eof <|>
-  do x0 <- h
-     x1 <-
-       string "  " *> c <|>
-       l *> p <|>
-       do key <- u
-          (val, rest) <-
-            string "  " *> c <|>
-            l *> p
-          return $ (key, val) : rest
-c, p, d :: Parser ([(Int, String)], [(String, [(Int, String)])])
-c =
-  do _ <- many (char ' ')
+c :: Parser [(String, [(Int, String)])]
+c = many e
+e :: Parser (String, [(Int, String)])
+e = (,) <$> k <*> v
+k :: Parser String
+k =
+  do _ <- notFollowedBy w
+     y <- manyTill anyChar (lookAhead (try (s *> s) <|> l))
+     return y
+v :: Parser [(Int, String)]
+v = s *> s *> x <|> l *> y
+x :: Parser [(Int, String)]
+x =
+  do _ <- many s
      n <- sourceColumn <$> getPosition
-     val <- d
-     return (n, val)
-d =
-  do x0 <- h
-     x1 <- l <|>
-       (\ xs x -> xs ++ [x]) <$> manyTo t (try (h <* l)) <*> h <* l
-     x2 <- a <|> b
-     return x
-p = l *> p <|> many1 (char ' ') *> d
-a = l *> (a <|> b) <|> many1 (char ' ') *> d
-l = try (string "\r\n") <|> string "\r" <|> string "\n" <|>
-u = manyTo t (try (string "  ") <|> oneOf "\r\n")
-h = noneOf " \r\n"
-t = noneOf "\r\n"
-
--- manyTill that does not consume end
-manyTo :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
-manyTo p end      = scan
-                    where
-                      scan  = do{ lookAhead end; return [] }
-                            <|> do{ x <- p; xs <- scan; return (x:xs) }
+     _ <- notFollowedBy w
+     y <- manyTill (notFollowedBy (w *> l) *> anyChar) (lookAhead l)
+     _ <- l
+     ys <- z <|> return []
+     return $ (n, y) : ys
+y :: Parser [(Int, String)]
+y = s *> x <|> l *> y
+z :: Parser [(Int, String)]
+z = s *> x <|> l *> (z <|> return [])
+w :: Parser String
+w = l <|> s
+l :: Parser String
+l = (++) <$> r <*> n <|> r <|> n
+s :: Parser String
+s = string " "
+r :: Parser String
+r = string "\r"
+n :: Parser String
+n = string "\n"
 
 parseContents :: String -> Either ParseError [(String, [(Int, String)])]
-parseContents = runParser b () []
+parseContents = runParser (c <* eof) () []
 
 -- This sucks.
 sanitizeContents :: Map String String -> Map String String

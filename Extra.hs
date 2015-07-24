@@ -47,3 +47,11 @@ manyNTill n p q
   | otherwise =
       do notFollowedBy q
          (:) <$> p <*> manyNTill (n - 1) p q
+
+-- Text.Parsec.Combinator
+manyTo ::
+  Stream s m t =>
+  ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+manyTo p q =
+  let r = [] <$ lookAhead q <|> (:) <$> p <*> r in
+      r
