@@ -1,55 +1,52 @@
 # Formal Grammar
 
-The grammar of wrapped two-column tables is context-free, so
-it can be written with the first-order productions
+The grammar of wrapped two-column tables is context-free and
+its productions can be arranged to form the anagram "big thunderclaps".
 
-    A -> E | (P | P K* P) (S S C | N F)
-    C -> S* (P | P V* P) N (Z | A)
-    Z -> (N | S+ (P | P V* P) N) (Z | A)
-    F -> N F | S+ (P | P V* P) N (Z | A)
-    K -> ~(S S | R | N)
-    V -> ~(R | N)
-    P -> ~(S | R | N)
-    L -> R N | R | N
-    S -> ' '
-    R -> '\r'
-    N -> '\n'
-    E -> eof
-
-or the equivalent higher-order productions
-
-    A -> E | W[K] (S S C | N F)
+    B -> E | I[U] (S S C | L P)
     C -> S* D
-    D -> W[V] N (Z | A)
-    Z -> G[Z | A]
-    F -> G[F]
-    K -> ~(S S | R | N)
-    V -> ~(R | N)
-    P -> ~(S | R | N)
-    L -> R N | R | N
-    W[X] -> P | P X* P
-    G[X] -> N X | S+ D
-    S -> ' '
-    R -> '\r'
-    N -> '\n'
-    E -> eof
-
-that can then be arranged into
-
-    B -> E | I[U] (S S C | N H)
-    I[X] -> P | P X* P
-    G[X] -> N X | S+ D
-    T -> ~(R | N)
-    H -> G[H]
-    U -> ~(S S | R | N)
-    N -> '\n'
-    D -> I[T] N (A | B)
-    E -> eof
-    R -> '\r'
-    C -> S* D
-    L -> R N | R | N
+    D -> I[T] L (A | B)
+    P -> G[P]
     A -> G[A | B]
-    P -> ~(S | R | N)
+    L -> R N | R | N
+    U -> ~(S S | R | N)
+    H -> ~(S | R | N)
+    T -> ~(R | N)
+    I[X] -> H | H X* H
+    G[X] -> L X | S+ D
     S -> ' '
+    R -> '\r'
+    N -> '\n'
+    E -> eof
 
-which is oddly satisfying.
+It can be expanded
+
+    B -> E | (H | H U* H) (S S C | L P)
+    C -> S* D
+    D -> (H | H T* H) L (A | B)
+    P -> L P | S+ D
+    A -> L (A | B) | S+ D
+    L -> R N | R | N
+    U -> ~(S S | R | N)
+    H -> ~(S | R | N)
+    T -> ~(R | N)
+    S -> ' '
+    R -> '\r'
+    N -> '\n'
+    E -> eof
+
+and converted into LL(2) form.
+
+    B -> E | H (S S C | L P | U* H (S S C | L P))
+    C -> S* D
+    D -> H (L | T* H L) (A | B)
+    P -> L P | S+ D
+    A -> L (A | B) | S+ D
+    L -> R N | R | N
+    U -> ~(S S | R | N)
+    H -> ~(S | R | N)
+    T -> ~(R | N)
+    S -> ' '
+    R -> '\r'
+    N -> '\n'
+    E -> eof

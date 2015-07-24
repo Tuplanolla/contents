@@ -15,35 +15,38 @@ import Extra
 -- Merge entries with the same key.
 
 b :: Parser [(String, [(Int, String)])]
-b = e <|> i u' *> (s *> s *> c <|> n *> h)
-
-i x = (:) <$> noneOf " \r\n" <*> manyUntil anyChar (try x)
-
-g x = n *> x <|> many1 s *> d
-
-t' = r <|> n
-
-h = g h
-
-u' = s *> s <|> r <|> n
-
-n = char '\n'
-
-d = i t' *> n *> (a <|> b)
-
-e = [] <$ eof
-
-r = char '\r'
-
-c = many s *> d
-
-a = g (a <|> b)
-
-s = char ' '
+b = [] <$ eof <|>
+  do x0 <- h
+     x1 <-
+       string "  " *> c <|>
+       l *> p <|>
+       do key <- u
+          (val, rest) <-
+            string "  " *> c <|>
+            l *> p
+          return $ (key, val) : rest
+c, p, d :: Parser ([(Int, String)], [(String, [(Int, String)])])
+c =
+  do _ <- many (char ' ')
+     n <- sourceColumn <$> getPosition
+     val <- d
+     return (n, val)
+d =
+  do x0 <- h
+     x1 <- l <|>
+       (\ xs x -> xs ++ [x]) <$> manyTo t (try (h <* l)) <*> h <* l
+     x2 <- a <|> b
+     return x
+p = l *> p <|> many1 (char ' ') *> d
+a = l *> (a <|> b) <|> many1 (char ' ') *> d
+l = try (string "\r\n") <|> string "\r" <|> string "\n" <|>
+u = manyTo t (try (string "  ") <|> oneOf "\r\n")
+h = noneOf " \r\n"
+t = noneOf "\r\n"
 
 -- manyTill that does not consume end
-manyUntil :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
-manyUntil p end      = scan
+manyTo :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+manyTo p end      = scan
                     where
                       scan  = do{ lookAhead end; return [] }
                             <|> do{ x <- p; xs <- scan; return (x:xs) }
