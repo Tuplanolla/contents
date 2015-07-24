@@ -66,7 +66,7 @@ changeContents c @ Configuration {name = file} f =
                -- That Maybe says whether there is an entry and
                -- that Bool says whether a file exists.
                q <- f y
-               let z = formatContents q
+               let z = formatContents c q
                case swap c of
                     Just g ->
                       do let swapFile = g file

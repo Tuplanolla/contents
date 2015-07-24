@@ -19,8 +19,8 @@ data Constfiguration =
 defaultConstfiguration :: Constfiguration
 defaultConstfiguration =
   Constfiguration
-    {constName = "The Great Indefinix",
-     constConfiguration = ".indefinix",
+    {constName = "The Program Called Contents",
+     constConfiguration = ".contents",
      constVersion = (0, 0, 0)}
 
 data Configuration =
@@ -29,6 +29,7 @@ data Configuration =
      editor :: Maybe String,
      swap :: Maybe (String -> String),
      skip :: Maybe Int,
+     wrapSkipSlap :: Maybe Int,
      wrap :: Maybe Int}
   -- deriving Show
 
@@ -39,6 +40,7 @@ defaultConfiguration =
      editor = Nothing,
      swap = Just $ \ x -> "." ++ x ++ ".swap",
      skip = Just 20,
+     wrapSkipSlap = Just 2,
      wrap = Just 80}
 
 parseConfiguration :: String -> Either ParseError Configuration

@@ -1,19 +1,19 @@
 module Content where
 
 import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
+import Data.Function
+import Data.List
 import Data.Map (Map, toAscList, fromList)
+import Data.Ord
 import Text.Parsec
 import Text.Parsec.Prim
 import Text.Parsec.String (Parser)
 import qualified Data.Text as T (justifyLeft, pack, unpack)
 
+import Configuration
 import Extra
 
--- When encountering incorrect indentation:
--- "This does not seem to be a table of contents file. Keep going?"
-
--- Merge entries with the same key.
-
+-- This works somehow.
 c :: Parser [(String, [(Int, String)])]
 c = many e
 e :: Parser (String, [(Int, String)])
@@ -52,15 +52,43 @@ n = string "\n"
 parseContents :: String -> Either ParseError [(String, [(Int, String)])]
 parseContents = runParser (c <* eof) () []
 
--- This sucks.
-sanitizeContents :: Map String String -> Map String String
-sanitizeContents = mapBoth $ filter (/= '\n')
+-- This is silly and should remain internal.
+mergeContents :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
+mergeContents xs =
+  let f xs @ ((x, _) : _) = (x, concat $ snd <$> xs)
+      ys = groupBy ((==) `on` fst) $ sortBy (comparing fst) xs in
+      f <$> ys
+
+-- It does some extra work and is kind of really stupid, but... gives results.
+cleanContents :: [(String, [(Int, String)])] -> Map String String
+cleanContents xs =
+  let f (x, ys) = unwords $ snd <$> ys
+      ys = mergeContents xs in
+      fromList $ zip (fst <$> ys) (f <$> ys)
+
+-- When encountering incorrect indentation:
+-- "This does not seem to be a table of contents file. Keep going?"
+
+-- Merge entries with the same key.
 
 justifyLeft :: Int -> Char -> String -> String
 justifyLeft n c = T.unpack . T.justifyLeft n c . T.pack
 
-formatContents :: Map String String -> String
-formatContents m =
-  let xs = toAscList $ sanitizeContents m
-      n = maximum $ length . fst <$> xs in
-      unlines $ (\ (x, y) -> justifyLeft n ' ' x ++ "  " ++ y) <$> xs
+-- There is no wrapping yet and the logic is kind of shit too.
+formatContents :: Configuration -> Map String String -> String
+formatContents c @ Configuration {skip = mskip} m =
+  let xs = toAscList m
+      n = maximum $ length . fst <$> xs
+      g (x, y) =
+        if maybe True (n <) mskip then
+           justifyLeft (n + 2) ' ' x ++ y else
+           x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) mskip) - 1) ' ' " " ++ y in
+         unlines $ g <$> xs
+
+-- Just for developer convenience.
+handOverContents :: String -> Either ParseError (Map String String)
+handOverContents x = cleanContents <$> parseContents x
+
+-- Try this:
+testC :: IO ()
+testC = either undefined putStr =<< fmap (formatContents defaultConfiguration . cleanContents) . parseContents <$> readFile "CONTENTS"
