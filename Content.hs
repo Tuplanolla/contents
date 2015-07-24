@@ -1,6 +1,6 @@
 module Content where
 
-import Control.Applicative ((<$>), (<*), (<*>))
+import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
 import Data.Map (Map, toAscList, fromList)
 import Text.Parsec
 import Text.Parsec.Prim
@@ -9,47 +9,47 @@ import qualified Data.Text as T (justifyLeft, pack, unpack)
 
 import Extra
 
-separator :: Parser String
-separator = manyN 2 $ char ' '
-
 -- When encountering incorrect indentation:
 -- "This does not seem to be a table of contents file. Keep going?"
 
 -- Merge entries with the same key.
 
-{-
-The formal grammar is
+b :: Parser [(String, [(Int, String)])]
+b = e <|> i u' *> (s *> s *> c <|> n *> h)
 
-  X -> E | (notSN | notSN not2SN* notSN) (2S Y | N W)
-  Y -> S* (notSN | notSN notN* notSN) N (Z | X)
-  Z -> (N | S+ (notSN | notSN notN* notSN) N) (Z | X)
-  W -> N W | S+ (notSN | notSN notN* notSN) N (Z | X)
-  2S -> S S
-  S -> ' '
-  N -> '\n'
-  E -> eof
+i x = (:) <$> noneOf " \r\n" <*> manyUntil anyChar (try x)
 
-but the following code does not agree yet.
--}
+g x = n *> x <|> many1 s *> d
 
-line :: Parser (Int, String)
-line =
-  do n <- sourceColumn <$> getPosition
-     v <- many1Till anyChar $ try (lookAhead lineTerminator)
-     return (n, v)
+t' = r <|> n
 
-entry :: Parser (String, [(Int, String)])
-entry =
-  do notFollowedBy $ char ' '
-     k <- many1Till anyChar $ try separator
-     vs <- many1Till line $ try $ lineTerminator <* notFollowedBy separator
-     return (k, vs)
+h = g h
 
-file :: Parser [(String, [(Int, String)])]
-file = many entry
+u' = s *> s <|> r <|> n
+
+n = char '\n'
+
+d = i t' *> n *> (a <|> b)
+
+e = [] <$ eof
+
+r = char '\r'
+
+c = many s *> d
+
+a = g (a <|> b)
+
+s = char ' '
+
+-- manyTill that does not consume end
+manyUntil :: Stream s m t => ParsecT s u m a -> ParsecT s u m end -> ParsecT s u m [a]
+manyUntil p end      = scan
+                    where
+                      scan  = do{ lookAhead end; return [] }
+                            <|> do{ x <- p; xs <- scan; return (x:xs) }
 
 parseContents :: String -> Either ParseError [(String, [(Int, String)])]
-parseContents = runParser (file <* eof) () []
+parseContents = runParser b () []
 
 -- This sucks.
 sanitizeContents :: Map String String -> Map String String
