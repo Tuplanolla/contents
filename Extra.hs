@@ -18,7 +18,11 @@ getEditor = lookupEnv "EDITOR"
 
 -- Text.Parsec.Char
 lineTerminator :: Stream s m Char => ParsecT s u m String
-lineTerminator = try (string "\r\n") <|> string "\r" <|> string "\n"
+lineTerminator =
+  try (string "\r\n") <|>
+  string "\r" <|>
+  string "\n" <|>
+  "" <$ lookAhead eof
 
 -- Text.Parsec.Combinator
 manyN :: Stream s m t => Int -> ParsecT s u m a -> ParsecT s u m [a]

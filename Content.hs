@@ -15,10 +15,22 @@ separator = manyN 2 $ char ' '
 -- When encountering incorrect indentation:
 -- "This does not seem to be a table of contents file. Keep going?"
 
--- Potential problems:
--- start the file with "key···\n" or "··value\n"
-
 -- Merge entries with the same key.
+
+{-
+The formal grammar is
+
+  X -> E | (notSN | notSN not2SN* notSN) (2S Y | N W)
+  Y -> S* (notSN | notSN notN* notSN) N (Z | X)
+  Z -> (N | S+ (notSN | notSN notN* notSN) N) (Z | X)
+  W -> N W | S+ (notSN | notSN notN* notSN) N (Z | X)
+  2S -> S S
+  S -> ' '
+  N -> '\n'
+  E -> eof
+
+but the following code does not agree yet.
+-}
 
 line :: Parser (Int, String)
 line =
