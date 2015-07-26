@@ -6,17 +6,34 @@ import Data.List (isPrefixOf)
 import Error
 
 data Action =
+  -- | Create an empty table of contents if none exists.
   Make |
+  -- | Fill the table of contents based on currently existing files.
+  -- Interactive if possible, asks about each file.
+  -- Leave the value empty to skip.
+  Interact |
+  -- | Edit file in text editor, automatically sanitize afterwards.
   Edit |
+  -- | Edit config file in text editor, check afterwards.
+  EditConfig |
+  -- | Add a new entry or fail for an existing one.
   Add {addKey :: String, addValue :: String} |
   Remove {removeKey :: String} |
   Update {updateKey :: String, updateValue :: String} |
+  -- | Retrieve an entry with the exact key.
   Lookup {lookupKey :: String} |
-  Find {findKey :: String} |
+  -- | Retrieve an entry based on any part of the key.
+  Find {findEntry :: String} |
+  FindKey {findKey :: String} |
+  FindValue {findValue :: String} |
+  -- | Just run the sanitizer.
   Touch |
+  -- | Delete the table of contents file.
   Destroy |
   Help |
   Version
+  -- Perhaps give these more sensible names and
+  -- make contents-configure work the configuration instead.
   deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String

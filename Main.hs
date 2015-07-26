@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE CPP, ScopedTypeVariables #-}
 
 module Main where
 
@@ -14,6 +14,21 @@ import Content
 import Error
 import Executor
 
+-- This is avoidable.
+#ifdef OS_Linux
+
+import System.Posix
+
+isATTY :: IO Bool
+isATTY = queryTerminal stdInput
+
+#else
+
+isATTY :: IO Bool
+isATTY = return True
+
+#endif
+
 mainWith :: Configuration -> [String] -> IO ()
 mainWith c xs =
   case parseActions xs of
@@ -24,6 +39,7 @@ main :: IO ()
 main =
   do as <- getArgs
      e <- try readConfiguration
+     b <- isATTY
      case e of
           Right c -> mainWith c as
           Left (_ :: SomeException) -> mainWith defaultConfiguration as

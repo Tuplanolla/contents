@@ -18,11 +18,13 @@ data ExecutionError =
   AlreadyExists |
   NoEditor |
   EditorFailed {editorName :: String, exitCode :: Int} |
-  SyntaxError {row :: Int, column :: Int} |
-  ContentError {commandError :: ParseError} |
+  SyntaxError {row :: Int, column :: Int, expected :: String, actual :: String} |
+  -- Should not stuff Parsec's errors here.
+  ContentError {contentError :: ParseError} |
   ConfigurationError {configurationError :: ParseError} |
   SwapInUse |
   Fuck
   deriving (Show, Typeable)
+  -- deriving (Eq, Ord, Read, Show, Typeable)
 
 instance Exception ExecutionError

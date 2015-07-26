@@ -93,7 +93,3 @@ formatContents c @ Configuration {skip = mskip} m =
 -- Just for developer convenience.
 handOverContents :: String -> Either ParseError (Map String String)
 handOverContents x = cleanContents <$> parseContents x
-
--- Try this:
-testC :: IO ()
-testC = either undefined putStr =<< fmap (formatContents defaultConfiguration . cleanContents) . parseContents <$> readFile "CONTENTS"

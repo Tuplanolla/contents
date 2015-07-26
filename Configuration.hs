@@ -6,6 +6,7 @@ import Data.Map (fromList)
 import System.Directory (getHomeDirectory)
 import System.FilePath ((</>))
 import Text.Parsec (ParseError)
+import Text.Read (readEither)
 
 import Error
 
@@ -40,6 +41,7 @@ data Policy = MergeAll | KeepFirst | KeepLast | DropAll
 data Position = First | Last
   deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
+-- Consider using a Map too.
 data PlannedConfiguration =
   PlannedConfiguration
      -- The length at which to accept commands, like wa for watch.
@@ -96,11 +98,12 @@ defaultConfiguration =
      skip = Just 20,
      wrap = Just 80}
 
-parseConfiguration :: String -> Either ParseError Configuration
-parseConfiguration = Right . const defaultConfiguration
-                           . fromList
-                           . fmap (second tail . span (/= '='))
-                           . lines
+formatConfiguration :: Configuration -> String
+formatConfiguration = show
+
+-- This is dumb.
+parseConfiguration :: String -> Either String Configuration
+parseConfiguration = readEither
 
 readConfiguration :: IO Configuration
 readConfiguration =
@@ -108,4 +111,4 @@ readConfiguration =
      c <- readFile $ fp </> constConfiguration defaultConstfiguration
      case parseConfiguration c of
           Right q -> return q
-          Left x -> throw $ ConfigurationError x
+          Left x -> throw $ ConfigurationError undefined
