@@ -17,12 +17,24 @@ data Action =
   Destroy |
   Help |
   Version
-  deriving Show
+  deriving (Read, Show)
+
+key :: Action -> Maybe String
+key (Add k _) = Just k
+key (Remove k) = Just k
+key (Update k _) = Just k
+key (Lookup k) = Just k
+key (Find k) = Just k
+key _ = Nothing
+
+value :: Action -> Maybe String
+value (Add _ v) = Just v
+value (Update _ v) = Just v
+value _ = Nothing
 
 data Wrapper =
   F (String -> Wrapper) |
   A Action
-  -- deriving Show
 
 type Wrapped = (Wrapper, Int)
 
@@ -51,13 +63,15 @@ commands =
 
 parseCommand :: [(String, a)] -> String -> Either CommandError a
 parseCommand as x =
-  case filter (isPrefixOf x . fst) as of
-       ys @ (_ : _ : _) -> Left $ Ambiguous x $ fst <$> ys
-       (y : _) -> Right $ snd y
-       _ -> Left $ Invalid x
+  let f (y, _) = x `isPrefixOf` y in
+      case filter f as of
+           ys @ (_ : _ : _) -> Left $ Ambiguous x $ fst <$> ys
+           (y : _) -> Right $ snd y
+           _ -> Left $ Invalid x
 
 parseActionsWith ::
-  Maybe ((String, Int), Wrapped) -> [String] -> Either CommandError [Action]
+  Maybe ((String, Int), (Wrapper, Int)) ->
+  [String] -> Either CommandError [Action]
 parseActionsWith (Just ((x, k), (F f, n))) (y : ys) =
   case f y of
        w @ (F _) -> parseActionsWith (Just ((x, k + 1), (w, n))) ys

@@ -1,7 +1,7 @@
 GHC=ghc
 GHCFLAGS=-Wall
 
-build: Main
+build: contents
 
 deep-clean: clean
 	$(RM) Main
@@ -12,8 +12,8 @@ clean: shallow-clean
 shallow-clean:
 	$(RM) *.hi
 
-run: Main
-	./Main
+run: contents
+	./contents
 
-Main: Main.hs
+contents: Main.hs
 	$(GHC) $(GHCFLAGS) -o $@ $<

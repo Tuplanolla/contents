@@ -16,15 +16,17 @@ import Error
 import Extra
 
 executeOne :: Configuration -> Action -> IO ()
-executeOne Configuration {name = file} Make =
-  do b <- doesFileExist file
+executeOne _ Make =
+  do let file = constTarget defaultConstfiguration
+     b <- doesFileExist $ constTarget defaultConstfiguration
      if b then
         throw AlreadyExists else
         -- If another process creates 'file' here,
         -- it will be overwritten by this process.
         writeFile file ""
-executeOne Configuration {name = file, editor = editor} Edit =
-  do m <- getEditor
+executeOne Configuration {editor = editor} Edit =
+  do let file = constTarget defaultConstfiguration
+     m <- getEditor
      case editor <|> m of
           Just x ->
             do e <- rawSystem x [file]
@@ -40,7 +42,7 @@ executeOne c (Update k v) = changeContents c $ return . insert k v -- Ensure exi
 executeOne c (Lookup k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
 executeOne c (Find k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
 executeOne c Touch = changeContents c $ return
-executeOne Configuration {name = file} Destroy = removeFile file
+executeOne _ Destroy = removeFile $ constTarget defaultConstfiguration
 executeOne _ Help = putStrLn $ constName defaultConstfiguration
 executeOne _ Version = putStrLn $ show $ constVersion defaultConstfiguration
 
@@ -53,8 +55,10 @@ execute c = mapM_ $ executeOne c
 
 changeContents ::
   Configuration -> (Map String String -> IO (Map String String)) -> IO ()
-changeContents c @ Configuration {name = file} f =
-  do x <- readFile file
+changeContents c f =
+  do let file = constTarget defaultConstfiguration
+         swapFile = constSwap defaultConstfiguration
+     x <- readFile file
      _ <- evaluate $ length x
      case undefined {- parseContents x -} of
           Right y ->
@@ -67,24 +71,23 @@ changeContents c @ Configuration {name = file} f =
                -- that Bool says whether a file exists.
                q <- f y
                let z = formatContents c q
-               case swap c of
-                    Just g ->
-                      do let swapFile = g file
-                         b <- doesFileExist swapFile
-                         -- If another process creates swapFile here,
-                         -- it will be overwritten by this process.
-                         if b then
-                            throw SwapInUse else
-                            do writeFile swapFile z
-                               -- This only works if swapFile
-                               -- is on the same volume as file.
-                               renameFile swapFile file
-                    _ -> writeFile file z
+               if True then
+                  do b <- doesFileExist swapFile
+                     -- If another process creates swapFile here,
+                     -- it will be overwritten by this process.
+                     if b then
+                        throw SwapInUse else
+                        do writeFile swapFile z
+                           -- This only works if swapFile
+                           -- is on the same volume as file.
+                           renameFile swapFile file else
+                  writeFile file z
           Left e -> throw $ ContentError e
 
 readContents :: Configuration -> IO (Map String String)
-readContents c @ Configuration {name = file} =
-  do x <- readFile file
+readContents _ =
+  do let file = constTarget defaultConstfiguration
+     x <- readFile file
      _ <- evaluate $ length x
      case undefined {- parseContents x -} of
           Right y -> return y

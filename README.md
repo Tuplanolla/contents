@@ -1,4 +1,4 @@
-# Contents
+# The Program Called Contents
 
 Contents is table of contents utility for the command line.
 Not a big surprise.

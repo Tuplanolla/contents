@@ -28,16 +28,12 @@ main =
           Right c -> mainWith c as
           Left (_ :: SomeException) -> mainWith defaultConfiguration as
 
-testc :: Either CommandError [Action]
 testc = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 
-testp :: IO (Either ParseError (Map String String))
-testp = parseContents <$> readFile (name defaultConfiguration)
+testp = parseContents <$> readFile (constTarget defaultConstfiguration)
 
-testf :: IO (Either ParseError String)
-testf = fmap formatContents <$> testp
+testf = fmap (formatContents defaultConfiguration . cleanContents) <$> testp
 
-testq :: IO ()
 testq =
   do x <- testf
      case x of

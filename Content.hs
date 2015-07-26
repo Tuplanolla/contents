@@ -71,8 +71,13 @@ cleanContents xs =
 
 -- Merge entries with the same key.
 
-justifyLeft :: Int -> Char -> String -> String
-justifyLeft n c = T.unpack . T.justifyLeft n c . T.pack
+justifyLeft :: Int -> String -> String
+justifyLeft n = T.unpack . T.justifyLeft n ' ' . T.pack
+
+indentLeft :: Int -> String -> String
+indentLeft n xs
+  | n > 0 = indentLeft (n - 1) $ ' ' : xs
+  | otherwise = xs
 
 -- There is no wrapping yet and the logic is kind of shit too.
 formatContents :: Configuration -> Map String String -> String
@@ -81,8 +86,8 @@ formatContents c @ Configuration {skip = mskip} m =
       n = maximum $ length . fst <$> xs
       g (x, y) =
         if maybe True (n <) mskip then
-           justifyLeft (n + 2) ' ' x ++ y else
-           x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) mskip) - 1) ' ' " " ++ y in
+           justifyLeft (n + 2) x ++ y else
+           x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) mskip) - 1) " " ++ y in
          unlines $ g <$> xs
 
 -- Just for developer convenience.
