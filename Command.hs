@@ -33,7 +33,7 @@ data Action =
   Help |
   Version
   -- Perhaps give these more sensible names and
-  -- make contents-configure work the configuration instead.
+  -- make contents-configure work the config instead.
   deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String

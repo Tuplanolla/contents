@@ -10,7 +10,7 @@ import Text.Parsec.Prim
 import Text.Parsec.String (Parser)
 import qualified Data.Text as T (justifyLeft, pack, unpack)
 
-import Configuration
+import Config
 import Extra
 
 -- This works somehow.
@@ -80,8 +80,8 @@ indentLeft n xs
   | otherwise = xs
 
 -- There is no wrapping yet and the logic is kind of shit too.
-formatContents :: Configuration -> Map String String -> String
-formatContents c @ Configuration {skip = mskip} m =
+formatContents :: Config -> Map String String -> String
+formatContents c @ Config {skip = mskip} m =
   let xs = toAscList m
       n = maximum $ length . fst <$> xs
       g (x, y) =

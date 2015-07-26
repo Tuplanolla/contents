@@ -9,23 +9,24 @@ import System.Exit (ExitCode(ExitFailure))
 import System.Process (rawSystem)
 import qualified Data.Map as M (lookup)
 
-import Configuration
+import Config
 import Content
 import Command
 import Error
 import Extra
+import Project
 
-executeOne :: Configuration -> Action -> IO ()
+executeOne :: Config -> Action -> IO ()
 executeOne _ Make =
-  do let file = constTarget defaultConstfiguration
-     b <- doesFileExist $ constTarget defaultConstfiguration
+  do let file = projectTarget defaultProject
+     b <- doesFileExist $ projectTarget defaultProject
      if b then
         throw AlreadyExists else
         -- If another process creates 'file' here,
         -- it will be overwritten by this process.
         writeFile file ""
-executeOne Configuration {editor = editor} Edit =
-  do let file = constTarget defaultConstfiguration
+executeOne Config {editor = editor} Edit =
+  do let file = projectTarget defaultProject
      m <- getEditor
      case editor <|> m of
           Just x ->
@@ -42,11 +43,11 @@ executeOne c (Update k v) = changeContents c $ return . insert k v -- Ensure exi
 executeOne c (Lookup k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
 executeOne c (Find k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
 executeOne c Touch = changeContents c $ return
-executeOne _ Destroy = removeFile $ constTarget defaultConstfiguration
-executeOne _ Help = putStrLn $ constName defaultConstfiguration
-executeOne _ Version = putStrLn $ show $ constVersion defaultConstfiguration
+executeOne _ Destroy = removeFile $ projectTarget defaultProject
+executeOne _ Help = putStrLn $ projectName defaultProject
+executeOne _ Version = putStrLn $ show $ projectVersion defaultProject
 
-execute :: Configuration -> [Action] -> IO ()
+execute :: Config -> [Action] -> IO ()
 execute c = mapM_ $ executeOne c
 
 -- Use these in the future.
@@ -54,10 +55,10 @@ execute c = mapM_ $ executeOne c
 -- doesFileExist :: FilePath -> IO Bool
 
 changeContents ::
-  Configuration -> (Map String String -> IO (Map String String)) -> IO ()
+  Config -> (Map String String -> IO (Map String String)) -> IO ()
 changeContents c f =
-  do let file = constTarget defaultConstfiguration
-         swapFile = constSwap defaultConstfiguration
+  do let file = projectTarget defaultProject
+         swapFile = projectSwap defaultProject
      x <- readFile file
      _ <- evaluate $ length x
      case undefined {- parseContents x -} of
@@ -84,9 +85,9 @@ changeContents c f =
                   writeFile file z
           Left e -> throw $ ContentError e
 
-readContents :: Configuration -> IO (Map String String)
+readContents :: Config -> IO (Map String String)
 readContents _ =
-  do let file = constTarget defaultConstfiguration
+  do let file = projectTarget defaultProject
      x <- readFile file
      _ <- evaluate $ length x
      case undefined {- parseContents x -} of

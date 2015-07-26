@@ -9,10 +9,11 @@ import System.Environment
 import Text.Parsec (ParseError)
 
 import Command
-import Configuration
+import Config
 import Content
 import Error
 import Executor
+import Project
 
 -- This is avoidable.
 #ifdef OS_Linux
@@ -29,7 +30,7 @@ isATTY = return True
 
 #endif
 
-mainWith :: Configuration -> [String] -> IO ()
+mainWith :: Config -> [String] -> IO ()
 mainWith c xs =
   case parseActions xs of
        Right x -> execute c x
@@ -38,17 +39,17 @@ mainWith c xs =
 main :: IO ()
 main =
   do as <- getArgs
-     e <- try readConfiguration
+     e <- try readConfig
      b <- isATTY
      case e of
           Right c -> mainWith c as
-          Left (_ :: SomeException) -> mainWith defaultConfiguration as
+          Left (_ :: SomeException) -> mainWith defaultConfig as
 
 testc = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 
-testp = parseContents <$> readFile (constTarget defaultConstfiguration)
+testp = parseContents <$> readFile (projectTarget defaultProject)
 
-testf = fmap (formatContents defaultConfiguration . cleanContents) <$> testp
+testf = fmap (formatContents defaultConfig . cleanContents) <$> testp
 
 testq =
   do x <- testf
