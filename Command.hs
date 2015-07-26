@@ -17,7 +17,7 @@ data Action =
   Destroy |
   Help |
   Version
-  deriving (Read, Show)
+  deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String
 key (Add k _) = Just k

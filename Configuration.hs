@@ -16,7 +16,7 @@ data Constfiguration =
      constTarget :: String,
      constSwap :: String,
      constVersion :: (Int, Int, Int)}
-  deriving (Read, Show)
+  deriving (Eq, Ord, Read, Show)
 
 defaultConstfiguration :: Constfiguration
 defaultConstfiguration =
@@ -32,13 +32,13 @@ data Configuration =
     {editor :: Maybe String,
      skip :: Maybe Int,
      wrap :: Maybe Int}
-  deriving (Read, Show)
+  deriving (Eq, Ord, Read, Show)
 
 data Policy = MergeAll | KeepFirst | KeepLast | DropAll
-  deriving (Read, Show)
+  deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
 data Position = First | Last
-  deriving (Read, Show)
+  deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
 data PlannedConfiguration =
   PlannedConfiguration
@@ -87,7 +87,7 @@ data PlannedConfiguration =
      warnLineSkip :: Bool,
      warnIndentation :: Bool}
      -- Perhaps convert Column into (Row, Column) in the parser to accomodate.
-  deriving (Read, Show)
+  deriving (Eq, Ord, Read, Show)
 
 defaultConfiguration :: Configuration
 defaultConfiguration =

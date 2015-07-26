@@ -10,7 +10,7 @@ data CommandError =
   Invalid {invalidInput :: String} |
   Ambiguous {ambiguousInput :: String, candidates :: [String]} |
   Incomplete {incompleteInput :: String, expected :: Int, actual :: Int}
-  deriving (Show, Typeable)
+  deriving (Eq, Ord, Read, Show, Typeable)
 
 instance Exception CommandError
 
