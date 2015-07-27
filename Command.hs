@@ -78,7 +78,7 @@ commands =
    ("help", wrap0 Help),
    ("version", wrap0 Version)]
 
-parseCommand :: [(String, a)] -> String -> Either CommandError a
+parseCommand :: [(String, a)] -> String -> Either ExecutionError a
 parseCommand as x =
   let f (y, _) = x `isPrefixOf` y in
       case filter f as of
@@ -88,7 +88,7 @@ parseCommand as x =
 
 parseActionsWith ::
   Maybe ((String, Int), (Wrapper, Int)) ->
-  [String] -> Either CommandError [Action]
+  [String] -> Either ExecutionError [Action]
 parseActionsWith (Just ((x, k), (F f, n))) (y : ys) =
   case f y of
        w @ (F _) -> parseActionsWith (Just ((x, k + 1), (w, n))) ys
@@ -101,5 +101,5 @@ parseActionsWith _ (y : ys) =
        Left e -> Left e
 parseActionsWith _ _ = Right []
 
-parseActions :: [String] -> Either CommandError [Action]
+parseActions :: [String] -> Either ExecutionError [Action]
 parseActions = parseActionsWith Nothing

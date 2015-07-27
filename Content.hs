@@ -1,6 +1,7 @@
 module Content where
 
 import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
+import Control.Arrow (left)
 import Data.Function
 import Data.List
 import Data.Map (Map, toAscList, fromList)
@@ -11,6 +12,7 @@ import Text.Parsec.String (Parser)
 import qualified Data.Text as T (justifyLeft, pack, unpack)
 
 import Config
+import Error
 import Extra
 
 -- This works somehow.
@@ -49,8 +51,13 @@ r = string "\r"
 n :: Parser String
 n = string "\n"
 
-parseContents :: String -> Either ParseError [(String, [(Int, String)])]
-parseContents = runParser (c <* eof) () []
+mapError :: ParseError -> ExecutionError
+mapError e =
+  let p = errorPos e in
+      SyntaxError (sourceLine p) (sourceColumn p)
+
+parseContents :: String -> Either ExecutionError [(String, [(Int, String)])]
+parseContents = left mapError . runParser (c <* eof) () []
 
 -- This is silly and should remain internal.
 mergeContents :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
@@ -81,15 +88,15 @@ indentLeft n xs
 
 -- There is no wrapping yet and the logic is kind of shit too.
 formatContents :: Config -> Map String String -> String
-formatContents c @ Config {skip = mskip} m =
+formatContents c m =
   let xs = toAscList m
       n = maximum $ length . fst <$> xs
       g (x, y) =
-        if maybe True (n <) mskip then
+        if True then
            justifyLeft (n + 2) x ++ y else
-           x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) mskip) - 1) " " ++ y in
+           x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) $ Just 5) - 1) " " ++ y in
          unlines $ g <$> xs
 
 -- Just for developer convenience.
-handOverContents :: String -> Either ParseError (Map String String)
+handOverContents :: String -> Either ExecutionError (Map String String)
 handOverContents x = cleanContents <$> parseContents x

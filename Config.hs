@@ -1,6 +1,6 @@
 module Config where
 
-import Control.Arrow (second)
+import Control.Arrow (left)
 import Control.Exception (throw)
 import Data.Map (fromList)
 import System.Directory (getHomeDirectory)
@@ -11,13 +11,6 @@ import Text.Read (readEither)
 import Error
 import Project
 
-data Config =
-  Config
-    {editor :: Maybe String,
-     skip :: Maybe Int,
-     wrap :: Maybe Int}
-  deriving (Eq, Ord, Read, Show)
-
 data Policy = MergeAll | KeepFirst | KeepLast | DropAll
   deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
@@ -25,17 +18,17 @@ data Position = First | Last
   deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
 -- Consider using a Map too.
-data PlannedConfig =
-  PlannedConfig
+data Config =
+  Config
      -- The length at which to accept commands, like wa for watch.
     {completion :: Maybe Int,
-     -- User editor.
-     userEditor :: Maybe String,
+     -- User's favorite editor.
+     editor :: Maybe String,
      -- Leave this many empty lines between keys.
-     lineSkip :: Int,
+     skip :: Int,
      -- If a value is too long, cut it before the exceeding word and
      -- move the rest of the value to the next line.
-     lineWrap :: Maybe Int,
+     wrap :: Maybe Int,
      -- If a key is too long, move the value to the next line and
      -- do not take the key into account when calculating indents.
      maxKeyLength :: Maybe Int,
@@ -78,15 +71,14 @@ defaultConfig :: Config
 defaultConfig =
   Config
     {editor = Nothing,
-     skip = Just 20,
      wrap = Just 80}
 
 formatConfig :: Config -> String
 formatConfig = show
 
 -- This is dumb.
-parseConfig :: String -> Either String Config
-parseConfig = readEither
+parseConfig :: String -> Either ExecutionError Config
+parseConfig = left (const $ SyntaxError 0 0) . readEither
 
 readConfig :: IO Config
 readConfig =
@@ -94,4 +86,4 @@ readConfig =
      c <- readFile $ fp </> projectConfig defaultProject
      case parseConfig c of
           Right q -> return q
-          Left x -> throw $ ConfigError undefined
+          Left x -> throw x

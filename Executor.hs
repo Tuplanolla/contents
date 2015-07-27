@@ -61,7 +61,7 @@ changeContents c f =
          swapFile = projectSwap defaultProject
      x <- readFile file
      _ <- evaluate $ length x
-     case undefined {- parseContents x -} of
+     case cleanContents <$> parseContents x of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp
@@ -83,13 +83,13 @@ changeContents c f =
                            -- is on the same volume as file.
                            renameFile swapFile file else
                   writeFile file z
-          Left e -> throw $ ContentError e
+          Left e -> throw e
 
 readContents :: Config -> IO (Map String String)
 readContents _ =
   do let file = projectTarget defaultProject
      x <- readFile file
      _ <- evaluate $ length x
-     case undefined {- parseContents x -} of
+     case cleanContents <$> parseContents x of
           Right y -> return y
-          Left e -> throw $ ContentError e
+          Left e -> throw e
