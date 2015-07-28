@@ -4,8 +4,10 @@ import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
 import Control.Arrow (left)
 import Data.Function
 import Data.List
-import Data.Map (Map, toAscList, fromList)
+import Data.Map as M
 import Data.Ord
+import Data.Set (Set)
+import qualified Data.Set as S
 import Text.Parsec
 import Text.Parsec.Prim
 import Text.Parsec.String (Parser)
@@ -86,6 +88,16 @@ indentLeft n xs
   | n > 0 = indentLeft (n - 1) $ ' ' : xs
   | otherwise = xs
 
+-- This needs to be baked into the grammar.
+dropTrails :: Map String String -> Map String String
+dropTrails m =
+  let f xs @ (x : [])
+        | x == '/' || x == '\\' = []
+        | otherwise = xs
+      f (x : xs) = x : f xs
+      f _ = [] in
+      f `mapKeys` m
+
 -- There is no wrapping yet and the logic is kind of shit too.
 formatTable :: Config -> Map String String -> String
 formatTable c m =
@@ -96,6 +108,30 @@ formatTable c m =
            justifyLeft (n + 2) x ++ y else
            x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) $ Just 5) - 1) " " ++ y in
            unlines $ g <$> xs
+
+data Value =
+  Matching String |
+  Missing |
+  Spurious String
+  deriving (Eq, Ord, Read, Show)
+
+-- Extend with Data.Set.zipWith to define this better.
+wrangleTable :: Set FilePath -> Map String String -> Map String Value
+wrangleTable s m =
+  let f Missing (Spurious x) = Matching x in
+      unionWith f (fromSet (const Missing) s) (Spurious <$> m)
+
+fromWrangledTable :: Config -> Map String Value -> Map String String
+fromWrangledTable c m =
+  -- These depend on the Config.
+  let -- f Missing = False
+      f _ = True
+      g (Matching x) = x
+      -- Make sure that placeholder is not empty or
+      -- the file will be corrupted gently.
+      g Missing = placeholder c
+      g (Spurious x) = x in
+      g <$> M.filter f m
 
 -- Just for developer convenience.
 handOverTable :: String -> Either ExecutionError (Map String String)

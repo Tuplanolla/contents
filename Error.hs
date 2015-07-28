@@ -16,8 +16,7 @@ data ExecutionError =
   SwapInUse |
   AlreadyInThere String |
   NotInThere String |
-  NotFound String |
-  Fuck
+  NotFound String
   deriving (Eq, Ord, Read, Show, Typeable)
 
 instance Exception ExecutionError

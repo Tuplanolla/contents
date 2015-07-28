@@ -48,6 +48,8 @@ data Config =
      showMissing :: Bool,
      -- Hide files in the contents that do not exist.
      hideSpurious :: Bool,
+     -- What to show for entries that do not have values.
+     placeholder :: String,
      -- Obvious.
      useSwap :: Bool,
      -- Then rules for special cases!
@@ -59,6 +61,7 @@ data Config =
      interactiveErrors :: Bool,
      -- Warn about existing inconsistencies.
      warnOrder :: Bool,
+     warnMarker :: Bool,
      warnDuplicate :: Bool,
      warnMissing :: Bool,
      warnSpurious :: Bool,
@@ -71,6 +74,7 @@ defaultConfig :: Config
 defaultConfig =
   Config
     {editor = Nothing,
+     placeholder = "??",
      wrap = Just 80}
 
 formatConfig :: Config -> String

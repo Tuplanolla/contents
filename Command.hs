@@ -34,10 +34,10 @@ data Action =
 
 data ConfigAction =
   -- | Edit config file in text editor, check afterwards.
-  EditConfig |
-  Destroy |
-  Help |
-  Version
+  ConfigEdit |
+  ConfigDestroy |
+  ConfigHelp |
+  ConfigVersion
   deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String

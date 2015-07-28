@@ -4,11 +4,13 @@ import Control.Applicative (Alternative((<|>)), Applicative((<*>)), (<$>))
 import Control.Exception (evaluate, throw)
 import Data.List (isInfixOf)
 import Data.Map
+import qualified Data.Map as M
+import Data.Set (Set)
+import qualified Data.Set as S
 import System.Directory
 import System.Environment (lookupEnv)
 import System.Exit (ExitCode(ExitFailure))
 import System.Process (rawSystem)
-import qualified Data.Map as M (lookup)
 
 import Config
 import Table
@@ -77,6 +79,8 @@ executeOne p _ Version = putStrLn $ show $ projectVersion p
 execute :: Project -> Config -> [Action] -> IO ()
 execute p c = mapM_ $ executeOne p c
 
+ignoreThese = S.fromList [".", ".."]
+
 changeTable ::
   Project -> Config -> (Map String String -> IO (Map String String)) -> IO ()
 changeTable p c f =
@@ -87,14 +91,11 @@ changeTable p c f =
      case cleanTable <$> parseTable x of
           Right y ->
             do fp <- getCurrentDirectory
-               fps <- getDirectoryContents fp
-               _ <- return fps
-               -- Here goes something to merge reality with expectations.
-               -- [FilePath] -> Map String String -> Map String (Maybe String, Bool)
-               -- That Maybe says whether there is an entry and
-               -- that Bool says whether a file exists.
+               fps <- S.fromList <$> getDirectoryContents fp
+               let s = fps `S.difference` ignoreThese
                q <- f y
-               let z = formatTable c q
+               -- Here goes wrangleTable to merge reality with expectations.
+               let z = formatTable c $ fromWrangledTable c $ wrangleTable s $ dropTrails q
                if True then
                   do b <- doesFileExist swapFile
                      -- If another process creates swapFile here,
