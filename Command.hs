@@ -7,7 +7,7 @@ import Error
 
 data Action =
   -- | Create an empty table of contents if none exists.
-  Make |
+  Create |
   -- | Fill the table of contents based on currently existing files.
   -- Interactive if possible, asks about each file.
   -- Leave the value empty to skip.
@@ -30,13 +30,14 @@ data Action =
   Destroy |
   Help |
   Version
-  -- Perhaps give these more sensible names and
-  -- make contents-configure work the config instead.
   deriving (Eq, Ord, Read, Show)
 
 data ConfigAction =
   -- | Edit config file in text editor, check afterwards.
-  EditConfig
+  EditConfig |
+  Destroy |
+  Help |
+  Version
   deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String
@@ -67,9 +68,10 @@ wrap1 f = (F $ \ x -> A $ f x, 1)
 wrap2 :: (String -> String -> Action) -> Wrapped
 wrap2 f = (F $ \ x -> F $ \ y -> A $ f x y, 2)
 
+-- Actually Map String Wrapped.
 commands :: [(String, Wrapped)]
 commands =
-  [("make", wrap0 Make),
+  [("create", wrap0 Create),
    ("edit", wrap0 Edit),
    ("add", wrap2 Add),
    ("remove", wrap1 Remove),

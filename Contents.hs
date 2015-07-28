@@ -16,10 +16,10 @@ import Executor
 import Platform
 import Project
 
-mainWith :: Config -> [String] -> IO ()
-mainWith c xs =
+mainWith :: Project -> Config -> [String] -> IO ()
+mainWith p c xs =
   case parseActions xs of
-       Right x -> execute c x
+       Right x -> execute p c x
        Left x -> print x
 
 main :: IO ()
@@ -28,14 +28,14 @@ main =
      e <- try readConfig
      b <- interactiveInput
      case e of
-          Right c -> mainWith c as
-          Left (_ :: SomeException) -> mainWith defaultConfig as
+          Right c -> mainWith defaultProject c as
+          Left (_ :: SomeException) -> mainWith defaultProject defaultConfig as
 
 testc = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 
-testp = parseTables <$> readFile (projectTarget defaultProject)
+testp = parseTable <$> readFile (projectTarget defaultProject)
 
-testf = fmap (formatTables defaultConfig . cleanTables) <$> testp
+testf = fmap (formatTable defaultConfig . cleanTable) <$> testp
 
 testq =
   do x <- testf

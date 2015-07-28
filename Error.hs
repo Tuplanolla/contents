@@ -14,6 +14,9 @@ data ExecutionError =
   EditorFailed {editorName :: String, exitCode :: Int} |
   SyntaxError {row :: Int, column :: Int} |
   SwapInUse |
+  AlreadyInThere String |
+  NotInThere String |
+  NotFound String |
   Fuck
   deriving (Eq, Ord, Read, Show, Typeable)
 

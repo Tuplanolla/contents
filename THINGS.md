@@ -1,22 +1,24 @@
 # Formal Grammar
 
+## Tables
+
 The grammar of wrapped two-column tables is not entirely trivial even though
 one might expect that to be the case.
 The formal grammar is context-free and
 can be expressed with the following type-annotated productions.
 
-    C -> E* : [(String, [String])]
-    E -> K V : (String, [String])
-    K -> ~W (~(S S | L)* ~W)? : String
-    V -> S S X | L Y : [String]
-    X -> S* ~W (~L* ~W)? L Z? : [String]
-    Y -> S X | L Y : [String]
-    Z -> S X | L Z? : [String]
-    W -> L | S : String
-    L -> R N | R | N : String
-    S -> " " : String
-    R -> "\r" : String
-    N -> "\n" : String
+    T -> E* : [(String, [String])] -- Table
+    E -> K V : (String, [String]) -- Entry
+    K -> ~W (~(S S | L)* ~W)? : String -- Key
+    V -> S S C | L F : [String] -- Value
+    C -> S* ~W (~L* ~W)? L Z? : [String] -- ContinuedLine
+    F -> S C | L F : [String] -- FiniteLine
+    Z -> S C | L Z? : [String] -- ZeroLine
+    W -> L | S : String -- WhiteSpace
+    L -> R N | R | N : String -- LineBreak
+    S -> " " : String -- Space
+    R -> "\r" : String -- ReturnCarriage
+    N -> "\n" : String -- NewLine
 
 The productions can be renamed and rearranged to get a better looking result.
 Turns out there is only one word in the English language that

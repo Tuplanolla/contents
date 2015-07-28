@@ -56,21 +56,21 @@ mapError e =
   let p = errorPos e in
       SyntaxError (sourceLine p) (sourceColumn p)
 
-parseTables :: String -> Either ExecutionError [(String, [(Int, String)])]
-parseTables = left mapError . runParser (c <* eof) () []
+parseTable :: String -> Either ExecutionError [(String, [(Int, String)])]
+parseTable = left mapError . runParser (c <* eof) () []
 
 -- This is silly and should remain internal.
-mergeTables :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
-mergeTables xs =
+mergeTable :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
+mergeTable xs =
   let f xs @ ((x, _) : _) = (x, concat $ snd <$> xs)
       ys = groupBy ((==) `on` fst) $ sortBy (comparing fst) xs in
       f <$> ys
 
 -- It does some extra work and is kind of really stupid, but... gives results.
-cleanTables :: [(String, [(Int, String)])] -> Map String String
-cleanTables xs =
+cleanTable :: [(String, [(Int, String)])] -> Map String String
+cleanTable xs =
   let f (x, ys) = unwords $ snd <$> ys
-      ys = mergeTables xs in
+      ys = mergeTable xs in
       fromList $ zip (fst <$> ys) (f <$> ys)
 
 -- When encountering incorrect indentation:
@@ -87,8 +87,8 @@ indentLeft n xs
   | otherwise = xs
 
 -- There is no wrapping yet and the logic is kind of shit too.
-formatTables :: Config -> Map String String -> String
-formatTables c m =
+formatTable :: Config -> Map String String -> String
+formatTable c m =
   let xs = toAscList m
       n = maximum $ length . fst <$> xs
       g (x, y) =
@@ -98,5 +98,5 @@ formatTables c m =
            unlines $ g <$> xs
 
 -- Just for developer convenience.
-handOverTables :: String -> Either ExecutionError (Map String String)
-handOverTables x = cleanTables <$> parseTables x
+handOverTable :: String -> Either ExecutionError (Map String String)
+handOverTable x = cleanTable <$> parseTable x

@@ -6,6 +6,7 @@ import Control.Applicative ((<$), (<$>), (<*), (<*>))
 import Data.Map as Map (Map)
 import qualified Data.Map as Map
 import System.Environment
+import System.IO
 import Text.Parsec
 
 -- Data.Map
@@ -15,6 +16,10 @@ mapBoth f = Map.map f . Map.mapKeys f
 -- System.Environment
 getEditor :: IO (Maybe FilePath)
 getEditor = lookupEnv "EDITOR"
+
+-- System.IO
+createFile :: FilePath -> IO ()
+createFile fp = writeFile fp ""
 
 -- Text.Parsec.Char
 lineTerminator :: Stream s m Char => ParsecT s u m String

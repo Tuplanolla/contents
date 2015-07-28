@@ -2,7 +2,8 @@ module Executor where
 
 import Control.Applicative (Alternative((<|>)), Applicative((<*>)), (<$>))
 import Control.Exception (evaluate, throw)
-import Data.Map (Map, delete, insert)
+import Data.List (isInfixOf)
+import Data.Map
 import System.Directory
 import System.Environment (lookupEnv)
 import System.Exit (ExitCode(ExitFailure))
@@ -16,52 +17,74 @@ import Error
 import Extra
 import Project
 
-executeOne :: Config -> Action -> IO ()
-executeOne _ Make =
-  do let file = projectTarget defaultProject
-     b <- doesFileExist $ projectTarget defaultProject
+executeOne :: Project -> Config -> Action -> IO ()
+executeOne p _ Create =
+  do let file = projectTarget p
+     b <- doesFileExist $ projectTarget p
      if b then
         throw AlreadyExists else
         -- If another process creates 'file' here,
         -- it will be overwritten by this process.
-        writeFile file ""
-executeOne Config {editor = editor} Edit =
-  do let file = projectTarget defaultProject
+        createFile file
+executeOne p Config {editor = editor} Edit =
+  do let file = projectTarget p
      m <- getEditor
      case editor <|> m of
           Just x ->
             do e <- rawSystem x [file]
                case e of
                     ExitFailure n -> throw $ EditorFailed x n
-                    _ -> return ()
+                    _ -> return () -- Sanitize here.
           _ -> throw NoEditor
 -- These write the file even when they should not.
 -- They also need additional access to the formatted result.
-executeOne c (Add k v) = changeTables c $ return . insert k v -- Ensure does not exist.
-executeOne c (Remove k) = changeTables c $ return . delete k
-executeOne c (Update k v) = changeTables c $ return . insert k v -- Ensure exists.
-executeOne c (Lookup k) = changeTables c $ \ m -> print (M.lookup k m) >> return m -- No.
-executeOne c (Find k) = changeTables c $ \ m -> print (M.lookup k m) >> return m -- No.
-executeOne c Touch = changeTables c $ return
-executeOne _ Destroy = removeFile $ projectTarget defaultProject
-executeOne _ Help = putStrLn $ projectName defaultProject
-executeOne _ Version = putStrLn $ show $ projectVersion defaultProject
+executeOne p c (Add k v) =
+  changeTable p c $ \ m ->
+    if member k m then
+       throw $ AlreadyInThere k else
+       return $ insert k v m
+executeOne p c (Remove k) =
+  changeTable p c $ \ m ->
+    if notMember k m then
+       throw $ NotInThere k else
+       return $ delete k m
+executeOne p c (Update k v) =
+  changeTable p c $ \ m ->
+    if notMember k m then
+       throw $ NotInThere k else
+       return $ insert k v m
+executeOne p c (Lookup k) =
+  withTable p c $ \ m ->
+    case M.lookup k m of
+         Just v -> putStrLn v
+         Nothing -> throw $ NotInThere k
+executeOne p c (Find x) =
+  withTable p c $ \ m ->
+    -- This should form another table and format it, but
+    -- the basic logic is there.
+    case toAscList $ filterWithKey (\ k v -> x `isInfixOf` k || x `isInfixOf` v) m of
+         xs @ (_ : _) -> putStr $ unlines $ (\ (k, v) -> k ++ "  " ++ v) <$> xs
+         _ -> throw $ NotFound x
+-- Interact
+-- FindKey
+-- FindValue
+executeOne p c Touch = changeTable p c $ return
+-- Catch exceptions in here.
+executeOne p _ Destroy = removeFile $ projectTarget p
+executeOne p _ Help = putStrLn $ projectName p
+executeOne p _ Version = putStrLn $ show $ projectVersion p
 
-execute :: Config -> [Action] -> IO ()
-execute c = mapM_ $ executeOne c
+execute :: Project -> Config -> [Action] -> IO ()
+execute p c = mapM_ $ executeOne p c
 
--- Use these in the future.
--- getHomeDirectory :: IO FilePath
--- doesFileExist :: FilePath -> IO Bool
-
-changeTables ::
-  Config -> (Map String String -> IO (Map String String)) -> IO ()
-changeTables c f =
-  do let file = projectTarget defaultProject
-         swapFile = projectSwap defaultProject
+changeTable ::
+  Project -> Config -> (Map String String -> IO (Map String String)) -> IO ()
+changeTable p c f =
+  do let file = projectTarget p
+         swapFile = projectSwap p
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanTables <$> parseTables x of
+     case cleanTable <$> parseTable x of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp
@@ -71,7 +94,7 @@ changeTables c f =
                -- That Maybe says whether there is an entry and
                -- that Bool says whether a file exists.
                q <- f y
-               let z = formatTables c q
+               let z = formatTable c q
                if True then
                   do b <- doesFileExist swapFile
                      -- If another process creates swapFile here,
@@ -85,11 +108,17 @@ changeTables c f =
                   writeFile file z
           Left e -> throw e
 
-readTables :: Config -> IO (Map String String)
-readTables _ =
-  do let file = projectTarget defaultProject
+withTable :: Project -> Config -> (Map String String -> IO ()) -> IO ()
+withTable p _ f =
+  do let file = projectTarget p
+         swapFile = projectSwap p
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanTables <$> parseTables x of
-          Right y -> return y
+     case cleanTable <$> parseTable x of
+          Right y ->
+            do fp <- getCurrentDirectory
+               fps <- getDirectoryContents fp
+               _ <- return fps
+               -- Only the next line differs.
+               f y
           Left e -> throw e
