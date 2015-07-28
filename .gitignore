@@ -1,6 +1,7 @@
 *.hi
 *.o
 *.swp
-/dist
 /CONTENTS
 /contents
+/contents-config
+/dist

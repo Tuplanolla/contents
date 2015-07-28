@@ -1,4 +1,4 @@
-module Content where
+module Table where
 
 import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
 import Control.Arrow (left)
@@ -56,21 +56,21 @@ mapError e =
   let p = errorPos e in
       SyntaxError (sourceLine p) (sourceColumn p)
 
-parseContents :: String -> Either ExecutionError [(String, [(Int, String)])]
-parseContents = left mapError . runParser (c <* eof) () []
+parseTables :: String -> Either ExecutionError [(String, [(Int, String)])]
+parseTables = left mapError . runParser (c <* eof) () []
 
 -- This is silly and should remain internal.
-mergeContents :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
-mergeContents xs =
+mergeTables :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
+mergeTables xs =
   let f xs @ ((x, _) : _) = (x, concat $ snd <$> xs)
       ys = groupBy ((==) `on` fst) $ sortBy (comparing fst) xs in
       f <$> ys
 
 -- It does some extra work and is kind of really stupid, but... gives results.
-cleanContents :: [(String, [(Int, String)])] -> Map String String
-cleanContents xs =
+cleanTables :: [(String, [(Int, String)])] -> Map String String
+cleanTables xs =
   let f (x, ys) = unwords $ snd <$> ys
-      ys = mergeContents xs in
+      ys = mergeTables xs in
       fromList $ zip (fst <$> ys) (f <$> ys)
 
 -- When encountering incorrect indentation:
@@ -87,16 +87,16 @@ indentLeft n xs
   | otherwise = xs
 
 -- There is no wrapping yet and the logic is kind of shit too.
-formatContents :: Config -> Map String String -> String
-formatContents c m =
+formatTables :: Config -> Map String String -> String
+formatTables c m =
   let xs = toAscList m
       n = maximum $ length . fst <$> xs
       g (x, y) =
         if True then
            justifyLeft (n + 2) x ++ y else
            x ++ "\n" ++ justifyLeft (max 1 ((\ (Just x) -> x) $ Just 5) - 1) " " ++ y in
-         unlines $ g <$> xs
+           unlines $ g <$> xs
 
 -- Just for developer convenience.
-handOverContents :: String -> Either ExecutionError (Map String String)
-handOverContents x = cleanContents <$> parseContents x
+handOverTables :: String -> Either ExecutionError (Map String String)
+handOverTables x = cleanTables <$> parseTables x

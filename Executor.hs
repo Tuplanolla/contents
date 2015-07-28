@@ -10,7 +10,7 @@ import System.Process (rawSystem)
 import qualified Data.Map as M (lookup)
 
 import Config
-import Content
+import Table
 import Command
 import Error
 import Extra
@@ -37,12 +37,12 @@ executeOne Config {editor = editor} Edit =
           _ -> throw NoEditor
 -- These write the file even when they should not.
 -- They also need additional access to the formatted result.
-executeOne c (Add k v) = changeContents c $ return . insert k v -- Ensure does not exist.
-executeOne c (Remove k) = changeContents c $ return . delete k
-executeOne c (Update k v) = changeContents c $ return . insert k v -- Ensure exists.
-executeOne c (Lookup k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
-executeOne c (Find k) = changeContents c $ \ m -> print (M.lookup k m) >> return m -- No.
-executeOne c Touch = changeContents c $ return
+executeOne c (Add k v) = changeTables c $ return . insert k v -- Ensure does not exist.
+executeOne c (Remove k) = changeTables c $ return . delete k
+executeOne c (Update k v) = changeTables c $ return . insert k v -- Ensure exists.
+executeOne c (Lookup k) = changeTables c $ \ m -> print (M.lookup k m) >> return m -- No.
+executeOne c (Find k) = changeTables c $ \ m -> print (M.lookup k m) >> return m -- No.
+executeOne c Touch = changeTables c $ return
 executeOne _ Destroy = removeFile $ projectTarget defaultProject
 executeOne _ Help = putStrLn $ projectName defaultProject
 executeOne _ Version = putStrLn $ show $ projectVersion defaultProject
@@ -54,14 +54,14 @@ execute c = mapM_ $ executeOne c
 -- getHomeDirectory :: IO FilePath
 -- doesFileExist :: FilePath -> IO Bool
 
-changeContents ::
+changeTables ::
   Config -> (Map String String -> IO (Map String String)) -> IO ()
-changeContents c f =
+changeTables c f =
   do let file = projectTarget defaultProject
          swapFile = projectSwap defaultProject
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanContents <$> parseContents x of
+     case cleanTables <$> parseTables x of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp
@@ -71,7 +71,7 @@ changeContents c f =
                -- That Maybe says whether there is an entry and
                -- that Bool says whether a file exists.
                q <- f y
-               let z = formatContents c q
+               let z = formatTables c q
                if True then
                   do b <- doesFileExist swapFile
                      -- If another process creates swapFile here,
@@ -85,11 +85,11 @@ changeContents c f =
                   writeFile file z
           Left e -> throw e
 
-readContents :: Config -> IO (Map String String)
-readContents _ =
+readTables :: Config -> IO (Map String String)
+readTables _ =
   do let file = projectTarget defaultProject
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanContents <$> parseContents x of
+     case cleanTables <$> parseTables x of
           Right y -> return y
           Left e -> throw e

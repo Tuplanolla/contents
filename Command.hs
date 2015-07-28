@@ -14,8 +14,6 @@ data Action =
   Interact |
   -- | Edit file in text editor, automatically sanitize afterwards.
   Edit |
-  -- | Edit config file in text editor, check afterwards.
-  EditConfig |
   -- | Add a new entry or fail for an existing one.
   Add {addKey :: String, addValue :: String} |
   Remove {removeKey :: String} |
@@ -34,6 +32,11 @@ data Action =
   Version
   -- Perhaps give these more sensible names and
   -- make contents-configure work the config instead.
+  deriving (Eq, Ord, Read, Show)
+
+data ConfigAction =
+  -- | Edit config file in text editor, check afterwards.
+  EditConfig
   deriving (Eq, Ord, Read, Show)
 
 key :: Action -> Maybe String
