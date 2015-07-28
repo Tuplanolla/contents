@@ -18,19 +18,21 @@ import Error
 import Extra
 
 -- This works somehow.
-c :: Parser [(String, [(Int, String)])]
-c = many e
+t :: Parser [(String, [(Int, String)])]
+t = many e
 e :: Parser (String, [(Int, String)])
 e = (,) <$> k <*> v
 k :: Parser String
 k =
   do _ <- notFollowedBy w
-     y <- manyTill anyChar (lookAhead (try (s *> s) <|> l))
+     _ <- notFollowedBy d
+     y <- manyTill anyChar (lookAhead (try (s *> s) <|> l <|> d))
+     _ <- d <|> return []
      return y
 v :: Parser [(Int, String)]
-v = s *> s *> x <|> l *> y
-x :: Parser [(Int, String)]
-x =
+v = s *> s *> c <|> l *> p
+c :: Parser [(Int, String)]
+c =
   do _ <- many s
      n <- sourceColumn <$> getPosition
      _ <- notFollowedBy w
@@ -38,20 +40,26 @@ x =
      _ <- l
      ys <- z <|> return []
      return $ (n, y) : ys
-y :: Parser [(Int, String)]
-y = s *> x <|> l *> y
+p :: Parser [(Int, String)]
+p = s *> c <|> l *> p
 z :: Parser [(Int, String)]
-z = s *> x <|> l *> (z <|> return [])
+z = s *> c <|> l *> (z <|> return [])
 w :: Parser String
 w = l <|> s
 l :: Parser String
 l = (++) <$> r <*> n <|> r <|> n
+d :: Parser String
+d = f <|> b
 s :: Parser String
 s = string " "
 r :: Parser String
 r = string "\r"
 n :: Parser String
 n = string "\n"
+f :: Parser String
+f = string "/"
+b :: Parser String
+b = string "\\"
 
 mapError :: ParseError -> ExecutionError
 mapError e =
@@ -59,7 +67,7 @@ mapError e =
       SyntaxError (sourceLine p) (sourceColumn p)
 
 parseTable :: String -> Either ExecutionError [(String, [(Int, String)])]
-parseTable = left mapError . runParser (c <* eof) () []
+parseTable = left mapError . runParser (t <* eof) () []
 
 -- This is silly and should remain internal.
 mergeTable :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
@@ -88,7 +96,7 @@ indentLeft n xs
   | n > 0 = indentLeft (n - 1) $ ' ' : xs
   | otherwise = xs
 
--- This needs to be baked into the grammar.
+-- This is baked into the grammar, but not separated there yet.
 dropTrails :: Map String String -> Map String String
 dropTrails m =
   let f xs @ (x : [])
