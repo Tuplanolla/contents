@@ -88,7 +88,7 @@ changeTable p c f =
          swapFile = projectSwap p
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanTable <$> parseTable x of
+     case cleanTable . stripPositions <$> parseTable x of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- S.fromList <$> getDirectoryContents fp
@@ -115,7 +115,7 @@ withTable p _ f =
          swapFile = projectSwap p
      x <- readFile file
      _ <- evaluate $ length x
-     case cleanTable <$> parseTable x of
+     case cleanTable . stripPositions <$> parseTable x of
           Right y ->
             do fp <- getCurrentDirectory
                fps <- getDirectoryContents fp

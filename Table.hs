@@ -1,7 +1,7 @@
 module Table where
 
 import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
-import Control.Arrow (left)
+import Control.Arrow (first, left)
 import Data.Function
 import Data.List as L
 import Data.Map as M
@@ -137,21 +137,18 @@ stripPositions xs =
       g <$> xs
 
 -- This is silly and should remain internal.
-mergeTable :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
+mergeTable :: [(String, [String])] -> [(String, [String])]
 mergeTable xs =
   let f xs @ ((x, _) : _) = (x, concat $ snd <$> xs)
       ys = groupBy ((==) `on` fst) $ sortBy (comparing fst) xs in
       f <$> ys
 
 -- It does some extra work and is kind of really stupid, but... gives results.
-cleanTable :: [(String, [(Int, String)])] -> Map String String
+cleanTable :: [(Marked String, [String])] -> Map String String
 cleanTable xs =
-  let f (x, ys) = unwords $ snd <$> ys
-      ys = mergeTable xs in
+  let f (_, ys) = unwords ys
+      ys = mergeTable $ first getThing <$> xs in
       fromList $ zip (fst <$> ys) (f <$> ys)
-
--- When encountering incorrect indentation:
--- "This does not seem to be a table of contents file. Keep going?"
 
 -- Merge entries with the same key.
 

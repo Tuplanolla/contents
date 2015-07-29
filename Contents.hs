@@ -35,7 +35,7 @@ testc = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 
 testp = parseTable <$> readFile (projectTarget defaultProject)
 
-testf = fmap (formatTable defaultConfig . cleanTable) <$> testp
+testf = fmap (formatTable defaultConfig . cleanTable . stripPositions) <$> testp
 
 testq =
   do x <- testf
