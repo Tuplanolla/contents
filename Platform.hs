@@ -21,4 +21,3 @@ interactiveOutput :: IO Bool
 interactiveOutput = return True
 
 #endif
-

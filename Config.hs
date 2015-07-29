@@ -60,11 +60,12 @@ data Config =
      interactiveWarnings :: Bool,
      interactiveErrors :: Bool,
      -- Warn about existing inconsistencies.
-     warnOrder :: Bool,
      warnMarker :: Bool,
-     warnDuplicate :: Bool,
      warnMissing :: Bool,
      warnSpurious :: Bool,
+     -- These are pure.
+     warnOrder :: Bool,
+     warnDuplicate :: Bool,
      warnLineSkip :: Bool,
      warnIndentation :: Bool}
      -- Perhaps convert Column into (Row, Column) in the parser to accomodate.

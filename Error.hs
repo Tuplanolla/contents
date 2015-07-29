@@ -20,3 +20,10 @@ data ExecutionError =
   deriving (Eq, Ord, Read, Show, Typeable)
 
 instance Exception ExecutionError
+
+data ExecutionWarning =
+  WLineSkip |
+  WDuplicate |
+  WOrder |
+  WIndentation
+  deriving (Eq, Ord, Read, Show)

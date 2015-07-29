@@ -3,7 +3,7 @@ module Table where
 import Control.Applicative ((*>), (<$), (<$>), (<*), (<*>))
 import Control.Arrow (left)
 import Data.Function
-import Data.List
+import Data.List as L
 import Data.Map as M
 import Data.Ord
 import Data.Set (Set)
@@ -17,32 +17,50 @@ import Config
 import Error
 import Extra
 
+data Marked a =
+  File a |
+  Directory a
+  deriving (Eq, Ord, Read, Show)
+
+getThing (File x) = x
+getThing (Directory x) = x
+
+data Row a =
+  Row {getRowQ :: Int, getAQ :: a}
+  deriving (Eq, Ord, Read, Show)
+
+data RowColumn a =
+  RowColumn {getRow :: Int, getColumn :: Int, getA :: a}
+  deriving (Eq, Ord, Read, Show)
+
 -- This works somehow.
-t :: Parser [(String, [(Int, String)])]
+t :: Parser [(Row (Marked String), [RowColumn String])]
 t = many e
-e :: Parser (String, [(Int, String)])
+e :: Parser (Row (Marked String), [RowColumn String])
 e = (,) <$> k <*> v
-k :: Parser String
+k :: Parser (Row (Marked String))
 k =
   do _ <- notFollowedBy w
      _ <- notFollowedBy d
+     n <- sourceLine <$> getPosition
      y <- manyTill anyChar (lookAhead (try (s *> s) <|> l <|> d))
-     _ <- d <|> return []
-     return y
-v :: Parser [(Int, String)]
+     f <- Directory <$ d <|> return File
+     return $ Row n $ f y
+v :: Parser [RowColumn String]
 v = s *> s *> c <|> l *> p
-c :: Parser [(Int, String)]
+c :: Parser [RowColumn String]
 c =
   do _ <- many s
-     n <- sourceColumn <$> getPosition
+     n <- sourceLine <$> getPosition
+     k <- sourceColumn <$> getPosition
      _ <- notFollowedBy w
      y <- manyTill (notFollowedBy (w *> l) *> anyChar) (lookAhead l)
      _ <- l
      ys <- z <|> return []
-     return $ (n, y) : ys
-p :: Parser [(Int, String)]
+     return $ RowColumn n k y : ys
+p :: Parser [RowColumn String]
 p = s *> c <|> l *> p
-z :: Parser [(Int, String)]
+z :: Parser [RowColumn String]
 z = s *> c <|> l *> (z <|> return [])
 w :: Parser String
 w = l <|> s
@@ -66,8 +84,57 @@ mapError e =
   let p = errorPos e in
       SyntaxError (sourceLine p) (sourceColumn p)
 
-parseTable :: String -> Either ExecutionError [(String, [(Int, String)])]
-parseTable = left mapError . runParser (t <* eof) () []
+parseTable :: String -> Either ExecutionError [(Row (Marked String), [RowColumn String])]
+parseTable = left mapError . runParser (t <* eof) () "<anonymous>"
+
+checkLineSkipIn :: [Int] -> [ExecutionWarning]
+checkLineSkipIn ns =
+  case nub ns of
+       _ : [] -> []
+       _ -> [WLineSkip]
+
+checkLineSkip :: [(Row (Marked String), [RowColumn String])] -> [ExecutionWarning]
+checkLineSkip xs =
+  let f (RowColumn n _ _) = n
+      lastLine (_, vs) = maximum (f <$> vs)
+      firstLine (Row n _, _) = n
+      ys = sortBy (comparing firstLine) xs in
+      checkLineSkipIn $ (zipWith subtract . tail) (firstLine <$> ys) (lastLine <$> ys)
+
+checkIndentationIn :: [RowColumn String] -> [ExecutionWarning]
+checkIndentationIn xs =
+  case nubBy ((==) `on` getColumn) xs of
+       _ : [] -> []
+       _ -> [WIndentation]
+
+checkIndentation :: [(Row (Marked String), [RowColumn String])] -> [ExecutionWarning]
+checkIndentation xs = checkIndentationIn $ snd `concatMap` xs
+
+checkDuplicate :: [(Row (Marked String), [RowColumn String])] -> [ExecutionWarning]
+checkDuplicate xs =
+  let ys = getThing . getAQ . fst <$> xs
+      zs = sort ys in
+      if nub zs == zs then
+         [] else
+         [WDuplicate]
+
+checkOrder :: [(Row (Marked String), [RowColumn String])] -> [ExecutionWarning]
+checkOrder xs =
+  let ys = getThing . getAQ . fst <$> xs in
+      if sort ys == ys then
+         [] else
+         [WOrder]
+
+checkAll :: [(Row (Marked String), [RowColumn String])] -> [ExecutionWarning]
+checkAll xs =
+  ($ xs) `concatMap`
+    [checkLineSkip, checkIndentation, checkDuplicate, checkOrder]
+
+stripPositions :: [(Row (Marked String), [RowColumn String])] -> [(Marked String, [String])]
+stripPositions xs =
+  let f (RowColumn _ _ v) = v
+      g (Row _ k, vs) = (k, f <$> vs) in
+      g <$> xs
 
 -- This is silly and should remain internal.
 mergeTable :: [(String, [(Int, String)])] -> [(String, [(Int, String)])]
@@ -140,7 +207,3 @@ fromWrangledTable c m =
       g Missing = placeholder c
       g (Spurious x) = x in
       g <$> M.filter f m
-
--- Just for developer convenience.
-handOverTable :: String -> Either ExecutionError (Map String String)
-handOverTable x = cleanTable <$> parseTable x
