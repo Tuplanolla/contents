@@ -6,18 +6,18 @@ module Platform where
 
 import System.Posix
 
-interactiveInput :: IO Bool
-interactiveInput = queryTerminal stdInput
+isInputInteractive :: IO Bool
+isInputInteractive = queryTerminal stdInput
 
-interactiveOutput :: IO Bool
-interactiveOutput = queryTerminal stdOutput
+isOutputInteractive :: IO Bool
+isOutputInteractive = queryTerminal stdOutput
 
 #else
 
-interactiveInput :: IO Bool
-interactiveInput = return True
+isInputInteractive :: IO Bool
+isInputInteractive = return True
 
-interactiveOutput :: IO Bool
-interactiveOutput = return True
+isOutputInteractive :: IO Bool
+isOutputInteractive = return True
 
 #endif

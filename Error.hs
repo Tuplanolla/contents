@@ -5,7 +5,7 @@ module Error where
 import Control.Exception (Exception)
 import Data.Typeable (Typeable)
 
-data ExecutionError =
+data ContentsError =
   Invalid {invalidInput :: String} |
   Ambiguous {ambiguousInput :: String, candidates :: [String]} |
   Incomplete {incompleteInput :: String, expectedInput :: Int, actualInput :: Int} |
@@ -19,7 +19,7 @@ data ExecutionError =
   NotFound String
   deriving (Eq, Ord, Read, Show, Typeable)
 
-instance Exception ExecutionError
+instance Exception ContentsError
 
 data ExecutionWarning =
   WLineSkip |

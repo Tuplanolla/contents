@@ -6,6 +6,7 @@ import Control.Applicative
 import Control.Exception
 import Data.Map (Map)
 import System.Environment
+import System.IO.Error
 import Text.Parsec (ParseError)
 
 import Command
@@ -25,11 +26,20 @@ mainWith p c xs =
 main :: IO ()
 main =
   do as <- getArgs
-     e <- try readConfig
-     b <- interactiveInput
-     case e of
-          Right c -> mainWith defaultProject c as
-          Left (_ :: SomeException) -> mainWith defaultProject defaultConfig as
+     e <-
+       tryJust (\ e ->
+       -- isAlreadyInUseError
+       -- isDoesNotExistError
+       -- isPermissionError
+       if isDoesNotExistError e then Just 1 else Nothing)
+       readConfig
+     b <- isInputInteractive
+     -- Needs a better exception mechanism.
+     mainWith defaultProject (
+       case e of
+            Right c -> c
+            Left 1 -> defaultConfig
+       ) {interactive = b} as
 
 testc = parseActions ["make", "to", "add", "key", "value", "look", "key"]
 

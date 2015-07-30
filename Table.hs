@@ -22,6 +22,7 @@ data Marked a =
   Directory a
   deriving (Eq, Ord, Read, Show)
 
+getThing :: Marked a -> a
 getThing (File x) = x
 getThing (Directory x) = x
 
@@ -33,59 +34,58 @@ data RowColumn a =
   RowColumn {getRow :: Int, getColumn :: Int, getA :: a}
   deriving (Eq, Ord, Read, Show)
 
--- This works somehow.
-t :: Parser [(Row (Marked String), [RowColumn String])]
-t = many e
-e :: Parser (Row (Marked String), [RowColumn String])
-e = (,) <$> k <*> v
-k :: Parser (Row (Marked String))
-k =
-  do _ <- notFollowedBy w
-     _ <- notFollowedBy d
-     n <- sourceLine <$> getPosition
-     y <- manyTill anyChar (lookAhead (try (s *> s) <|> l <|> d))
-     f <- Directory <$ d <|> return File
-     return $ Row n $ f y
-v :: Parser [RowColumn String]
-v = s *> s *> c <|> l *> p
-c :: Parser [RowColumn String]
-c =
-  do _ <- many s
-     n <- sourceLine <$> getPosition
-     k <- sourceColumn <$> getPosition
-     _ <- notFollowedBy w
-     y <- manyTill (notFollowedBy (w *> l) *> anyChar) (lookAhead l)
-     _ <- l
-     ys <- z <|> return []
-     return $ RowColumn n k y : ys
-p :: Parser [RowColumn String]
-p = s *> c <|> l *> p
-z :: Parser [RowColumn String]
-z = s *> c <|> l *> (z <|> return [])
-w :: Parser String
-w = l <|> s
-l :: Parser String
-l = (++) <$> r <*> n <|> r <|> n
-d :: Parser String
-d = f <|> b
-s :: Parser String
-s = string " "
-r :: Parser String
-r = string "\r"
-n :: Parser String
-n = string "\n"
-f :: Parser String
-f = string "/"
-b :: Parser String
-b = string "\\"
-
-mapError :: ParseError -> ExecutionError
+mapError :: ParseError -> ContentsError
 mapError e =
   let p = errorPos e in
       SyntaxError (sourceLine p) (sourceColumn p)
 
-parseTable :: String -> Either ExecutionError [(Row (Marked String), [RowColumn String])]
-parseTable = left mapError . runParser (t <* eof) () "<anonymous>"
+parseTable :: String -> Either ContentsError [(Row (Marked String), [RowColumn String])]
+parseTable = -- This works somehow.
+  let t :: Parser [(Row (Marked String), [RowColumn String])]
+      t = many e
+      e :: Parser (Row (Marked String), [RowColumn String])
+      e = (,) <$> k <*> v
+      k :: Parser (Row (Marked String))
+      k =
+        do _ <- notFollowedBy w
+           _ <- notFollowedBy d
+           n <- sourceLine <$> getPosition
+           y <- manyTill anyChar (lookAhead (try (s *> s) <|> l <|> d))
+           f <- Directory <$ d <|> return File
+           return $ Row n $ f y
+      v :: Parser [RowColumn String]
+      v = s *> s *> c <|> l *> p
+      c :: Parser [RowColumn String]
+      c =
+        do _ <- many s
+           n <- sourceLine <$> getPosition
+           k <- sourceColumn <$> getPosition
+           _ <- notFollowedBy w
+           y <- manyTill (notFollowedBy (w *> l) *> anyChar) (lookAhead l)
+           _ <- l
+           ys <- z <|> return []
+           return $ RowColumn n k y : ys
+      p :: Parser [RowColumn String]
+      p = s *> c <|> l *> p
+      z :: Parser [RowColumn String]
+      z = s *> c <|> l *> (z <|> return [])
+      w :: Parser String
+      w = l <|> s
+      l :: Parser String
+      l = (++) <$> r <*> n <|> r <|> n
+      d :: Parser String
+      d = f <|> b
+      s :: Parser String
+      s = string " "
+      r :: Parser String
+      r = string "\r"
+      n :: Parser String
+      n = string "\n"
+      f :: Parser String
+      f = string "/"
+      b :: Parser String
+      b = string "\\" in
+      left mapError . runParser (t <* eof) () "<anonymous>"
 
 checkLineSkipIn :: [Int] -> [ExecutionWarning]
 checkLineSkipIn ns =

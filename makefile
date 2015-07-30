@@ -4,7 +4,7 @@ GHCFLAGS=-Wall
 build: contents contents-config
 
 deep-clean: clean
-	$(RM) contents
+	$(RM) contents contents-config
 
 clean: shallow-clean
 	$(RM) *.o

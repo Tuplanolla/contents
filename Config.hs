@@ -24,6 +24,8 @@ data Config =
     {completion :: Maybe Int,
      -- User's favorite editor.
      editor :: Maybe String,
+     -- User can answer questions.
+     interactive :: Bool,
      -- Leave this many empty lines between keys.
      skip :: Int,
      -- If a value is too long, cut it before the exceeding word and
@@ -59,6 +61,7 @@ data Config =
      interactiveActions :: Bool,
      interactiveWarnings :: Bool,
      interactiveErrors :: Bool,
+     warnConfig :: Bool,
      -- Warn about existing inconsistencies.
      warnMarker :: Bool,
      warnMissing :: Bool,
@@ -68,7 +71,6 @@ data Config =
      warnDuplicate :: Bool,
      warnLineSkip :: Bool,
      warnIndentation :: Bool}
-     -- Perhaps convert Column into (Row, Column) in the parser to accomodate.
   deriving (Eq, Ord, Read, Show)
 
 defaultConfig :: Config
@@ -82,7 +84,7 @@ formatConfig :: Config -> String
 formatConfig = show
 
 -- This is dumb.
-parseConfig :: String -> Either ExecutionError Config
+parseConfig :: String -> Either ContentsError Config
 parseConfig = left (const $ SyntaxError 0 0) . readEither
 
 readConfig :: IO Config

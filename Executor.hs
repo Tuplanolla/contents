@@ -19,7 +19,7 @@ import Error
 import Extra
 import Project
 
-executeOne :: Project -> Config -> Action -> IO ()
+executeOne :: Project -> Config -> Action String -> IO ()
 executeOne p _ Create =
   do let file = projectTarget p
      b <- doesFileExist $ projectTarget p
@@ -76,7 +76,7 @@ executeOne p _ Destroy = removeFile $ projectTarget p
 executeOne p _ Help = putStrLn $ projectName p
 executeOne p _ Version = putStrLn $ show $ projectVersion p
 
-execute :: Project -> Config -> [Action] -> IO ()
+execute :: Project -> Config -> [Action String] -> IO ()
 execute p c = mapM_ $ executeOne p c
 
 ignoreThese = S.fromList [".", ".."]
